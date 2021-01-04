@@ -71,7 +71,7 @@ def retrieveCustomer():
     'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
     'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04'
 }
-print(c)   
+ 
 ls = lightspeed_api.Lightspeed(cArray)
 
 # Get a customer record
