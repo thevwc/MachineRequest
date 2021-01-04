@@ -34,7 +34,7 @@ function memberSelectedRtn() {
 	lastEight = selectedMember.slice(-8)
 	currentMemberID= lastEight.slice(1,7)
 	//document.getElementById('selectpicker').value=''
-    document.getElementById('prtMonitorTransactionsID').removeAttribute('disabled')
+    document.getElementById('prtTransactionsID').removeAttribute('disabled')
 }
 function PresidentsReport() {
     window.location.href = '/prtPresidentsReport?destination=PRINT' 
@@ -49,11 +49,14 @@ function Contacts() {
 }
 
 function Transactions() {
-    d = new Date();
-    curYear = d.getFullYear();
-    yr = prompt('Monitor schedule year?',curYear)
-    link = '/prtMonitorTransactions?destination=PRINT&memberID=' + currentMemberID + '&year=' + curYear
+    // TO BE DEFINED .....
+    link = '/prtTransactions?destination=PRINT&memberID=' + currentMemberID + '&year=' + curYear
     window.location.href = link
 }
 
+function retrieveCustomer() {
+    // get memberID (lightspeed#?) to send
+    link = '/retrieveCustomer'
+    window.location.href = link
+}
 // END OF FUNCTIONS
