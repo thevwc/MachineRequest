@@ -12,7 +12,7 @@
             <div><h2>LIGHTSPEED INTERFACE</h2></div>
         </div>
         <div class="version">
-            <h3>ver. Jan 2, 2021</h3>
+            <h3>ver. May 5, 2021</h3>
         </div>  
     </div>
     <div id="printReportBtns">
@@ -29,25 +29,33 @@
         </div>
    
         <div id="column2">
-            <button class='btn btn-primary' onclick='retrieveCustomer()'>Retrieve a customer</button>
-           <h6>daily send address changes</h6>
-           <h6>daily send eMail changes</h6>
-           <h6>receive dues/initiation Transactions; compare to membership records</h6>
-
+            <button type="button" class='btn btn-sm btn-primary' onclick='updateLightspeedID()'>Update Lightspeed ID</button>
+            <h6>daily send eMail changes</h6>
+            <h6>receive dues/initiation Transactions; compare to membership records</h6>
+            <h6>List Recent Sales</h6>
+            <button type="button" class='btn btn-sm btn-primary' onclick='retrieveCustomerByID()'>Get Customer by ID - 1</button>
         </div>
 
         <div id="column3">
             <div id="memberOptions" style=margin-top:20px>
                 <select id="selectpicker" class='selectpicker' style='margin-bottom:20px' title='Find a member ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
-                {% for nme in nameList %}
-                    <option class="optName" value='{{nme}}'</option>{{nme}}</option>
+                {% for n in nameDict %}
+                    <option 
+                        class="optName" 
+                        value='{{n.memberName}}' 
+                        data-memberID='{{n.memberID}}' 
+                        data-ls='{{n.lightspeedID}}'
+                    </option>{{n.memberName}}</option>
                 {% endfor %}
                 </select>
+                <input id='memberID' type="hidden" value=''>
             </div>
             <div class="memberReports">
                 <!-- PRINT BUTTONS TO PROVIDE LINKS TO ROUTES -->
                 <ul style="list-style-type:none;">
-                    <li><button id='prtTransactionsID' disabled onclick='Transactions()' type="button" class='btn btn-sm btn-primary'>Transactions</button></li>
+                    <li><button id='getCustByPythonID' class='btn btn-primary' disabled onclick="retrieveCustomerPython()">Retrieve a customer (via python)</button></li>
+                    <li><button id='prtTransactionsID' disabled onclick='listTransactions()' type="button" class='btn btn-sm btn-primary'>Transactions</button></li>
+                    <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
                 </ul>
             </div>
         </div>
