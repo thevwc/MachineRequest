@@ -139,47 +139,86 @@ def refreshToken():
 def updateLightspeedID():
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
+    start = 0
+    batchSize = 100
+    recordCnt = 0
+    for i in range(50):
+        # BUILD URL 
+        url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json'
+        url += '?load_relations=["Contact"]&Contact.custom&offset=' + str(start) + '&limit=' + str(batchSize)
+        print(url)
+
+        headers = {'authorization': 'Bearer ' + token}
+        response = requests.request('GET', url, headers=headers) 
+        data_json = response.json()
+
+        # PRINT ATTRIBUTES DATA
+        len_data_json = len(data_json)
+        print('Batch ',i)
+        count = data_json['@attributes']['count']
+        offset = data_json['@attributes']['offset']
+        limit = data_json['@attributes']['limit']
+
+        print ('.............. attributes of json file .......................')
+        print('length of data_json - ',len_data_json)
+        print('count - ',count)
+        print('offset - ',offset)
+        print('limit - ',limit)
+        
+        # PRINT CUSTOMER DATA
+        print('--------  MEMBER DATA -----------')
+        print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format('#','d','ID', 'Name','VillageID', 'Type', 'email'))
+        for d in range(int(limit)):
+            lightspeedID = data_json['Customer'][d]['customerID']
+            lastName = data_json['Customer'][d]['lastName']
+            firstName = data_json['Customer'][d]['firstName']
+            villageID = data_json['Customer'][d]['Contact']['custom']
+            email = data_json['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
+            memberType = data_json['Customer'][d]['customerTypeID']
     
-    # BUILD URL 
-    url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json?load_relations=["Contact"]&Contact.custom&limit=2'
+            print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format(str(recordCnt),str(d),lightspeedID, firstName + ' ' + lastName,villageID, memberType, email))
+            
+            # UPDATE lightspeedID IN tblMember_Data
+            sqlUpdate = "UPDATE tblMember_Data SET lightspeedID = '" + lightspeedID + "' "
+            sqlUpdate += "WHERE Member_ID = '" + villageID + "'"
+            db.engine.execute(sqlUpdate)
+            
+            recordCnt += 1
+            if (recordCnt >= int(count)):
+                flash("Records updated - "+str(recordCnt))
+                return redirect(url_for('index'))
+        start += batchSize
+        
+        
+    return redirect(url_for('index'))
+
+
+@app.route('/addCustomer')
+def addCustomer():
+    villageID = '123456'
+    firstName = 'Jane'
+    lastName = 'Doe'
+    email = 'hartl1r@gmail.com'
+
+    # BUILD JSON FILE ?
+
+    url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
+    print(url)
+
+    payload = {
+        "firstName": firstName,
+        "lastName": lastName,
+        "customerTypeID":1,
+        "Contact": {
+            "custom":villageID,
+            "email":email
+            }
+        }
+    
+    token = refresh_token()
     headers = {'authorization': 'Bearer ' + token}
-    response = requests.request('GET', url, headers=headers) 
-    data_json = response.json()
+    response = requests.request("POST", url, data=payload, headers=headers)
 
-    # PRINT ATTRIBUTES DATA
-    len_data_json = len(data_json)
-    count = data_json['@attributes']['count']
-    offset = data_json['@attributes']['offset']
-    limit = data_json['@attributes']['limit']
-
-    print ('.............. attributes of json file .......................')
-    print('length of data_json - ',len_data_json)
-    print('count - ',count)
-    print('offset - ',offset)
-    print('limit - ',limit)
-
-    # PRETTY PRINT OF JSON DATA
-    pprint.pprint ('................  PRETTY PRINT OF JSON DATA .....................')
-    pprint.pprint(data_json)
-
-
-    #  ??????????????????????????????????????????????????????????????????????
-    #               HOW DO WE READ EACH 'RECORD' OF JSON FILE?
-    #  ??????????????????????????????????????????????????????????????????????
-
-
-    # GET CUSTOMER DATA
-    # lightspeedID = data_json['Customer']['customerID']
-    # lastName = data_json['Customer']['lastName']
-    # firstName = data_json['Customer']['firstName']
-    # villageID = data_json['Customer']['Contact']['custom']
-    # email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    print(response.text)
     
-    # PRINT CUSTOMER DATA
-    # print('--------  MEMBER DATA -----------')
-    # print('Lightspeed ID: ',lightspeedID, '\nName: ',firstName + ' ' + lastName, 
-    # '\nVillage ID - ',villageID)
-    # print('--------------------------------------------------------')
-    
-
     return redirect(url_for('index'))

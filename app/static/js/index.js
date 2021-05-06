@@ -85,4 +85,9 @@ function listTransactions() {
 //     return token
 // }
 
+
+function addCustomer() {
+    url = '/addCustomer'
+    location.href=url
+}
 // END OF FUNCTIONS
