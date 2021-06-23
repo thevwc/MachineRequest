@@ -33,12 +33,35 @@ function retrieveCustomerByID() {
     location.href=url
 }
 
-function retrieveCustomerPython() {
+function retrieveCustomerByVillageID() {
     villageID = document.getElementById('memberID').value
-    url = '/retrieveCustomerByVillageID?villageID=' + villageID
-    location.href="/retrieveCustomerByVillageID/"+ villageID 
+    //url = "${window.origin}/retrieveCustomerByVillageID/?villageID=" + villageID
+    //url = window.originhttp://localhost:5000/retrieveCustomerByVillageID/?villageID=" + villageID
+    var entry = {
+        villageID: villageID
+    };
+    //console.log('url - ',url)
+    fetch(`${window.origin}/retrieveCustomerByVillageID`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(entry),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+    .then(function (response) {
+        if (response.status != 200) {
+            console.log(`Response status was not 200: ${response.status}`);
+            return ;
+        }
+        response.json().then(function (data) {
+            console.log(data)
+        })
+    })
 }
-   
+
+
 function listTransactions() {
     alert('To be developed.')
 }

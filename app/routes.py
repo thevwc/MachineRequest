@@ -93,9 +93,13 @@ def retrieveCustomerByID():
     # s = ls.get('Contact/127')
     return redirect(url_for('index'))
 
-@app.route('/retrieveCustomerByVillageID/<villageID>') 
-def retrieveCustomerByVillageID(villageID):
-
+@app.route('/retrieveCustomerByVillageID', methods=['POST']) 
+def retrieveCustomerByVillageID():
+    print("RETRIEVE CUSTOMER BY VILLAGE ID")
+    req = request.get_json()
+    villageID = req["villageID"]
+    print("villageID - ",villageID)
+    
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
 
@@ -104,6 +108,8 @@ def retrieveCustomerByVillageID(villageID):
     #headers = {'authorization': 'Bearer c69c7b31ce5b6caf176c189ba741f9ec4b231a20'}
     headers = {'authorization': 'Bearer ' + token}
     response = requests.request('GET', url, headers=headers)
+    pprint.pprint(response.text)
+    print('............................................................................')
     data_json = response.json()
     print('------- Pretty Print JSON String ----------')
     pprint.pprint(data_json)
@@ -146,12 +152,12 @@ def updateLightspeedID():
         # BUILD URL 
         url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json'
         url += '?load_relations=["Contact"]&Contact.custom&offset=' + str(start) + '&limit=' + str(batchSize)
-        print(url)
+        #print(url)
 
         headers = {'authorization': 'Bearer ' + token}
         response = requests.request('GET', url, headers=headers) 
         data_json = response.json()
-
+        #pprint.pprint(data_json)
         # PRINT ATTRIBUTES DATA
         len_data_json = len(data_json)
         print('Batch ',i)
@@ -215,7 +221,7 @@ def addCustomer():
             }
         }
     
-    token = refresh_token()
+    token = refreshToken()
     headers = {'authorization': 'Bearer ' + token}
     response = requests.request("POST", url, data=payload, headers=headers)
 

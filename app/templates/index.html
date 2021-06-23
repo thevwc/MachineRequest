@@ -12,7 +12,7 @@
             <div><h2>LIGHTSPEED INTERFACE</h2></div>
         </div>
         <div class="version">
-            <h3>ver. May 6, 2021</h3>
+            <h3>ver. Jun 23, 2021</h3>
         </div>  
     </div>
     <div id="printReportBtns">
@@ -54,7 +54,8 @@
             <div class="memberReports">
                 <!-- PRINT BUTTONS TO PROVIDE LINKS TO ROUTES -->
                 <ul style="list-style-type:none;">
-                    <li><button id='getCustByPythonID' class='btn btn-primary' disabled onclick="retrieveCustomerPython()">Retrieve a customer (via python)</button></li>
+                    <li><button id='getCustByPythonID' class='btn btn-primary' disabled onclick="retrieveCustomerByVillageID()">Retrieve a customer by Village ID)</button></li>
+                    <li>{{lsID}}{{memberName}}{{villageID}}</li>
                     <li><button id='prtTransactionsID' disabled onclick='listTransactions()' type="button" class='btn btn-sm btn-primary'>Transactions</button></li>
                     <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
                 </ul>
