@@ -125,8 +125,9 @@ def retrieveCustomerByVillageID():
     print('Lightspeed ID: ',lightspeedID, '\nName: ',firstName + ' ' + lastName, 
     '\nVillage ID - ',villageID)
     print('--------------------------------------------------------')
+    memberName = firstName + ' ' + lastName
+    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName)
     
-    return redirect(url_for('index'))
 
 def refreshToken():
     import requests
@@ -141,13 +142,16 @@ def refreshToken():
     token = (r['access_token'])
     return token
 
-@app.route('/updateLightspeedID') 
+@app.route('/updateLightspeedID', methods=['POST']) 
 def updateLightspeedID():
+    print('/updateLightspeedID ........................................')
+
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
     start = 0
     batchSize = 100
-    recordCnt = 0
+    recordsUpdated = 0
+    numberOfLightspeedRecords = 0
     for i in range(50):
         # BUILD URL 
         url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json'
@@ -174,27 +178,32 @@ def updateLightspeedID():
         # PRINT CUSTOMER DATA
         print('--------  MEMBER DATA -----------')
         print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format('#','d','ID', 'Name','VillageID', 'Type', 'email'))
-        for d in range(int(limit)):
-            lightspeedID = data_json['Customer'][d]['customerID']
-            lastName = data_json['Customer'][d]['lastName']
-            firstName = data_json['Customer'][d]['firstName']
-            villageID = data_json['Customer'][d]['Contact']['custom']
-            email = data_json['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
-            memberType = data_json['Customer'][d]['customerTypeID']
-    
-            print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format(str(recordCnt),str(d),lightspeedID, firstName + ' ' + lastName,villageID, memberType, email))
-            
-            # UPDATE lightspeedID IN tblMember_Data
-            sqlUpdate = "UPDATE tblMember_Data SET lightspeedID = '" + lightspeedID + "' "
-            sqlUpdate += "WHERE Member_ID = '" + villageID + "'"
-            db.engine.execute(sqlUpdate)
-            
-            recordCnt += 1
-            if (recordCnt >= int(count)):
-                flash("Records updated - "+str(recordCnt))
-                return redirect(url_for('index'))
-        start += batchSize
+        try:
+            for d in range(int(limit)):
+                lightspeedID = data_json['Customer'][d]['customerID']
+                lastName = data_json['Customer'][d]['lastName']
+                firstName = data_json['Customer'][d]['firstName']
+                villageID = data_json['Customer'][d]['Contact']['custom']
+                email = data_json['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
+                memberType = data_json['Customer'][d]['customerTypeID']
         
+                print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format(str(numberOfLightspeedRecords),str(d),lightspeedID, firstName + ' ' + lastName,villageID, memberType, email))
+                if villageID != '' and villageID != None:
+                    # UPDATE lightspeedID IN tblMember_Data
+                    sqlUpdate = "UPDATE tblMember_Data SET lightspeedID = '" + lightspeedID + "' "
+                    sqlUpdate += "WHERE Member_ID = '" + villageID + "'"
+                    db.engine.execute(sqlUpdate)
+                    recordsUpdated += 1
+
+                numberOfLightspeedRecords += 1
+                if (numberOfLightspeedRecords >= int(count)):
+                    flash("Records updated - "+str(recordsUpdated))
+                    return redirect(url_for('index'))
+            start += batchSize
+        except:
+            print('Number of Lightspeed records - ',numberOfLightspeedRecords)
+            print('Number of member records updated w/Lightspeed ID - ',recordsUpdated)
+            print('End of file')    
         
     return redirect(url_for('index'))
 

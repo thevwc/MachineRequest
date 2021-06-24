@@ -23,10 +23,34 @@ function memberSelectedRtn() {
 
 
 function updateLightspeedID() {
-    console.log('updateLightspeedID')
-    url = '/updateLightspeedID'
-    location.href=url
+    // GET ALL CURRENT LIGHTSPEED CUSTOMER RECORDS
+    // villageID = document.getElementById('memberID').value
+    // var dataToSend = {
+    //     villageID: villageID
+    // };
+    dataToSend = ''
+    fetch(`${window.origin}/updateLightspeedID`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+    .then(function (response) {
+        if (response.status != 200) {
+            console.log(`Response status was not 200: ${response.status}${response.msg}`);
+            return ;
+        }
+        response.json().then(function (data) {
+            console.log(data)
+            // msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            // alert(msg)
+        })
+    })
 }
+
 
 function retrieveCustomerByID() {
     url = '/retrieveCustomerByID'
@@ -35,16 +59,13 @@ function retrieveCustomerByID() {
 
 function retrieveCustomerByVillageID() {
     villageID = document.getElementById('memberID').value
-    //url = "${window.origin}/retrieveCustomerByVillageID/?villageID=" + villageID
-    //url = window.originhttp://localhost:5000/retrieveCustomerByVillageID/?villageID=" + villageID
-    var entry = {
+    var dataToSend = {
         villageID: villageID
     };
-    //console.log('url - ',url)
     fetch(`${window.origin}/retrieveCustomerByVillageID`, {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify(entry),
+        body: JSON.stringify(dataToSend),
         cache: "no-cache",
         headers: new Headers({
             "content-type": "application/json"
@@ -57,6 +78,8 @@ function retrieveCustomerByVillageID() {
         }
         response.json().then(function (data) {
             console.log(data)
+            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            alert(msg)
         })
     })
 }
