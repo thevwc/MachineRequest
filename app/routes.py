@@ -144,7 +144,6 @@ def refreshToken():
 
 @app.route('/updateLightspeedID', methods=['POST']) 
 def updateLightspeedID():
-    print('/updateLightspeedID ........................................')
 
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
@@ -156,30 +155,29 @@ def updateLightspeedID():
         # BUILD URL 
         url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json'
         url += '?load_relations=["Contact"]&Contact.custom&offset=' + str(start) + '&limit=' + str(batchSize)
-        #print(url)
 
         headers = {'authorization': 'Bearer ' + token}
         response = requests.request('GET', url, headers=headers) 
         data_json = response.json()
-        #pprint.pprint(data_json)
-        # PRINT ATTRIBUTES DATA
-        len_data_json = len(data_json)
-        print('Batch ',i)
-        count = data_json['@attributes']['count']
-        offset = data_json['@attributes']['offset']
-        limit = data_json['@attributes']['limit']
-
-        print ('.............. attributes of json file .......................')
-        print('length of data_json - ',len_data_json)
-        print('count - ',count)
-        print('offset - ',offset)
-        print('limit - ',limit)
         
-        # PRINT CUSTOMER DATA
-        print('--------  MEMBER DATA -----------')
-        print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format('#','d','ID', 'Name','VillageID', 'Type', 'email'))
+        count = data_json['@attributes']['count']
+        if (numberOfLightspeedRecords >= int(count)):
+            break
+        
+
+        # PRINT ATTRIBUTES DATA
+        try:
+            offset = data_json['@attributes']['offset']
+        except:
+            break
+        limit = data_json['@attributes']['limit'] 
+        
         try:
             for d in range(int(limit)):
+                if (numberOfLightspeedRecords >= int(count)):
+                    break
+                numberOfLightspeedRecords += 1
+
                 lightspeedID = data_json['Customer'][d]['customerID']
                 lastName = data_json['Customer'][d]['lastName']
                 firstName = data_json['Customer'][d]['firstName']
@@ -187,7 +185,6 @@ def updateLightspeedID():
                 email = data_json['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
                 memberType = data_json['Customer'][d]['customerTypeID']
         
-                print ("{:<5} {:<5} {:<5} {:<20} {:<10} {:<5} {:<35}".format(str(numberOfLightspeedRecords),str(d),lightspeedID, firstName + ' ' + lastName,villageID, memberType, email))
                 if villageID != '' and villageID != None:
                     # UPDATE lightspeedID IN tblMember_Data
                     sqlUpdate = "UPDATE tblMember_Data SET lightspeedID = '" + lightspeedID + "' "
@@ -195,18 +192,18 @@ def updateLightspeedID():
                     db.engine.execute(sqlUpdate)
                     recordsUpdated += 1
 
-                numberOfLightspeedRecords += 1
-                if (numberOfLightspeedRecords >= int(count)):
-                    flash("Records updated - "+str(recordsUpdated))
-                    return redirect(url_for('index'))
-            start += batchSize
         except:
-            print('Number of Lightspeed records - ',numberOfLightspeedRecords)
-            print('Number of member records updated w/Lightspeed ID - ',recordsUpdated)
-            print('End of file')    
-        
-    return redirect(url_for('index'))
+            continue
+        finally:
+            start += batchSize
 
+    msg = 'Number of Lightspeed records - ' + str(numberOfLightspeedRecords)
+    msg += '\nNumber of member records updated w/Lightspeed ID - ' + str(recordsUpdated) 
+
+    print('Number of Lightspeed records - ',numberOfLightspeedRecords)
+    print('Number of member records updated w/Lightspeed ID - ',recordsUpdated)
+   
+    return jsonify(msg)
 
 @app.route('/addCustomer')
 def addCustomer():

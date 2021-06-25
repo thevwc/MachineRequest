@@ -28,7 +28,9 @@ function updateLightspeedID() {
     // var dataToSend = {
     //     villageID: villageID
     // };
+    document.getElementById('updateLightspeedID').innerHTML = 'Working ...'
     dataToSend = ''
+    
     fetch(`${window.origin}/updateLightspeedID`, {
         method: "POST",
         credentials: "include",
@@ -39,12 +41,14 @@ function updateLightspeedID() {
         })
     })
     .then(function (response) {
+        document.getElementById('updateLightspeedID').innerHTML = 'Update Lightspeed ID'
+
         if (response.status != 200) {
             console.log(`Response status was not 200: ${response.status}${response.msg}`);
             return ;
         }
         response.json().then(function (data) {
-            console.log(data)
+            alert(data)
             // msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
             // alert(msg)
         })
