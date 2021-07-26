@@ -38,15 +38,14 @@ def index():
     nameItems=[]
     sqlSelect = "SELECT Last_Name, First_Name, Nickname, Member_ID, lightspeedID FROM tblMember_Data "
     sqlSelect += "ORDER BY Last_Name, First_Name "
-    #print('sqlSelect - ',sqlSelect)
 
     nameList = db.engine.execute(sqlSelect)
     position = 0
     for n in nameList:
         position += 1
-        lastFirst = n.Last_Name + ', ' + n.First_Name 
-        if (n.Nickname != None and n.Nickname != ''):
-            lastFirst += ' (' + n.Nickname + ')'
+        lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
+        # if (n.Nickname != None and n.Nickname != ''):
+        #     lastFirst += ' (' + n.Nickname + ')'
         nameItems = {
             'memberName':lastFirst,
             'memberID':n.Member_ID,
@@ -63,7 +62,6 @@ def prtTransactions():
     
     # GET TODAYS DATE
     todays_date = date.today()
-    #todaysDate = todays_date.strftime('%-m-%-d-%Y')
     displayDate = todays_date.strftime('%B %-d, %Y') 
 
     # GET MEMBER NAME
@@ -74,31 +72,42 @@ def prtTransactions():
     displayName += ' ' + member.Last_Name
     
     return render_template("rptTransactions.html")
-    
+
 
 # GET CUSTOMER RECORD BY CUSTOMER ID (LIGHTSPEED #)
 @app.route('/retrieveCustomerByID')
 def retrieveCustomerByID():
+    lightSpeedID = request.args.get('lightSpeedID')
+    print('lightSpeedID - ',lightSpeedID)
     c = {'account_id': '230019',
         'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
         'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
         'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04'
     }
-
+    # THIS APPROACH WORKS FOR ONE ENDPOINT AT A TIME
     ls = lightspeed_api.Lightspeed(c)
 
     # Get a customer record
-    r = ls.get('Customer/1')
-    pprint.pprint(r)
-    # s = ls.get('Contact/127')
+    parameter = 'Customer/' + lightSpeedID
+    try:
+        response = ls.get(parameter)
+    except:
+        flash("Record not found.",'info')
+        return redirect(url_for('index'))
+    
+    print(response['Customer']['firstName'],response['Customer']['lastName'])
+    lastName = response['Customer']['lastName']
+    firstName = response['Customer']['firstName']
+    print(firstName + ' ' + lastName)
+    msg = firstName + ' ' + lastName 
+    flash (msg,'success')
     return redirect(url_for('index'))
-
+    
 @app.route('/retrieveCustomerByVillageID', methods=['POST']) 
 def retrieveCustomerByVillageID():
     print("RETRIEVE CUSTOMER BY VILLAGE ID")
     req = request.get_json()
     villageID = req["villageID"]
-    print("villageID - ",villageID)
     
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
@@ -205,32 +214,89 @@ def updateLightspeedID():
    
     return jsonify(msg)
 
+# @app.route('/addCustomer')
+# def addCustomer():
+#     villageID = '123456'
+#     firstName = 'Jane'
+#     lastName = 'Doe2'
+#     email = 'hartl1r@gmail.com'
+
+#     # BUILD JSON FILE ?
+
+#     url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
+#     print(url)
+
+#     payload = {
+#         "firstName": firstName,
+#         "lastName": lastName,
+#         "customerTypeID":1,
+#         "Contact": {
+#             "custom":villageID,
+#             "email":email
+#             }
+#         }
+#     # payload = {
+#     #     "firstName": firstName,
+#     #     "lastName": lastName,
+#     #     "customerTypeID":1,
+#     #     }
+#     token = refreshToken()
+#     headers = {'authorization': 'Bearer ' + token}
+#     response = requests.request("POST", url, data=payload, headers=headers)
+
+#     print(response.text)
+    
+#     return redirect(url_for('index'))
+
 @app.route('/addCustomer')
 def addCustomer():
+    c = {'account_id': '230019',
+        'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
+        'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
+        'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04'
+    }
+    ls = lightspeed_api.Lightspeed(c)
+
+    # Create a new customer
     villageID = '123456'
     firstName = 'Jane'
-    lastName = 'Doe'
+    lastName = 'Smith2'
     email = 'hartl1r@gmail.com'
 
-    # BUILD JSON FILE ?
-
-    url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
-    print(url)
-
-    payload = {
-        "firstName": firstName,
-        "lastName": lastName,
-        "customerTypeID":1,
-        "Contact": {
-            "custom":villageID,
-            "email":email
+    formatted = {'Customer':
+        {'firstName': firstName,
+            'lastName': lastName,
+            'customerTypeID': 1,
+            'Contact': {
+                'custom': villageID,
+                'Emails': {
+                    'ContactEmail': {
+                        'address': email,
+                        'useType': 'Primary'
+                    }
+                }
             }
         }
-    
-    token = refreshToken()
-    headers = {'authorization': 'Bearer ' + token}
-    response = requests.request("POST", url, data=payload, headers=headers)
+    }
+        
+    ls.create("Customer", formatted["Customer"])
 
-    print(response.text)
-    
-    return redirect(url_for('index'))
+    return redirect(url_for('index')) 
+
+    # url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
+    # print(url)
+
+    # payload = {
+    #     "firstName": firstName,
+    #     "lastName": lastName,
+    #     "customerTypeID":1,
+    #     "Contact": {
+    #         "custom":villageID,
+    #         "email":email
+    #         }
+    #     }
+    # payload = {
+    #     "firstName": firstName,
+    #     "lastName": lastName,
+    #     "customerTypeID":1,
+    #     }

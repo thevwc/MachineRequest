@@ -57,7 +57,9 @@ function updateLightspeedID() {
 
 
 function retrieveCustomerByID() {
-    url = '/retrieveCustomerByID'
+    lightSpeedID = document.getElementById('lightSpeedID').value 
+    alert('lightSpeedID - '+lightSpeedID)
+    url = '/retrieveCustomerByID?lightSpeedID=' + lightSpeedID
     location.href=url
 }
 

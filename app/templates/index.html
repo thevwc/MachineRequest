@@ -12,7 +12,7 @@
             <div><h2>LIGHTSPEED INTERFACE</h2></div>
         </div>
         <div class="version">
-            <h3>ver. Jun 25, 2021</h3>
+            <h3>ver. Jul 26, 2021</h3>
         </div>  
     </div>
     <div id="printReportBtns">
@@ -33,7 +33,13 @@
             <h6>daily send eMail changes</h6>
             <h6>receive dues/initiation Transactions; compare to membership records</h6>
             <h6>List Recent Sales</h6>
-            <button type="button" class='btn btn-sm btn-primary' onclick='retrieveCustomerByID()'>Get Customer by ID - 1</button>
+            <div>
+                <label for="lightSpeedID">Lightspeed ID - </label>
+                <input type="text" id="lightSpeedID" style=width:50px>
+                <button type="button" class='btn btn-sm btn-primary' style=width:200px onclick='retrieveCustomerByID()'>Get Customer</button>
+            </div>
+            
+            
             <button type="button" class='btn btn-sm btn-primary' onclick='addCustomer()'>Test Add Customer</button>
         </div>
 
