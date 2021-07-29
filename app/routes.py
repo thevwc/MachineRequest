@@ -43,9 +43,17 @@ def index():
     position = 0
     for n in nameList:
         position += 1
-        lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
-        # if (n.Nickname != None and n.Nickname != ''):
-        #     lastFirst += ' (' + n.Nickname + ')'
+        #print(n.Last_Name,n.First_Name,n.Member_ID)
+        # print('---------------------------')
+        # print(type(n.Last_Name))
+        if n.Last_Name != None and n.First_Name != None:
+        #     print(n.Last_Name,n.First_Name,n.Member_ID)
+            lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
+            if (n.Nickname != None and n.Nickname != ''):
+                lastFirst += ' (' + n.Nickname + ')'
+        else:
+            lastFirst = ''
+
         nameItems = {
             'memberName':lastFirst,
             'memberID':n.Member_ID,
@@ -108,7 +116,7 @@ def retrieveCustomerByVillageID():
     print("RETRIEVE CUSTOMER BY VILLAGE ID")
     req = request.get_json()
     villageID = req["villageID"]
-    
+
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
 
@@ -250,6 +258,7 @@ def updateLightspeedID():
 
 @app.route('/addCustomer')
 def addCustomer():
+    print('/addCustomer')
     c = {'account_id': '230019',
         'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
         'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
@@ -258,10 +267,12 @@ def addCustomer():
     ls = lightspeed_api.Lightspeed(c)
 
     # Create a new customer
-    villageID = '123456'
-    firstName = 'Jane'
-    lastName = 'Smith2'
+    villageID = '100007'
+    firstName = 'Janet'
+    lastName = 'Smith7'
     email = 'hartl1r@gmail.com'
+    homePhone = '(352) 391-0727'
+    mobilePhone = '(352 391-7894'
 
     formatted = {'Customer':
         {'firstName': firstName,
@@ -274,13 +285,29 @@ def addCustomer():
                         'address': email,
                         'useType': 'Primary'
                     }
+                },
+                'Phones': {
+                    'Contact': {
+                        'address':homePhone,
+                        'useType':'Home'
+                    },
+                    'Contact': {
+                        'address':mobilePhone,
+                        'useType':'Mobile'
+                    }
                 }
             }
         }
     }
-        
-    ls.create("Customer", formatted["Customer"])
-
+    print('==============================')
+    pprint.pprint(formatted)
+    print('==============================')
+    try:    
+        ls.create("Customer", formatted["Customer"])
+    except:
+        print('ls.create error')
+    print('Customer added.')
+    flash("Customer added.","Success")
     return redirect(url_for('index')) 
 
     # url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"

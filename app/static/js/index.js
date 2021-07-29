@@ -49,8 +49,6 @@ function updateLightspeedID() {
         }
         response.json().then(function (data) {
             alert(data)
-            // msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
-            // alert(msg)
         })
     })
 }
