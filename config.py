@@ -37,3 +37,7 @@ class Config(object):
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_ASCII_ATTACHMENTS = False
     ADMINS = ['hartl1r@gmail.com']
+    ACCOUNT_ID = os.environ.get('account_id')
+    REFRESH_TOKEN = os.environ.get('refresh_token')
+    CLIENT_TOKEN = os.environ.get('client_secret')
+    CLIENT_ID = os.environ.get('client_id')

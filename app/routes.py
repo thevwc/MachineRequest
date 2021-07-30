@@ -87,11 +87,12 @@ def prtTransactions():
 def retrieveCustomerByID():
     lightSpeedID = request.args.get('lightSpeedID')
     print('lightSpeedID - ',lightSpeedID)
-    c = {'account_id': '230019',
-        'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
-        'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
-        'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04'
+    c = {'account_id': app.config['ACCOUNT_ID'],
+        'client_id': app.config['CLIENT_ID'],
+        'client_secret': app.config['CLIENT_SECRET'],
+        'refresh_token': app.config['REFRESH_TOKEN']
     }
+    
     # THIS APPROACH WORKS FOR ONE ENDPOINT AT A TIME
     ls = lightspeed_api.Lightspeed(c)
 
@@ -149,11 +150,12 @@ def retrieveCustomerByVillageID():
 def refreshToken():
     import requests
     payload = {
-        'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04',
-        'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
-        'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
+        'refresh_token': app.config['REFRESH_TOKEN'],
+        'client_secret': app.config['CLIENT_SECRET'],
+        'client_id': app.config[''],
         'grant_type': 'refresh_token'
     }
+
     r = requests.post('https://cloud.lightspeedapp.com/oauth/access_token.php', data=payload).json()
     #print('r - ',r)
     token = (r['access_token'])
@@ -259,11 +261,12 @@ def updateLightspeedID():
 @app.route('/addCustomer')
 def addCustomer():
     print('/addCustomer')
-    c = {'account_id': '230019',
-        'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
-        'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
-        'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04'
+    c = {'account_id': app.config['ACCOUNT_ID'],
+        'client_id': app.config['CLIENT_ID'],
+        'client_secret': app.config['CLIENT_SECRET'],
+        'refresh_token': app.config['REFRESH_TOKEN']
     }
+    
     ls = lightspeed_api.Lightspeed(c)
 
     # Create a new customer
@@ -284,8 +287,8 @@ def addCustomer():
                     'ContactEmail': {
                         'address': email,
                         'useType': 'Primary'
-                    }
                 },
+                    }
                 'Phones': {
                     'Contact': {
                         'address':homePhone,
