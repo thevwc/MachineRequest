@@ -261,6 +261,11 @@ def updateLightspeedID():
 @app.route('/addCustomer')
 def addCustomer():
     print('/addCustomer')
+    account_id = app.config['ACCOUNT_ID']
+    client_id = app.config['CLIENT_ID']
+    client_secret = app.config['CLIENT_SECRET']
+    refresh_token = app.config['REFRESH_TOKEN']
+
     c = {'account_id': app.config['ACCOUNT_ID'],
         'client_id': app.config['CLIENT_ID'],
         'client_secret': app.config['CLIENT_SECRET'],
@@ -287,8 +292,8 @@ def addCustomer():
                     'ContactEmail': {
                         'address': email,
                         'useType': 'Primary'
-                },
                     }
+                },
                 'Phones': {
                     'Contact': {
                         'address':homePhone,

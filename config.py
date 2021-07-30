@@ -39,5 +39,5 @@ class Config(object):
     ADMINS = ['hartl1r@gmail.com']
     ACCOUNT_ID = os.environ.get('account_id')
     REFRESH_TOKEN = os.environ.get('refresh_token')
-    CLIENT_TOKEN = os.environ.get('client_secret')
+    CLIENT_SECRET = os.environ.get('client_secret')
     CLIENT_ID = os.environ.get('client_id')
