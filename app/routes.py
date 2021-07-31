@@ -103,7 +103,8 @@ def retrieveCustomerByID():
     except:
         flash("Record not found.",'info')
         return redirect(url_for('index'))
-    
+    print(response)
+    print('------------------------------------------')
     print(response['Customer']['firstName'],response['Customer']['lastName'])
     lastName = response['Customer']['lastName']
     firstName = response['Customer']['firstName']
@@ -122,16 +123,19 @@ def retrieveCustomerByVillageID():
     token = refreshToken()
 
     # BUILD URL 
-    url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
-    #headers = {'authorization': 'Bearer c69c7b31ce5b6caf176c189ba741f9ec4b231a20'}
+    url = 'https://api.lightspeedapp.com/API/Account/' 
+    url += app.config['ACCOUNT_ID']
+    url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
     headers = {'authorization': 'Bearer ' + token}
     response = requests.request('GET', url, headers=headers)
-    pprint.pprint(response.text)
-    print('............................................................................')
+    # pprint.pprint(response.text)
+    # print('............................................................................')
+    # print(response)
+
     data_json = response.json()
-    print('------- Pretty Print JSON String ----------')
-    pprint.pprint(data_json)
-    print('--------------------------------------------------------')
+    # print('------- Pretty Print JSON String ----------')
+    # pprint.pprint(data_json)
+    # print('--------------------------------------------------------')
     
     lightspeedID = data_json['Customer']['customerID']
     lastName = data_json['Customer']['lastName']
@@ -139,12 +143,54 @@ def retrieveCustomerByVillageID():
     villageID = data_json['Customer']['Contact']['custom']
     email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
     
-    print('--------  MEMBER DATA -----------')
-    print('Lightspeed ID: ',lightspeedID, '\nName: ',firstName + ' ' + lastName, 
-    '\nVillage ID - ',villageID)
-    print('--------------------------------------------------------')
+    phones = data_json['Customer']['Contact']['Phones']
+    #for each ...
+        #if useType == 'Home'
+            #homePhone = number
+        #else
+            #if useType == 'Mobile'
+            #mobilePhone = number
+
+
+    # print('phones - ',phones)
+    # print('h phone number - ', data_json['Customer']['Contact']['Phones']['ContactPhone'][0])
+    # phone1 =  data_json['Customer']['Contact']['Phones']['ContactPhone'][0]
+    # print ('phone1 - ',phone1)
+    # print('phone1 useType - ', phone1['useType'])
+    #print('phone1 useType & number - ', phone1['useType']['number'])
+
+    #print('h phone useType - ', data_json['Customer']['Contact']['Phones']['useType'])
+    homePhone = ''
+    mobilePhone = ''
+
+    if data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['useType'] == 'Home':
+        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['number']
+    else:
+        if data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['useType'] == 'Mobile':
+            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['number']
+    
+    if data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['useType'] == 'Home':
+        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['number']
+    else:
+        if data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['useType'] == 'Mobile':
+            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['number']
+    
+    if data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['useType'] == 'Home':
+        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['number']
+    else:
+        if data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['useType'] == 'Mobile':
+            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['number']
+    
+    # print('homePhone - ',homePhone)
+    # print('mobilePhone - ',mobilePhone)
+    # print('--------  MEMBER DATA -----------')
+    # print('Lightspeed ID: ',lightspeedID, '\nName: ',firstName + ' ' + lastName, 
+    # '\nVillage ID - ',villageID)
+    # print('--------------------------------------------------------')
+    # print('homePhone - ',homePhone)
+    # print('mobilePhone - ',mobilePhone)
     memberName = firstName + ' ' + lastName
-    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName)
+    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,email=email,homePhone=homePhone,mobilePhone=mobilePhone)
     
 
 def refreshToken():
@@ -152,7 +198,7 @@ def refreshToken():
     payload = {
         'refresh_token': app.config['REFRESH_TOKEN'],
         'client_secret': app.config['CLIENT_SECRET'],
-        'client_id': app.config[''],
+        'client_id': app.config['CLIENT_ID'],
         'grant_type': 'refresh_token'
     }
 
@@ -275,13 +321,13 @@ def addCustomer():
     ls = lightspeed_api.Lightspeed(c)
 
     # Create a new customer
-    villageID = '100007'
+    villageID = '100053'
     firstName = 'Janet'
-    lastName = 'Smith7'
+    lastName = 'L100053'
     email = 'hartl1r@gmail.com'
     homePhone = '(352) 391-0727'
     mobilePhone = '(352 391-7894'
-
+    workPhone = '(123) 456-7890'
     formatted = {'Customer':
         {'firstName': firstName,
             'lastName': lastName,
@@ -295,14 +341,18 @@ def addCustomer():
                     }
                 },
                 'Phones': {
-                    'Contact': {
-                        'address':homePhone,
+                    'Contact': [{
+                        'number':mobilePhone,
+                        'useType':'Mobile'
+                    },
+                    {
+                        'number':homePhone,
                         'useType':'Home'
                     },
-                    'Contact': {
-                        'address':mobilePhone,
-                        'useType':'Mobile'
-                    }
+                    {
+                        'number':workPhone,
+                        'useType':'Work'
+                    }]   
                 }
             }
         }

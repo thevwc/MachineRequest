@@ -83,6 +83,7 @@ function retrieveCustomerByVillageID() {
         response.json().then(function (data) {
             console.log(data)
             msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
             alert(msg)
         })
     })
