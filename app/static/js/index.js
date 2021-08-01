@@ -54,12 +54,43 @@ function updateLightspeedID() {
 }
 
 
+// function retrieveCustomerByID() {
+//     lightSpeedID = document.getElementById('lightSpeedID').value 
+//     alert('lightSpeedID - '+lightSpeedID)
+//     url = '/retrieveCustomerByID?lightSpeedID=' + lightSpeedID
+//     location.href=url
+// }
+
 function retrieveCustomerByID() {
-    lightSpeedID = document.getElementById('lightSpeedID').value 
-    alert('lightSpeedID - '+lightSpeedID)
-    url = '/retrieveCustomerByID?lightSpeedID=' + lightSpeedID
-    location.href=url
+    lightspeedID = document.getElementById('lightSpeedID').value
+    var dataToSend = {
+        lightspeedID: lightspeedID
+    };
+    
+    fetch(`${window.origin}/retrieveCustomerByID`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+    .then(function (response) {
+        if (response.status != 200) {
+            console.log(`Response status was not 200: ${response.status}`);
+            return ;
+        }
+        response.json().then(function (data) {
+            console.log(data)
+            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
+            msg += '\nCustomer type - ' + data.customerType
+            alert(msg)
+        })
+    })
 }
+
 
 function retrieveCustomerByVillageID() {
     villageID = document.getElementById('memberID').value
@@ -84,6 +115,7 @@ function retrieveCustomerByVillageID() {
             console.log(data)
             msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
             msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
+            msg += '\nCustomer type - ' + data.customerType
             alert(msg)
         })
     })

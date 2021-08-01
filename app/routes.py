@@ -83,42 +83,58 @@ def prtTransactions():
 
 
 # GET CUSTOMER RECORD BY CUSTOMER ID (LIGHTSPEED #)
-@app.route('/retrieveCustomerByID')
+@app.route('/retrieveCustomerByID', methods=['POST'])
 def retrieveCustomerByID():
-    lightSpeedID = request.args.get('lightSpeedID')
-    print('lightSpeedID - ',lightSpeedID)
+    req = request.get_json()
+    lightspeedID = req["lightspeedID"]
+
     c = {'account_id': app.config['ACCOUNT_ID'],
         'client_id': app.config['CLIENT_ID'],
         'client_secret': app.config['CLIENT_SECRET'],
         'refresh_token': app.config['REFRESH_TOKEN']
     }
-    
-    # THIS APPROACH WORKS FOR ONE ENDPOINT AT A TIME
-    ls = lightspeed_api.Lightspeed(c)
+    # REFRESH TOKEN; SAVE TOKEN
+    token = refreshToken()
 
-    # Get a customer record
-    parameter = 'Customer/' + lightSpeedID
-    try:
-        response = ls.get(parameter)
-    except:
-        flash("Record not found.",'info')
-        return redirect(url_for('index'))
-    print(response)
-    print('------------------------------------------')
-    print(response['Customer']['firstName'],response['Customer']['lastName'])
-    lastName = response['Customer']['lastName']
-    firstName = response['Customer']['firstName']
-    print(firstName + ' ' + lastName)
+    # BUILD URL
+    url = 'https://api.lightspeedapp.com/API/Account/' 
+    url += app.config['ACCOUNT_ID']
+    url += '/Customer.json?load_relations=["Contact"]&customerID=~,' + lightspeedID
+    headers = {'authorization': 'Bearer ' + token}
+    response = requests.request('GET', url, headers=headers)
+    
+    data_json = response.json()
+
+    lastName = data_json['Customer']['lastName']
+    firstName = data_json['Customer']['firstName']
     msg = firstName + ' ' + lastName 
-    flash (msg,'success')
-    return redirect(url_for('index'))
+    customerType = data_json['Customer']['customerTypeID']
+    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+    homePhone = ''
+    mobilePhone = ''
+    for phone in phones:
+        if phone['useType'] == 'Home':
+            homePhone = phone['number']
+        if phone['useType'] == 'Mobile':
+            mobilePhone = phone['number']
+    email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    customerTypeID = data_json['Customer']['customerTypeID']
+    customerType = ''
+    if customerTypeID == '1':
+        customerType = 'Member'
+    if customerTypeID == '3':
+        customerType = 'Non-member Volunteer'
+    villageID = data_json['Customer']['Contact']['custom']
+
+    memberName = firstName + ' ' + lastName
+    return jsonify(lightspeedID=lightspeedID,villageID=villageID,\
+    memberName=memberName,email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
     
 @app.route('/retrieveCustomerByVillageID', methods=['POST']) 
 def retrieveCustomerByVillageID():
-    print("RETRIEVE CUSTOMER BY VILLAGE ID")
     req = request.get_json()
     villageID = req["villageID"]
-
+    
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
 
@@ -127,70 +143,36 @@ def retrieveCustomerByVillageID():
     url += app.config['ACCOUNT_ID']
     url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
     headers = {'authorization': 'Bearer ' + token}
-    response = requests.request('GET', url, headers=headers)
-    # pprint.pprint(response.text)
-    # print('............................................................................')
-    # print(response)
+    try:
+        response = requests.request('GET', url, headers=headers)
+    except:
+        flash('Operation failed','danger')
+        return redirect(url_for('index'))
 
     data_json = response.json()
-    # print('------- Pretty Print JSON String ----------')
-    # pprint.pprint(data_json)
-    # print('--------------------------------------------------------')
-    
+   
     lightspeedID = data_json['Customer']['customerID']
     lastName = data_json['Customer']['lastName']
     firstName = data_json['Customer']['firstName']
     villageID = data_json['Customer']['Contact']['custom']
     email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
-    
-    phones = data_json['Customer']['Contact']['Phones']
-    #for each ...
-        #if useType == 'Home'
-            #homePhone = number
-        #else
-            #if useType == 'Mobile'
-            #mobilePhone = number
-
-
-    # print('phones - ',phones)
-    # print('h phone number - ', data_json['Customer']['Contact']['Phones']['ContactPhone'][0])
-    # phone1 =  data_json['Customer']['Contact']['Phones']['ContactPhone'][0]
-    # print ('phone1 - ',phone1)
-    # print('phone1 useType - ', phone1['useType'])
-    #print('phone1 useType & number - ', phone1['useType']['number'])
-
-    #print('h phone useType - ', data_json['Customer']['Contact']['Phones']['useType'])
+    customerTypeID = data_json['Customer']['customerTypeID']
+    customerType = ''
+    if customerTypeID == '1':
+        customerType = 'Member'
+    if customerTypeID == '3':
+        customerType = 'Non-member Volunteer'
+    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
     homePhone = ''
     mobilePhone = ''
-
-    if data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['useType'] == 'Home':
-        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['number']
-    else:
-        if data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['useType'] == 'Mobile':
-            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][0]['number']
-    
-    if data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['useType'] == 'Home':
-        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['number']
-    else:
-        if data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['useType'] == 'Mobile':
-            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][1]['number']
-    
-    if data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['useType'] == 'Home':
-        homePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['number']
-    else:
-        if data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['useType'] == 'Mobile':
-            mobilePhone = data_json['Customer']['Contact']['Phones']['ContactPhone'][2]['number']
-    
-    # print('homePhone - ',homePhone)
-    # print('mobilePhone - ',mobilePhone)
-    # print('--------  MEMBER DATA -----------')
-    # print('Lightspeed ID: ',lightspeedID, '\nName: ',firstName + ' ' + lastName, 
-    # '\nVillage ID - ',villageID)
-    # print('--------------------------------------------------------')
-    # print('homePhone - ',homePhone)
-    # print('mobilePhone - ',mobilePhone)
+    for phone in phones:
+        if phone['useType'] == 'Home':
+            homePhone = phone['number']
+        if phone['useType'] == 'Mobile':
+            mobilePhone = phone['number']
     memberName = firstName + ' ' + lastName
-    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,email=email,homePhone=homePhone,mobilePhone=mobilePhone)
+    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
+    email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
     
 
 def refreshToken():
