@@ -1,7 +1,6 @@
 # routes.py
 
 from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
-#from flask_weasyprint import HTML, render_pdf
 import pdfkit
 
 
@@ -43,11 +42,7 @@ def index():
     position = 0
     for n in nameList:
         position += 1
-        #print(n.Last_Name,n.First_Name,n.Member_ID)
-        # print('---------------------------')
-        # print(type(n.Last_Name))
         if n.Last_Name != None and n.First_Name != None:
-        #     print(n.Last_Name,n.First_Name,n.Member_ID)
             lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
             if (n.Nickname != None and n.Nickname != ''):
                 lastFirst += ' (' + n.Nickname + ')'
@@ -195,7 +190,6 @@ def listTransactions():
         return redirect(url_for('index'))
 
     data_json = response.json()
-    pprint.pprint(data_json)
 
     lightspeedID = data_json['Customer']['customerID']
     lastName = data_json['Customer']['lastName']
@@ -231,7 +225,6 @@ def refreshToken():
     }
 
     r = requests.post('https://cloud.lightspeedapp.com/oauth/access_token.php', data=payload).json()
-    #print('r - ',r)
     token = (r['access_token'])
     return token
 
@@ -257,7 +250,6 @@ def updateLightspeedID():
         if (numberOfLightspeedRecords >= int(count)):
             break
         
-
         # PRINT ATTRIBUTES DATA
         try:
             offset = data_json['@attributes']['offset']
@@ -347,73 +339,11 @@ def addCustomer():
                 }
             }
         }
-    pprint.pprint (payload)
-    print('----------------------------------------------')
+    
     try:
-        #response = requests.request("POST", url, data=payload, headers=headers)
         response = requests.post(url, json=payload, headers=headers)
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-    
-    print(response.text)
     flash('Customer added','success')
     return redirect(url_for('index'))
-
-# @app.route('/addCustomer')
-# def addCustomer():
-#     print('/addCustomer')
-#     account_id = app.config['ACCOUNT_ID']
-#     client_id = app.config['CLIENT_ID']
-#     client_secret = app.config['CLIENT_SECRET']
-#     refresh_token = app.config['REFRESH_TOKEN']
-
-#     c = {'account_id': app.config['ACCOUNT_ID'],
-#         'client_id': app.config['CLIENT_ID'],
-#         'client_secret': app.config['CLIENT_SECRET'],
-#         'refresh_token': app.config['REFRESH_TOKEN']
-#     }
-    
-#     #ls = lightspeed_api.Lightspeed(c)
-
-#     # Create a new customer
-#     villageID = '100053'
-#     firstName = 'Janet'
-#     lastName = 'L100053'
-#     email = 'hartl1r@gmail.com'
-#     
-#     formatted = {'Customer':
-#         {'firstName': firstName,
-#             'lastName': lastName,
-#             
-#     print('==============================')
-#     pprint.pprint(formatted)
-#     print('==============================')
-#     try:    
-#         ls.create("Customer", formatted["Customer"])
-#     except:
-#         print('ls.create error')
-#     print('Customer added.')
-#     flash("Customer added.","Success")
-#     return redirect(url_for('index')) 
-
-
-
-
-    # url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
-    # print(url)
-
-    # payload = {
-    #     "firstName": firstName,
-    #     "lastName": lastName,
-    #     "customerTypeID":1,
-    #     "Contact": {
-    #         "custom":villageID,
-    #         "email":email
-    #         }
-    #     }
-    # payload = {
-    #     "firstName": firstName,
-    #     "lastName": lastName,
-    #     "customerTypeID":1,
-    #     }
