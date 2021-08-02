@@ -322,37 +322,36 @@ def addCustomer():
     payload = {
         "firstName": firstName,
         "lastName": lastName,
-        'customerTypeID': '1'
-    }
-
-        #     'Contact': {
-        #         'custom': villageID,
-        #         'Emails': {
-        #             'ContactEmail': {
-        #                 'address': email,
-        #                 'useType': 'Primary'
-        #             }
-        #         },
-        #         'Phones': {
-        #             'Contact': [{
-        #                 'number':mobilePhone,
-        #                 'useType':'Mobile'
-        #             },
-        #             {
-        #                 'number':homePhone,
-        #                 'useType':'Home'
-        #             },
-        #             {
-        #                 'number':workPhone,
-        #                 'useType':'Work'
-        #             }]   
-        #         }
-        #     }
-        # }
+        'customerTypeID': 1,
+            'Contact': {
+                'custom': villageID,
+                'Emails': {
+                    'ContactEmail': {
+                        'address': email,
+                        'useType': 'Primary'
+                    }
+                },
+                'Phones': {
+                    'Contact': [{
+                        'number':mobilePhone,
+                        'useType':'Mobile'
+                    },
+                    {
+                        'number':homePhone,
+                        'useType':'Home'
+                    },
+                    {
+                        'number':workPhone,
+                        'useType':'Work'
+                    }]   
+                }
+            }
+        }
     pprint.pprint (payload)
     print('----------------------------------------------')
     try:
-        response = requests.request("POST", url, data=payload, headers=headers)
+        #response = requests.request("POST", url, data=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
