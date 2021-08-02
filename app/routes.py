@@ -25,7 +25,7 @@ from os import path
 from flask_mail import Mail, Message
 mail=Mail(app)
 
-import lightspeed_api
+#import lightspeed_api
 import pprint
 import requests
 
@@ -174,6 +174,52 @@ def retrieveCustomerByVillageID():
     return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
     email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
     
+    
+@app.route('/listTransactions', methods=['POST']) 
+def listTransactions():
+    req = request.get_json()
+    villageID = req["villageID"]
+    
+    # REFRESH TOKEN; SAVE TOKEN
+    token = refreshToken()
+
+    # BUILD URL 
+    url = 'https://api.lightspeedapp.com/API/Account/' 
+    url += app.config['ACCOUNT_ID']
+    url += '/Customer.json?load_relations=["Contact","Sales"]&Contact.custom=~,' + villageID
+    headers = {'authorization': 'Bearer ' + token}
+    try:
+        response = requests.request('GET', url, headers=headers)
+    except:
+        flash('Operation failed','danger')
+        return redirect(url_for('index'))
+
+    data_json = response.json()
+    pprint.pprint(data_json)
+
+    lightspeedID = data_json['Customer']['customerID']
+    lastName = data_json['Customer']['lastName']
+    firstName = data_json['Customer']['firstName']
+    villageID = data_json['Customer']['Contact']['custom']
+    email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    customerTypeID = data_json['Customer']['customerTypeID']
+    customerType = ''
+    if customerTypeID == '1':
+        customerType = 'Member'
+    if customerTypeID == '3':
+        customerType = 'Non-member Volunteer'
+    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+    homePhone = ''
+    mobilePhone = ''
+    for phone in phones:
+        if phone['useType'] == 'Home':
+            homePhone = phone['number']
+        if phone['useType'] == 'Mobile':
+            mobilePhone = phone['number']
+    memberName = firstName + ' ' + lastName
+    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
+    email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
+    
 
 def refreshToken():
     import requests
@@ -252,103 +298,108 @@ def updateLightspeedID():
    
     return jsonify(msg)
 
-# @app.route('/addCustomer')
-# def addCustomer():
-#     villageID = '123456'
-#     firstName = 'Jane'
-#     lastName = 'Doe2'
-#     email = 'hartl1r@gmail.com'
-
-#     # BUILD JSON FILE ?
-
-#     url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
-#     print(url)
-
-#     payload = {
-#         "firstName": firstName,
-#         "lastName": lastName,
-#         "customerTypeID":1,
-#         "Contact": {
-#             "custom":villageID,
-#             "email":email
-#             }
-#         }
-#     # payload = {
-#     #     "firstName": firstName,
-#     #     "lastName": lastName,
-#     #     "customerTypeID":1,
-#     #     }
-#     token = refreshToken()
-#     headers = {'authorization': 'Bearer ' + token}
-#     response = requests.request("POST", url, data=payload, headers=headers)
-
-#     print(response.text)
-    
-#     return redirect(url_for('index'))
-
 @app.route('/addCustomer')
 def addCustomer():
-    print('/addCustomer')
-    account_id = app.config['ACCOUNT_ID']
-    client_id = app.config['CLIENT_ID']
-    client_secret = app.config['CLIENT_SECRET']
-    refresh_token = app.config['REFRESH_TOKEN']
-
-    c = {'account_id': app.config['ACCOUNT_ID'],
-        'client_id': app.config['CLIENT_ID'],
-        'client_secret': app.config['CLIENT_SECRET'],
-        'refresh_token': app.config['REFRESH_TOKEN']
-    }
-    
-    ls = lightspeed_api.Lightspeed(c)
-
-    # Create a new customer
-    villageID = '100053'
-    firstName = 'Janet'
-    lastName = 'L100053'
+    villageID = '200001'
+    firstName = 'John'
+    lastName = 'Johnson'
     email = 'hartl1r@gmail.com'
     homePhone = '(352) 391-0727'
     mobilePhone = '(352 391-7894'
-    workPhone = '(123) 456-7890'
-    formatted = {'Customer':
-        {'firstName': firstName,
-            'lastName': lastName,
-            'customerTypeID': 1,
-            'Contact': {
-                'custom': villageID,
-                'Emails': {
-                    'ContactEmail': {
-                        'address': email,
-                        'useType': 'Primary'
-                    }
-                },
-                'Phones': {
-                    'Contact': [{
-                        'number':mobilePhone,
-                        'useType':'Mobile'
-                    },
-                    {
-                        'number':homePhone,
-                        'useType':'Home'
-                    },
-                    {
-                        'number':workPhone,
-                        'useType':'Work'
-                    }]   
-                }
-            }
-        }
+    workPhone = '(123) 456-7890'  
+    
+    # REFRESH TOKEN; SAVE TOKEN
+    token = refreshToken()
+
+    # BUILD URL 
+    url = 'https://api.lightspeedapp.com/API/Account/' 
+    url += app.config['ACCOUNT_ID']
+    url += '/Customer.json'
+    print('url - ',url)
+    print('----------------------------------------------')
+    headers = {'authorization': 'Bearer ' + token}
+    
+    payload = {
+        "firstName": firstName,
+        "lastName": lastName,
+        'customerTypeID': '1'
     }
-    print('==============================')
-    pprint.pprint(formatted)
-    print('==============================')
-    try:    
-        ls.create("Customer", formatted["Customer"])
+
+        #     'Contact': {
+        #         'custom': villageID,
+        #         'Emails': {
+        #             'ContactEmail': {
+        #                 'address': email,
+        #                 'useType': 'Primary'
+        #             }
+        #         },
+        #         'Phones': {
+        #             'Contact': [{
+        #                 'number':mobilePhone,
+        #                 'useType':'Mobile'
+        #             },
+        #             {
+        #                 'number':homePhone,
+        #                 'useType':'Home'
+        #             },
+        #             {
+        #                 'number':workPhone,
+        #                 'useType':'Work'
+        #             }]   
+        #         }
+        #     }
+        # }
+    pprint.pprint (payload)
+    print('----------------------------------------------')
+    try:
+        response = requests.request("POST", url, data=payload, headers=headers)
     except:
-        print('ls.create error')
-    print('Customer added.')
-    flash("Customer added.","Success")
-    return redirect(url_for('index')) 
+        flash('Operation failed','danger')
+        return redirect(url_for('index'))
+    
+    print(response.text)
+    flash('Customer added','success')
+    return redirect(url_for('index'))
+
+# @app.route('/addCustomer')
+# def addCustomer():
+#     print('/addCustomer')
+#     account_id = app.config['ACCOUNT_ID']
+#     client_id = app.config['CLIENT_ID']
+#     client_secret = app.config['CLIENT_SECRET']
+#     refresh_token = app.config['REFRESH_TOKEN']
+
+#     c = {'account_id': app.config['ACCOUNT_ID'],
+#         'client_id': app.config['CLIENT_ID'],
+#         'client_secret': app.config['CLIENT_SECRET'],
+#         'refresh_token': app.config['REFRESH_TOKEN']
+#     }
+    
+#     #ls = lightspeed_api.Lightspeed(c)
+
+#     # Create a new customer
+#     villageID = '100053'
+#     firstName = 'Janet'
+#     lastName = 'L100053'
+#     email = 'hartl1r@gmail.com'
+#     
+#     formatted = {'Customer':
+#         {'firstName': firstName,
+#             'lastName': lastName,
+#             
+#     print('==============================')
+#     pprint.pprint(formatted)
+#     print('==============================')
+#     try:    
+#         ls.create("Customer", formatted["Customer"])
+#     except:
+#         print('ls.create error')
+#     print('Customer added.')
+#     flash("Customer added.","Success")
+#     return redirect(url_for('index')) 
+
+
+
 
     # url = "https://api.lightspeedapp.com/API/Account/230019/Customer.json"
     # print(url)

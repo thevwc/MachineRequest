@@ -123,7 +123,32 @@ function retrieveCustomerByVillageID() {
 
 
 function listTransactions() {
-    alert('To be developed.')
+    villageID = document.getElementById('memberID').value
+    var dataToSend = {
+        villageID: villageID
+    };
+    fetch(`${window.origin}/listTransactions`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+    .then(function (response) {
+        if (response.status != 200) {
+            console.log(`Response status was not 200: ${response.status}`);
+            return ;
+        }
+        response.json().then(function (data) {
+            console.log(data)
+            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
+            msg += '\nCustomer type - ' + data.customerType
+            alert(msg)
+        })
+    })   
 }
 
 // function retrieveCustomerJS() {
