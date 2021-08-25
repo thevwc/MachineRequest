@@ -24,7 +24,6 @@ from os import path
 from flask_mail import Mail, Message
 mail=Mail(app)
 
-#import lightspeed_api
 import pprint
 import requests
 
@@ -143,9 +142,10 @@ def retrieveCustomerByVillageID():
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-
+    print('response - ',response)
     data_json = response.json()
-   
+    print('data_json-',data_json)
+
     lightspeedID = data_json['Customer']['customerID']
     lastName = data_json['Customer']['lastName']
     firstName = data_json['Customer']['firstName']
@@ -169,7 +169,49 @@ def retrieveCustomerByVillageID():
     return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
     email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
     
-    
+@app.route('/duesPayment',methods=['POST'])
+def duesPayment():
+    req = request.get_json()
+    lightspeedID = req["lightspeedID"]
+    staffID = req["staffID"]
+    employeeID = db.session.query(Member.lightspeedID).filter(Member.memberID == staffID)
+    itemID = '1234'
+    itemAmt = 75
+    # url = 'https://api.lightspeedapp.com/API/Account/' 
+    # url += app.config['ACCOUNT_ID']
+    # url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
+    headers = {'authorization': 'Bearer ' + token}
+    AccountID = app.config['ACCOUNT_ID']
+    url = "https://api.lightspeedapp.com/API/Account/{AccountID}/Sale.json"
+
+    payload = {
+        "employeeID": employeeID,
+        "registerID": 1,
+        "shopID": 1,
+        "customerID": lightspeedID,
+        "completed": true,
+        "SaleLines": {
+            "SaleLine": [
+            {
+                "itemID": 12,
+                "unitQuantity": 1
+            },
+            {
+                "itemID": 28,
+                "unitQuantity": 1
+            }
+            ]
+        },
+        "SalePayments": {
+            "SalePayment": {
+                "amount": 75.00,
+                "paymentTypeID": 1
+            }
+        }
+    }
+    print('payload - ',payload)
+    return 'success'
+
 @app.route('/listTransactions', methods=['POST']) 
 def listTransactions():
     req = request.get_json()
@@ -181,39 +223,51 @@ def listTransactions():
     # BUILD URL 
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
-    url += '/Customer.json?load_relations=["Contact","Sales"]&Contact.custom=~,' + villageID
+    url += '/Sale?load_relations="Customer"]&Customer.customerID=24'
+    print('----------------------------------------------------')
+    print('url - ',url)
+
+    #url += '&Contact.custom=~,' + villageID
+    #GET /Sale?load_relations=["Customer","SaleLines.Item"]
+    #/Sale?load_relations=["Customer"]&Customer.customerID=1
+    
+    #url += '/Sale.json?Sale.customer_ID=553'
+    #url += '/Customer.json?load_relations=["Contact,Sales"]&Contact.custom=~,' + villageID
+   
+    #url += '/Customer.json?load_relations=["Contact","Sales"]&Contact.custom=~,' + villageID
     headers = {'authorization': 'Bearer ' + token}
     try:
         response = requests.request('GET', url, headers=headers)
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-
-    data_json = response.json()
-
-    lightspeedID = data_json['Customer']['customerID']
-    lastName = data_json['Customer']['lastName']
-    firstName = data_json['Customer']['firstName']
-    villageID = data_json['Customer']['Contact']['custom']
-    email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
-    customerTypeID = data_json['Customer']['customerTypeID']
-    customerType = ''
-    if customerTypeID == '1':
-        customerType = 'Member'
-    if customerTypeID == '3':
-        customerType = 'Non-member Volunteer'
-    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
-    homePhone = ''
-    mobilePhone = ''
-    for phone in phones:
-        if phone['useType'] == 'Home':
-            homePhone = phone['number']
-        if phone['useType'] == 'Mobile':
-            mobilePhone = phone['number']
-    memberName = firstName + ' ' + lastName
-    return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
-    email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
-    
+    print('----------------------------------------------------')
+    print(response)
+    # data_json = response.json()
+    # print('data_json - ',data_json)
+    # lightspeedID = data_json['Customer']['customerID']
+    # lastName = data_json['Customer']['lastName']
+    # firstName = data_json['Customer']['firstName']
+    # villageID = data_json['Customer']['Contact']['custom']
+    # email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    # customerTypeID = data_json['Customer']['customerTypeID']
+    # customerType = ''
+    # if customerTypeID == '1':
+    #     customerType = 'Member'
+    # if customerTypeID == '3':
+    #     customerType = 'Non-member Volunteer'
+    # phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+    # homePhone = ''
+    # mobilePhone = ''
+    # for phone in phones:
+    #     if phone['useType'] == 'Home':
+    #         homePhone = phone['number']
+    #     if phone['useType'] == 'Mobile':
+    #         mobilePhone = phone['number']
+    # memberName = firstName + ' ' + lastName
+    # return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
+    # email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
+    return 'success'
 
 def refreshToken():
     import requests
