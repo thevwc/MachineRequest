@@ -12,7 +12,7 @@
             <div><h2>LIGHTSPEED INTERFACE</h2></div>
         </div>
         <div class="version">
-            <h3>ver. Aug 24, 2021</h3>
+            <h3>ver. Aug 26, 2021</h3>
         </div>  
     </div>
     <div id="printReportBtns">
@@ -29,13 +29,13 @@
         </div>
    
         <div id="column2">
-            <button id='updateLightspeedID' type="button" class='btn btn-sm btn-primary' onclick='updateLightspeedID()'>Update VWC DB w/Lightspeed IDs</button>
+            <button id='updatelightspeedID' type="button" class='btn btn-sm btn-primary' onclick='updatelightspeedID()'>Update VWC DB w/Lightspeed IDs</button>
             <!-- <h6>daily send eMail changes</h6>
             <h6>receive dues/initiation Transactions; compare to membership records</h6>
             <h6>List Recent Sales</h6> -->
             <div>
-                <label for="lightSpeedID">Lightspeed ID - </label>
-                <input type="text" id="lightSpeedID" style=width:50px value = ''>
+                <label for="lightspeedID">Lightspeed ID - </label>
+                <input type="text" id="lightspeedID" style=width:50px value = ''>
                 <button type="button" class='btn btn-sm btn-primary' style=width:200px onclick='retrieveCustomerByID()'>Get Customer</button>
             </div>
             
@@ -62,7 +62,8 @@
                 <ul style="list-style-type:none;">
                     <li><button id='getCustByPythonID' class='btn btn-primary' disabled onclick="retrieveCustomerByVillageID()">Retrieve a customer by Village ID)</button></li>
                     <li>{{lsID}}{{memberName}}{{villageID}}</li>
-                    <li><button id='prtTransactionsID'  onclick='listTransactions()' type="button" class='btn btn-sm btn-primary'>Transactions</button></li>
+                    <li><button id='prtTransactionsID'  onclick='listTransactions()' type="button" class='btn btn-sm btn-primary'>List Transactions</button></li>
+                    
                     <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
                 </ul>
             </div>

@@ -94,6 +94,9 @@ def retrieveCustomerByID():
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Customer.json?load_relations=["Contact"]&customerID=~,' + lightspeedID
+    print("------ url for retrieveCustomerByID ----------------")
+    print(url)
+    
     headers = {'authorization': 'Bearer ' + token}
     response = requests.request('GET', url, headers=headers)
     
@@ -147,6 +150,8 @@ def retrieveCustomerByVillageID():
     print('data_json-',data_json)
 
     lightspeedID = data_json['Customer']['customerID']
+    print('lightspeedID - ',lightspeedID)
+    
     lastName = data_json['Customer']['lastName']
     firstName = data_json['Customer']['firstName']
     villageID = data_json['Customer']['Contact']['custom']
@@ -216,35 +221,34 @@ def duesPayment():
 def listTransactions():
     req = request.get_json()
     villageID = req["villageID"]
-    
+    lightspeedID = req["lightspeedID"]
+    print('villageID - ',villageID)
+    print('lightspeedID - ',lightspeedID)
+
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
-
+    
     # BUILD URL 
+   # url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
+    # GET /Sale?load_relations=["Customer","SaleLines.Item"]
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
-    url += '/Sale?load_relations="Customer"]&Customer.customerID=24'
-    print('----------------------------------------------------')
+    url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&Customer.customerID=~,' + lightspeedID
+    print('------  url follows  ----------------------------------------------')
     print('url - ',url)
-
-    #url += '&Contact.custom=~,' + villageID
-    #GET /Sale?load_relations=["Customer","SaleLines.Item"]
-    #/Sale?load_relations=["Customer"]&Customer.customerID=1
     
-    #url += '/Sale.json?Sale.customer_ID=553'
-    #url += '/Customer.json?load_relations=["Contact,Sales"]&Contact.custom=~,' + villageID
-   
-    #url += '/Customer.json?load_relations=["Contact","Sales"]&Contact.custom=~,' + villageID
     headers = {'authorization': 'Bearer ' + token}
     try:
         response = requests.request('GET', url, headers=headers)
+        print('-----  response follows  -----------------------------------------------')
+        print(response)
     except:
+        print('======= operation failed ============')
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-    print('----------------------------------------------------')
-    print(response)
-    # data_json = response.json()
-    # print('data_json - ',data_json)
+    
+    data_json = response.json()
+    print('data_json - ',data_json)
     # lightspeedID = data_json['Customer']['customerID']
     # lastName = data_json['Customer']['lastName']
     # firstName = data_json['Customer']['firstName']

@@ -22,16 +22,16 @@ function memberSelectedRtn() {
 }
 
 
-function updateLightspeedID() {
+function updatelightspeedID() {
     // GET ALL CURRENT LIGHTSPEED CUSTOMER RECORDS
     // villageID = document.getElementById('memberID').value
     // var dataToSend = {
     //     villageID: villageID
     // };
-    document.getElementById('updateLightspeedID').innerHTML = 'Working ...'
+    document.getElementById('updatelightspeedID').innerHTML = 'Working ...'
     dataToSend = ''
     
-    fetch(`${window.origin}/updateLightspeedID`, {
+    fetch(`${window.origin}/updatelightspeedID`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(dataToSend),
@@ -41,7 +41,7 @@ function updateLightspeedID() {
         })
     })
     .then(function (response) {
-        document.getElementById('updateLightspeedID').innerHTML = 'Update Lightspeed ID'
+        document.getElementById('updatelightspeedID').innerHTML = 'Update Lightspeed ID'
 
         if (response.status != 200) {
             console.log(`Response status was not 200: ${response.status}${response.msg}`);
@@ -55,14 +55,14 @@ function updateLightspeedID() {
 
 
 // function retrieveCustomerByID() {
-//     lightSpeedID = document.getElementById('lightSpeedID').value 
-//     alert('lightSpeedID - '+lightSpeedID)
-//     url = '/retrieveCustomerByID?lightSpeedID=' + lightSpeedID
+//     lightspeedID = document.getElementById('lightspeedID').value 
+//     alert('lightspeedID - '+lightspeedID)
+//     url = '/retrieveCustomerByID?lightspeedID=' + lightspeedID
 //     location.href=url
 // }
 
 function retrieveCustomerByID() {
-    lightspeedID = document.getElementById('lightSpeedID').value
+    lightspeedID = document.getElementById('lightspeedID').value
     var dataToSend = {
         lightspeedID: lightspeedID
     };
@@ -117,6 +117,7 @@ function retrieveCustomerByVillageID() {
             msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
             msg += '\nCustomer type - ' + data.customerType
             alert(msg)
+            document.getElementById('lightspeedID').value = data.lightspeedID
         })
     })
 }
@@ -124,8 +125,12 @@ function retrieveCustomerByVillageID() {
 
 function listTransactions() {
     villageID = document.getElementById('memberID').value
+    lightspeedID = document.getElementById('lightspeedID').value
+    
+
     var dataToSend = {
-        villageID: villageID
+        villageID: villageID,
+        lightspeedID: lightspeedID
     };
     fetch(`${window.origin}/listTransactions`, {
         method: "POST",
@@ -150,32 +155,6 @@ function listTransactions() {
         })
     })   
 }
-
-// function retrieveCustomerJS() {
-//     villageID = document.getElementById('memberID').value
-    
-//     // REFRESH TOKEN; SAVE TOKEN
-//     token = refreshToken()
-
-//     url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
-//     //headers = {'authorization': 'Bearer c69c7b31ce5b6caf176c189ba741f9ec4b231a20'}
-//     headers = {'authorization': 'Bearer ' + token}
-//     response = request('GET', url, headers=headers)
-//     data_json = response.json()
-//     console.log('------- Pretty Print JSON String ----------')
-//     console.log(data_json)
-//     console.log('--------------------------------------------------------')
-    
-//     lightspeedID = data_json['Customer']['customerID']
-//     lastName = data_json['Customer']['lastName']
-//     firstName = data_json['Customer']['firstName']
-//     villageID = data_json['Customer']['Contact']['custom']
-//     email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
-
-//     console.log('Lightspeed ID: '+lightspeedID+ '\nName: '+firstName + ' ' + lastName, 
-//     '\nVillage ID - ',villageID)
-// }
-   
 
 
 
