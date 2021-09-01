@@ -106,15 +106,25 @@ def retrieveCustomerByID():
     firstName = data_json['Customer']['firstName']
     msg = firstName + ' ' + lastName 
     customerType = data_json['Customer']['customerTypeID']
-    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
-    homePhone = ''
-    mobilePhone = ''
-    for phone in phones:
-        if phone['useType'] == 'Home':
-            homePhone = phone['number']
-        if phone['useType'] == 'Mobile':
-            mobilePhone = phone['number']
-    email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    
+    try:
+        phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+        for phone in phones:
+            if phone['useType'] == 'Home':
+                homePhone = phone['number']
+            if phone['useType'] == 'Mobile':
+                mobilePhone = phone['number']
+    except:
+        homePhone = ''
+        mobilePhone = ''
+        print('no phones')
+
+    try:
+        email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    except:
+        email = ''
+        print('no email')
+
     customerTypeID = data_json['Customer']['customerTypeID']
     customerType = ''
     if customerTypeID == '1':
@@ -145,31 +155,33 @@ def retrieveCustomerByVillageID():
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-    print('response - ',response)
     data_json = response.json()
-    print('data_json-',data_json)
 
     lightspeedID = data_json['Customer']['customerID']
-    print('lightspeedID - ',lightspeedID)
     
     lastName = data_json['Customer']['lastName']
     firstName = data_json['Customer']['firstName']
     villageID = data_json['Customer']['Contact']['custom']
-    email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    try:
+        email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+    except:
+        email = ''
     customerTypeID = data_json['Customer']['customerTypeID']
     customerType = ''
     if customerTypeID == '1':
         customerType = 'Member'
     if customerTypeID == '3':
         customerType = 'Non-member Volunteer'
-    phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
-    homePhone = ''
-    mobilePhone = ''
-    for phone in phones:
-        if phone['useType'] == 'Home':
-            homePhone = phone['number']
-        if phone['useType'] == 'Mobile':
-            mobilePhone = phone['number']
+    try:
+        phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+        for phone in phones:
+            if phone['useType'] == 'Home':
+                homePhone = phone['number']
+            if phone['useType'] == 'Mobile':
+                mobilePhone = phone['number']
+    except:
+        homePhone = ''
+        mobilePhone = ''
     memberName = firstName + ' ' + lastName
     return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
     email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
@@ -220,10 +232,13 @@ def duesPayment():
 @app.route('/listTransactions', methods=['POST']) 
 def listTransactions():
     req = request.get_json()
+    print('----------  Start of test  ---------------')
     villageID = req["villageID"]
     lightspeedID = req["lightspeedID"]
     print('villageID - ',villageID)
     print('lightspeedID - ',lightspeedID)
+    if lightspeedID == None or lightspeedID == '':
+        return "Missing lightspeedID",400
 
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
@@ -233,25 +248,36 @@ def listTransactions():
     # GET /Sale?load_relations=["Customer","SaleLines.Item"]
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
-    url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&Customer.customerID=~,' + lightspeedID
-    print('------  url follows  ----------------------------------------------')
+    url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&customerID=~,' + lightspeedID
+    print('------  url for listTransactions follows  ----------------------------------------------')
     print('url - ',url)
     
     headers = {'authorization': 'Bearer ' + token}
     try:
         response = requests.request('GET', url, headers=headers)
-        print('-----  response follows  -----------------------------------------------')
-        print(response)
+        print('-----  valid listTransactions response follows  -----------------------------------------------')
+        data_json = response.json()
+        print('data_json 1 - ',data_json)
     except:
         print('======= operation failed ============')
+        data_json = response.json()
+        print('data_json 2 - ',data_json)
+        msg1 = data_json['message']
+        print('msg1 - ',msg1)
         flash('Operation failed','danger')
-        return redirect(url_for('index'))
+        msg2 = "Operation failed"
+        return jsonify(msg=msg2),400
     
+    count = data_json['@attributes']['count']
+    print('count - ',count)
+    if count == 0:
+            print('count is 0')
+            return jsonify(msg='Count = 0'),200
     data_json = response.json()
-    print('data_json - ',data_json)
-    # lightspeedID = data_json['Customer']['customerID']
-    # lastName = data_json['Customer']['lastName']
-    # firstName = data_json['Customer']['firstName']
+    print('data_json 3 - ',data_json)
+    lightspeedID = data_json['Customer']['customerID']
+    lastName = data_json['Customer']['lastName']
+    firstName = data_json['Customer']['firstName']
     # villageID = data_json['Customer']['Contact']['custom']
     # email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
     # customerTypeID = data_json['Customer']['customerTypeID']
@@ -268,10 +294,10 @@ def listTransactions():
     #         homePhone = phone['number']
     #     if phone['useType'] == 'Mobile':
     #         mobilePhone = phone['number']
-    # memberName = firstName + ' ' + lastName
+    memberName = firstName + ' ' + lastName
     # return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
     # email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
-    return 'success'
+    return jsonify(lightspeedID=lightspeedID,memberName=memberName),200
 
 def refreshToken():
     import requests

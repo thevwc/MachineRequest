@@ -10,12 +10,12 @@ function memberSelectedRtn() {
     console.log('this - '+this)
     currentMemberID = $('option:selected', this).attr("data-memberID");
     console.log('currentMemberID - '+ currentMemberID)
-    
+    currentLightspeedID = $('option:selected', this).attr("data-ls");
     selectedMember = this.value
     console.log('selectedMember - '+selectedMember)
 	
     document.getElementById('memberID').value = currentMemberID
-    
+    document.getElementById('lightspeedID').value = currentLightspeedID
     document.getElementById('getCustByPythonID').removeAttribute('disabled')
     document.getElementById('prtTransactionsID').removeAttribute('disabled')
     //document.getElementById('getCustBYjsID').removeAttribute('disabled')
@@ -147,10 +147,9 @@ function listTransactions() {
             return ;
         }
         response.json().then(function (data) {
+            
             console.log(data)
-            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
-            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
-            msg += '\nCustomer type - ' + data.customerType
+            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID 
             alert(msg)
         })
     })   
