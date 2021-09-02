@@ -174,7 +174,11 @@ def retrieveCustomerByVillageID():
         customerType = 'Non-member Volunteer'
     try:
         phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+        homePhone = ''
+        mobilePhone = ''
         for phone in phones:
+            print('useType - ',phone['useType'])
+
             if phone['useType'] == 'Home':
                 homePhone = phone['number']
             if phone['useType'] == 'Mobile':
