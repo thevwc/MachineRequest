@@ -100,38 +100,39 @@ def retrieveCustomerByID():
     headers = {'authorization': 'Bearer ' + token}
     response = requests.request('GET', url, headers=headers)
     
-    data_json = response.json()
+    json_data = response.json()
+    pprint.pprint (json_data)
 
-    lastName = data_json['Customer']['lastName']
-    firstName = data_json['Customer']['firstName']
+    lastName = json_data['Customer']['lastName']
+    firstName = json_data['Customer']['firstName']
     msg = firstName + ' ' + lastName 
-    customerType = data_json['Customer']['customerTypeID']
-    
+    customerType = json_data['Customer']['customerTypeID']
+    homePhone = ''
+    mobilePhone = ''
+
     try:
-        phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+        phones = json_data['Customer']['Contact']['Phones']['ContactPhone']
         for phone in phones:
             if phone['useType'] == 'Home':
                 homePhone = phone['number']
             if phone['useType'] == 'Mobile':
                 mobilePhone = phone['number']
     except:
-        homePhone = ''
-        mobilePhone = ''
         print('no phones')
 
+    email = ''
     try:
-        email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+        email = json_data['Customer']['Contact']['Emails']['ContactEmail']['address']
     except:
-        email = ''
         print('no email')
 
-    customerTypeID = data_json['Customer']['customerTypeID']
+    customerTypeID = json_data['Customer']['customerTypeID']
     customerType = ''
     if customerTypeID == '1':
         customerType = 'Member'
     if customerTypeID == '3':
         customerType = 'Non-member Volunteer'
-    villageID = data_json['Customer']['Contact']['custom']
+    villageID = json_data['Customer']['Contact']['custom']
 
     memberName = firstName + ' ' + lastName
     return jsonify(lightspeedID=lightspeedID,villageID=villageID,\
@@ -155,25 +156,25 @@ def retrieveCustomerByVillageID():
     except:
         flash('Operation failed','danger')
         return redirect(url_for('index'))
-    data_json = response.json()
+    json_data = response.json()
 
-    lightspeedID = data_json['Customer']['customerID']
+    lightspeedID = json_data['Customer']['customerID']
     
-    lastName = data_json['Customer']['lastName']
-    firstName = data_json['Customer']['firstName']
-    villageID = data_json['Customer']['Contact']['custom']
+    lastName = json_data['Customer']['lastName']
+    firstName = json_data['Customer']['firstName']
+    villageID = json_data['Customer']['Contact']['custom']
     try:
-        email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
+        email = json_data['Customer']['Contact']['Emails']['ContactEmail']['address']
     except:
         email = ''
-    customerTypeID = data_json['Customer']['customerTypeID']
+    customerTypeID = json_data['Customer']['customerTypeID']
     customerType = ''
     if customerTypeID == '1':
         customerType = 'Member'
     if customerTypeID == '3':
         customerType = 'Non-member Volunteer'
     try:
-        phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+        phones = json_data['Customer']['Contact']['Phones']['ContactPhone']
         homePhone = ''
         mobilePhone = ''
         for phone in phones:
@@ -260,37 +261,40 @@ def listTransactions():
     try:
         response = requests.request('GET', url, headers=headers)
         print('-----  valid listTransactions response follows  -----------------------------------------------')
-        data_json = response.json()
-        print('data_json 1 - ',data_json)
+        json_data = response.json()
+        pprint.pprint(json_data)
     except:
         print('======= operation failed ============')
-        data_json = response.json()
-        print('data_json 2 - ',data_json)
-        msg1 = data_json['message']
-        print('msg1 - ',msg1)
+        json_data = response.json()
+        pprint.pprint(json_data)
+        # msg1 = json_data['message']
+        # print('msg1 - ',msg1)
         flash('Operation failed','danger')
         msg2 = "Operation failed"
         return jsonify(msg=msg2),400
     
-    count = data_json['@attributes']['count']
+    count = json_data['@attributes']['count']
     print('count - ',count)
     if count == 0:
             print('count is 0')
             return jsonify(msg='Count = 0'),200
-    data_json = response.json()
-    print('data_json 3 - ',data_json)
-    lightspeedID = data_json['Customer']['customerID']
-    lastName = data_json['Customer']['lastName']
-    firstName = data_json['Customer']['firstName']
-    # villageID = data_json['Customer']['Contact']['custom']
-    # email = data_json['Customer']['Contact']['Emails']['ContactEmail']['address']
-    # customerTypeID = data_json['Customer']['customerTypeID']
+    
+    print('Should display the customerID (lightspeedID) ........')
+    lightspeedID = json_data['Customer']['customerID'] 
+
+    lastName = json_data['Customer']['lastName']
+    firstName = json_data['Customer']['firstName']
+    
+
+    # villageID = json_data['Customer']['Contact']['custom']
+    # email = json_data['Customer']['Contact']['Emails']['ContactEmail']['address']
+    # customerTypeID = json_data['Customer']['customerTypeID']
     # customerType = ''
     # if customerTypeID == '1':
     #     customerType = 'Member'
     # if customerTypeID == '3':
     #     customerType = 'Non-member Volunteer'
-    # phones = data_json['Customer']['Contact']['Phones']['ContactPhone']
+    # phones = json_data['Customer']['Contact']['Phones']['ContactPhone']
     # homePhone = ''
     # mobilePhone = ''
     # for phone in phones:
@@ -332,18 +336,18 @@ def updateLightspeedID():
 
         headers = {'authorization': 'Bearer ' + token}
         response = requests.request('GET', url, headers=headers) 
-        data_json = response.json()
+        json_data = response.json()
         
-        count = data_json['@attributes']['count']
+        count = json_data['@attributes']['count']
         if (numberOfLightspeedRecords >= int(count)):
             break
         
         # PRINT ATTRIBUTES DATA
         try:
-            offset = data_json['@attributes']['offset']
+            offset = json_data['@attributes']['offset']
         except:
             break
-        limit = data_json['@attributes']['limit'] 
+        limit = json_data['@attributes']['limit'] 
         
         try:
             for d in range(int(limit)):
@@ -351,12 +355,12 @@ def updateLightspeedID():
                     break
                 numberOfLightspeedRecords += 1
 
-                lightspeedID = data_json['Customer'][d]['customerID']
-                lastName = data_json['Customer'][d]['lastName']
-                firstName = data_json['Customer'][d]['firstName']
-                villageID = data_json['Customer'][d]['Contact']['custom']
-                email = data_json['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
-                memberType = data_json['Customer'][d]['customerTypeID']
+                lightspeedID = json_data['Customer'][d]['customerID']
+                lastName = json_data['Customer'][d]['lastName']
+                firstName = json_data['Customer'][d]['firstName']
+                villageID = json_data['Customer'][d]['Contact']['custom']
+                email = json_data['Customer'][d]['Contact']['Emails']['ContactEmail']['address']
+                memberType = json_data['Customer'][d]['customerTypeID']
         
                 if villageID != '' and villageID != None:
                     # UPDATE lightspeedID IN tblMember_Data
