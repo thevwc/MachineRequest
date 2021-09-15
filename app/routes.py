@@ -53,8 +53,15 @@ def index():
             'memberID':n.Member_ID,
             'lightspeedID':n.lightspeedID
         }
+        
         nameDict.append(nameItems)
-    return render_template("index.html",nameDict=nameDict)
+
+    withoutLightspeedID = 0
+    withoutLightspeedID = db.session.query(func.count(Member.Member_ID))\
+        .filter(Member.Dues_Paid == True)\
+        .filter(Member.lightspeedID == None).scalar()
+    
+    return render_template("index.html",nameDict=nameDict,withoutLightspeedID=withoutLightspeedID)
    
 #PRINT MEMBER LIGHTSPEED TRANSACTIONS
 @app.route("/prtTransactions", methods=["GET"])
@@ -77,8 +84,8 @@ def prtTransactions():
 
 
 # GET CUSTOMER RECORD BY CUSTOMER ID (LIGHTSPEED #)
-@app.route('/retrieveCustomerByID', methods=['POST'])
-def retrieveCustomerByID():
+@app.route('/retrieveCustomerByLightspeedID', methods=['POST'])
+def retrieveCustomerByLightspeedID():
     req = request.get_json()
     lightspeedID = req["lightspeedID"]
 
@@ -98,9 +105,22 @@ def retrieveCustomerByID():
     print(url)
     
     headers = {'authorization': 'Bearer ' + token}
-    response = requests.request('GET', url, headers=headers)
-    
+    try:
+        response = requests.request('GET', url, headers=headers)
+    except:
+        msg = "ERROR - Call to Lightspeed API failed"
+        return jsonify(msg=msg)
+
     json_data = response.json()
+    count = json_data['@attributes']['count']
+    print('count - ',count)
+    if (count == '0'):
+        print('count is 0')
+        msg = 'ERROR - Member with lightspeed # ' + lightspeedID + ' was not found.'
+        print (msg)
+        return jsonify(msg=msg),201
+
+    print('-----------------------------------------')
     pprint.pprint (json_data)
 
     lastName = json_data['Customer']['lastName']
@@ -142,7 +162,8 @@ def retrieveCustomerByID():
 def retrieveCustomerByVillageID():
     req = request.get_json()
     villageID = req["villageID"]
-    
+    print('villageID - ',villageID)
+
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
 
@@ -150,6 +171,8 @@ def retrieveCustomerByVillageID():
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
+    print('url - ',url)
+
     headers = {'authorization': 'Bearer ' + token}
     try:
         response = requests.request('GET', url, headers=headers)
@@ -157,6 +180,7 @@ def retrieveCustomerByVillageID():
         flash('Operation failed','danger')
         return redirect(url_for('index'))
     json_data = response.json()
+    #pprint.pprint(json_data)
 
     lightspeedID = json_data['Customer']['customerID']
     
@@ -279,14 +303,15 @@ def listTransactions():
             print('count is 0')
             return jsonify(msg='Count = 0'),200
     
-    print('Should display the customerID (lightspeedID) ........')
-    lightspeedID = json_data['Customer']['customerID'] 
+    #print('Should display the customerID (lightspeedID) ........')
+    #print(json_data['Sale'][0]['Customer']['customerID'])
 
-    lastName = json_data['Customer']['lastName']
-    firstName = json_data['Customer']['firstName']
+    lightspeedID = json_data['Sale'][0]['Customer']['customerID'] 
+    lastName = json_data['Sale'][0]["Customer"]["lastName"]
+    firstName = json_data['Sale'][0]["Customer"]["firstName"]
+    print('Name - ',firstName,lastName,'ID - ',lightspeedID)
     
-
-    # villageID = json_data['Customer']['Contact']['custom']
+    
     # email = json_data['Customer']['Contact']['Emails']['ContactEmail']['address']
     # customerTypeID = json_data['Customer']['customerTypeID']
     # customerType = ''
@@ -320,8 +345,9 @@ def refreshToken():
     token = (r['access_token'])
     return token
 
-@app.route('/updateLightspeedID', methods=['POST']) 
-def updateLightspeedID():
+@app.route('/updatelightspeedID', methods=['GET']) 
+def updatelightspeedID():
+    print('Start updateLightspeedID ... ')
 
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
@@ -330,6 +356,8 @@ def updateLightspeedID():
     recordsUpdated = 0
     numberOfLightspeedRecords = 0
     for i in range(50):
+        print('Batch # ',i)
+
         # BUILD URL 
         url = 'https://api.lightspeedapp.com/API/Account/230019/Customer.json'
         url += '?load_relations=["Contact"]&Contact.custom&offset=' + str(start) + '&limit=' + str(batchSize)
@@ -339,6 +367,7 @@ def updateLightspeedID():
         json_data = response.json()
         
         count = json_data['@attributes']['count']
+        
         if (numberOfLightspeedRecords >= int(count)):
             break
         
@@ -349,6 +378,7 @@ def updateLightspeedID():
             break
         limit = json_data['@attributes']['limit'] 
         
+        # RETRIEVE LIGHTSPEED CUSTOMER/CONTACT RECORDS
         try:
             for d in range(int(limit)):
                 if (numberOfLightspeedRecords >= int(count)):
@@ -380,7 +410,7 @@ def updateLightspeedID():
     print('Number of Lightspeed records - ',numberOfLightspeedRecords)
     print('Number of member records updated w/Lightspeed ID - ',recordsUpdated)
    
-    return jsonify(msg)
+    return jsonify(msg=msg)
 
 @app.route('/addCustomer')
 def addCustomer():

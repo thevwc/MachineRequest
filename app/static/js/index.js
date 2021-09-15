@@ -7,67 +7,55 @@ document.getElementById("selectpicker").addEventListener("change",memberSelected
 // FUNCTIONS
 
 function memberSelectedRtn() {
-    console.log('this - '+this)
+    //$(this).find(':selected').data('id');
+    //currentLightspeedID = $(this).find(':selected').data('lightspeedID')
+    currentLightspeedID = $('option:selected', this).attr("data-lightspeedID");
+    console.log('currentLightspeedID - ',currentLightspeedID)
+    
     currentMemberID = $('option:selected', this).attr("data-memberID");
     console.log('currentMemberID - '+ currentMemberID)
-    currentLightspeedID = $('option:selected', this).attr("data-ls");
+    
+
     selectedMember = this.value
     console.log('selectedMember - '+selectedMember)
 	
-    document.getElementById('memberID').value = currentMemberID
+    //document.getElementById('memberID').value = currentMemberID
     document.getElementById('lightspeedID').value = currentLightspeedID
     document.getElementById('getCustByPythonID').removeAttribute('disabled')
     document.getElementById('prtTransactionsID').removeAttribute('disabled')
-    //document.getElementById('getCustBYjsID').removeAttribute('disabled')
+    
 }
-
 
 function updatelightspeedID() {
-    // GET ALL CURRENT LIGHTSPEED CUSTOMER RECORDS
-    // villageID = document.getElementById('memberID').value
-    // var dataToSend = {
-    //     villageID: villageID
-    // };
-    document.getElementById('updatelightspeedID').innerHTML = 'Working ...'
-    dataToSend = ''
-    
-    fetch(`${window.origin}/updatelightspeedID`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(dataToSend),
-        cache: "no-cache",
-        headers: new Headers({
-            "content-type": "application/json"
-        })
+    document.getElementById('updatelightspeedID').innerHTML = 'Working ...' 
+    alertMsg = "Only members that have been added to the lightspeed system will be affected."
+    alertMsg += "\n\nThis routine may take up to 5 minutes to complete."
+    alert(alertMsg)
+
+    $.ajax({
+        url: "/updatelightspeedID",
+        type: "GET",
+        data: {},
+    success: function(data, textStatus, jqXHR)
+    {
+        msg = data.msg
+        alert(msg)
+    },
+    error: function (jqXHR, textStatus, errorThrown){
+        alert("Error updating lightspeed ID")
+    }
     })
-    .then(function (response) {
-        document.getElementById('updatelightspeedID').innerHTML = 'Update Lightspeed ID'
-
-        if (response.status != 200) {
-            console.log(`Response status was not 200: ${response.status}${response.msg}`);
-            return ;
-        }
-        response.json().then(function (data) {
-            alert(data)
-        })
-    })
-}
+    document.getElementById('updatelightspeedID').innerHTML = "Update VWC DB w/Lightspeed IDs" 
+} 
 
 
-// function retrieveCustomerByID() {
-//     lightspeedID = document.getElementById('lightspeedID').value 
-//     alert('lightspeedID - '+lightspeedID)
-//     url = '/retrieveCustomerByID?lightspeedID=' + lightspeedID
-//     location.href=url
-// }
-
-function retrieveCustomerByID() {
+function retrieveCustomerByLightspeedID() {
     lightspeedID = document.getElementById('lightspeedID').value
     var dataToSend = {
         lightspeedID: lightspeedID
     };
     
-    fetch(`${window.origin}/retrieveCustomerByID`, {
+    fetch(`${window.origin}/retrieveCustomerByLightspeedID`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(dataToSend),
@@ -77,16 +65,23 @@ function retrieveCustomerByID() {
         })
     })
     .then(function (response) {
-        if (response.status != 200) {
+        if (!response.ok) {
+            alert('Network error ... retry.')
             console.log(`Response status was not 200: ${response.status}`);
             return ;
         }
         response.json().then(function (data) {
-            console.log(data)
+            // If member not found in lightspeed database ...
+            if (data.hasOwnProperty('msg')){
+                alert(data.msg)
+                return
+            }
+            // Display available data from lightspeed database
             msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
             msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
             msg += '\nCustomer type - ' + data.customerType
             alert(msg)
+            return
         })
     })
 }
@@ -94,6 +89,8 @@ function retrieveCustomerByID() {
 
 function retrieveCustomerByVillageID() {
     villageID = document.getElementById('memberID').value
+    alert('VILLAGE ID - ',villageID)
+    
     var dataToSend = {
         villageID: villageID
     };
@@ -154,22 +151,6 @@ function listTransactions() {
         })
     })   
 }
-
-
-
-// function refreshToken() {
-//     payload = {
-//         'refresh_token': '0e5c9948da5e257f1f55de872c6901d6b3975b04',
-//         'client_secret': 'cfb0bf58140eaa2f15b1e698c6b5470a4ab05d8ed65b0cd3013a9c94117d0283',
-//         'client_id': '0ec071521972565d2cf9258ae86d413fef4265cf29dba51662c083c48a429370',
-//         'grant_type': 'refresh_token'
-//     }
-//     url = 'https://cloud.lightspeedapp.com/oauth/access_token.php'
-//     response = request('GET', url, headers=headers)
-//     console.log('response -'+response)
-//     token = (response['access_token'])
-//     return token
-// }
 
 
 function addCustomer() {
