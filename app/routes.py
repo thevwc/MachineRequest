@@ -162,7 +162,7 @@ def retrieveCustomerByLightspeedID():
 def retrieveCustomerByVillageID():
     req = request.get_json()
     villageID = req["villageID"]
-    print('villageID - ',villageID)
+    #print('villageID - ',villageID)
 
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
@@ -171,7 +171,7 @@ def retrieveCustomerByVillageID():
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
-    print('url - ',url)
+    #print('url - ',url)
 
     headers = {'authorization': 'Bearer ' + token}
     try:
@@ -202,7 +202,7 @@ def retrieveCustomerByVillageID():
         homePhone = ''
         mobilePhone = ''
         for phone in phones:
-            print('useType - ',phone['useType'])
+            #print('useType - ',phone['useType'])
 
             if phone['useType'] == 'Home':
                 homePhone = phone['number']

@@ -1,4 +1,6 @@
 // index.js
+var currentLightspeedID = ''
+var currentMemberID = ''
 
 // EVENT LISTENERS
 document.getElementById("selectpicker").addEventListener("change",memberSelectedRtn)
@@ -7,20 +9,17 @@ document.getElementById("selectpicker").addEventListener("change",memberSelected
 // FUNCTIONS
 
 function memberSelectedRtn() {
-    //$(this).find(':selected').data('id');
-    //currentLightspeedID = $(this).find(':selected').data('lightspeedID')
     currentLightspeedID = $('option:selected', this).attr("data-lightspeedID");
-    console.log('currentLightspeedID - ',currentLightspeedID)
+    document.getElementById('lightspeedID').value = currentLightspeedID
     
     currentMemberID = $('option:selected', this).attr("data-memberID");
-    console.log('currentMemberID - '+ currentMemberID)
-    
+    document.getElementById('memberID').value = currentMemberID
+    //console.log('currentMemberID - ',currentMemberID)
 
     selectedMember = this.value
-    console.log('selectedMember - '+selectedMember)
+    //console.log('selectedMember - '+selectedMember)
 	
-    //document.getElementById('memberID').value = currentMemberID
-    document.getElementById('lightspeedID').value = currentLightspeedID
+    // Enable buttons
     document.getElementById('getCustByPythonID').removeAttribute('disabled')
     document.getElementById('prtTransactionsID').removeAttribute('disabled')
     
@@ -73,14 +72,28 @@ function retrieveCustomerByLightspeedID() {
         response.json().then(function (data) {
             // If member not found in lightspeed database ...
             if (data.hasOwnProperty('msg')){
-                alert(data.msg)
+                modalAlert("ERROR",data.msg)
                 return
             }
             // Display available data from lightspeed database
-            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
-            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
-            msg += '\nCustomer type - ' + data.customerType
-            alert(msg)
+            msg = '<h4>Lightspeed Data</h4>';
+            msg += `
+                <ul class="list-group mb=3">
+                    <li class="list-group-item" style=text-align:left>Name - ${data.memberName}</li>
+                    <li class="list-group-item"style=text-align:left>Lightspeed ID - ${data.lightspeedID}</li>
+                    <li class="list-group-item"style=text-align:left>Village ID - ${data.villageID}</li>
+                    <li class="list-group-item"style=text-align:left>Home phone - ${data.homePhone}</li>
+                    <li class="list-group-item"style=text-align:left>Mobile phone - ${data.mobilePhone}</li>
+                    <li class="list-group-item"style=text-align:left>Email - ${data.email}</li>
+                </ul>   
+            `
+                
+            modalAlert("",msg)
+
+            // msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            // msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
+            // msg += '\nCustomer type - ' + data.customerType
+            // alert(msg)
             return
         })
     })
@@ -89,7 +102,6 @@ function retrieveCustomerByLightspeedID() {
 
 function retrieveCustomerByVillageID() {
     villageID = document.getElementById('memberID').value
-    alert('VILLAGE ID - ',villageID)
     
     var dataToSend = {
         villageID: villageID
@@ -109,11 +121,28 @@ function retrieveCustomerByVillageID() {
             return ;
         }
         response.json().then(function (data) {
-            console.log(data)
-            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
-            msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
-            msg += '\nCustomer type - ' + data.customerType
-            alert(msg)
+            // Was the member found in the lightspeed database?
+            if (data.hasOwnProperty('msg')){
+                modalAlert('ERROR',data.msg)
+                return
+            }
+            // console.log(data)
+            // msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID + '\nVillage ID - ' + data.villageID
+            // msg += '\nHome phone - ' + data.homePhone + '\nMobile phone - ' + data.mobilePhone + '\nEmail - ' + data.email
+            // msg += '\nCustomer type - ' + data.customerType
+            msg = '<h4>Lightspeed Data</h4>';
+            msg += `
+                <ul class="list-group mb=3">
+                    <li class="list-group-item" style=text-align:left>Name - ${data.memberName}</li>
+                    <li class="list-group-item"style=text-align:left>Lightspeed ID - ${data.lightspeedID}</li>
+                    <li class="list-group-item"style=text-align:left>Village ID - ${data.villageID}</li>
+                    <li class="list-group-item"style=text-align:left>Home phone - ${data.homePhone}</li>
+                    <li class="list-group-item"style=text-align:left>Mobile phone - ${data.mobilePhone}</li>
+                    <li class="list-group-item"style=text-align:left>Email - ${data.email}</li>
+                </ul>   
+            `
+                
+            modalAlert("",msg)
             document.getElementById('lightspeedID').value = data.lightspeedID
         })
     })
@@ -157,4 +186,15 @@ function addCustomer() {
     url = '/addCustomer'
     location.href=url
 }
+
+function modalAlert(title,msg) {
+	document.getElementById("modalTitle").innerHTML = title
+	document.getElementById("modalBody").innerHTML= msg
+	$('#myModalMsg').modal('show')
+}
+
+function closeModal() {
+	$('#myModalMsg').modal('hide')
+}
+
 // END OF FUNCTIONS

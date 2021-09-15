@@ -5,7 +5,7 @@
     --main-body-bg-color: lightgray;
   }
                          
-  
+
 .parent {
     display: grid;
     grid-template-columns: 1fr;
