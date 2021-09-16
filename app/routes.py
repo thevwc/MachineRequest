@@ -267,14 +267,13 @@ def listTransactions():
     print('villageID - ',villageID)
     print('lightspeedID - ',lightspeedID)
     if lightspeedID == None or lightspeedID == '':
-        return "Missing lightspeedID",400
+        msg = "Missing lightspeedID"
+        return msg,200
 
     # REFRESH TOKEN; SAVE TOKEN
     token = refreshToken()
     
     # BUILD URL 
-   # url += '/Customer.json?load_relations=["Contact"]&Contact.custom=~,' + villageID
-    # GET /Sale?load_relations=["Customer","SaleLines.Item"]
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&customerID=~,' + lightspeedID
@@ -286,27 +285,27 @@ def listTransactions():
         response = requests.request('GET', url, headers=headers)
         print('-----  valid listTransactions response follows  -----------------------------------------------')
         json_data = response.json()
-        pprint.pprint(json_data)
     except:
         print('======= operation failed ============')
         json_data = response.json()
-        pprint.pprint(json_data)
-        # msg1 = json_data['message']
-        # print('msg1 - ',msg1)
-        flash('Operation failed','danger')
-        msg2 = "Operation failed"
-        return jsonify(msg=msg2),400
+        msg = "Operation failed"
+        return jsonify(msg=msg),200
     
+    #Were any sales found?
     count = json_data['@attributes']['count']
-    print('count - ',count)
     if count == 0:
             print('count is 0')
             return jsonify(msg='Count = 0'),200
     
-    #print('Should display the customerID (lightspeedID) ........')
-    #print(json_data['Sale'][0]['Customer']['customerID'])
+    # Show json data ....
+    print(json_data['Sale'])
+    
+    try:
+        lightspeedID = json_data['Sale'][0]['Customer']['customerID']
+    except:
+        msg="lightspeedID = failed"
+        return jsonify(msg=msg),200
 
-    lightspeedID = json_data['Sale'][0]['Customer']['customerID'] 
     lastName = json_data['Sale'][0]["Customer"]["lastName"]
     firstName = json_data['Sale'][0]["Customer"]["firstName"]
     print('Name - ',firstName,lastName,'ID - ',lightspeedID)

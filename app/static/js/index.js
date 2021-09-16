@@ -9,19 +9,29 @@ document.getElementById("selectpicker").addEventListener("change",memberSelected
 // FUNCTIONS
 
 function memberSelectedRtn() {
-    currentLightspeedID = $('option:selected', this).attr("data-lightspeedID");
+    var e = document.getElementById("selectpicker");
+    var option = e.options[e.selectedIndex];
+
+    var lsData = option.getAttribute("data-lightspeed");
+    console.log('lsData - ',lsData)
+
+    var attrs = option.attributes;
+    console.log('attrs - ',attrs)
+
+    currentLightspeedID = $('option:selected', this).attr("data-lightspeeed");
     document.getElementById('lightspeedID').value = currentLightspeedID
-    
-    currentMemberID = $('option:selected', this).attr("data-memberID");
+    console.log('currentLightspeedID - ',currentLightspeedID)
+
+    currentMemberID = $('option:selected', this).attr("data-member");
     document.getElementById('memberID').value = currentMemberID
-    //console.log('currentMemberID - ',currentMemberID)
+    console.log('currentMemberID - ',currentMemberID)
 
     selectedMember = this.value
     //console.log('selectedMember - '+selectedMember)
 	
     // Enable buttons
     document.getElementById('getCustByPythonID').removeAttribute('disabled')
-    document.getElementById('prtTransactionsID').removeAttribute('disabled')
+    //document.getElementById('prtTransactionsID').removeAttribute('disabled')
     
 }
 
@@ -144,6 +154,7 @@ function retrieveCustomerByVillageID() {
                 
             modalAlert("",msg)
             document.getElementById('lightspeedID').value = data.lightspeedID
+            document.getElementById('prtTransactionsID').removeAttribute('disabled')
         })
     })
 }
@@ -173,7 +184,10 @@ function listTransactions() {
             return ;
         }
         response.json().then(function (data) {
-            
+            if (data.hasOwnProperty('msg')){
+                modalAlert('ERROR',data.msg)
+                return
+            }
             console.log(data)
             msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID 
             alert(msg)

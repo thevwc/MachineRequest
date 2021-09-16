@@ -8,11 +8,11 @@
 
 <div class="parent">
     <div class="hdg">
-        <div class="title">
+        <div class="title" style=text-align:left>
             <div><h2>LIGHTSPEED INTERFACE</h2></div>
         </div>
-        <div class="version">
-            <h3>ver. Sep 15, 2021</h3>
+        <div class="version" style=text-align:right>
+            <h3>ver. Sep 16, 2021</h3>
         </div>  
     </div>
     <div>
@@ -61,10 +61,10 @@
                 {% for n in nameDict %}
                     <option 
                         class="optName" 
-                        value='{{n.memberName}}' 
-                        data-lightspeedID='{{n.lightspeedID}}'
-                        data-memberID='{{n.memberID}}'
-                    </option>{{n.memberName}}</option>
+                        value="{{n.memberName}}" 
+                        data-lightspeed="{{n.lightspeedID}}"
+                        data-member="{{n.memberID}}"
+                    </option>{{n.memberName}}{{n.lightspeedID}}</option>
                 {% endfor %}
                 </select>
                 <input id='memberID' type="hidden" value=''>
@@ -72,9 +72,9 @@
             <div class="memberReports">
                 <!-- PRINT BUTTONS TO PROVIDE LINKS TO ROUTES -->
                 <ul style="list-style-type:none;">
-                    <li><button id='getCustByPythonID' class='btn btn-primary' disabled onclick="retrieveCustomerByVillageID()">Display selected customer</button></li>
+                    <li><button id='getCustByPythonID' class='btn btn-sm btn-primary' disabled onclick="retrieveCustomerByVillageID()">Display selected customer</button></li>
                     <li>{{lsID}}{{memberName}}{{villageID}}</li>
-                    <li><button id='prtTransactionsID'  onclick='listTransactions()' type="button" class='btn btn-sm btn-primary'>List Member's Sales Transactions</button></li>
+                    <li><button id='prtTransactionsID' class='btn btn-sm btn-primary' disabled onclick='listTransactions()'>List Member's Sales Transactions</button></li>
                     
                     <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
                 </ul>
