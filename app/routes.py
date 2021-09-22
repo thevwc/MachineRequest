@@ -277,8 +277,8 @@ def listTransactions():
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&customerID=~,' + lightspeedID
-    print('------  url for listTransactions follows  ----------------------------------------------')
-    print('url - ',url)
+    #print('------  url for listTransactions follows  ----------------------------------------------')
+    #print('url - ',url)
     
     headers = {'authorization': 'Bearer ' + token}
     try:
@@ -296,10 +296,13 @@ def listTransactions():
     if count == 0:
             print('count is 0')
             return jsonify(msg='Count = 0'),200
-    
+    salelines = json_data('SaleLines')
+    for saleline in salelines
+        pprint.pprint(json_data['SaleLine'])
     # Show json data ....
-    print(json_data['Sale'])
-    
+    print('--------  show json data returned --------------')
+    pprint.pprint(json_data['Sale'])
+    print('--------  end of returned data -----------------')
     try:
         lightspeedID = json_data['Sale'][0]['Customer']['customerID']
     except:
@@ -308,27 +311,31 @@ def listTransactions():
 
     lastName = json_data['Sale'][0]["Customer"]["lastName"]
     firstName = json_data['Sale'][0]["Customer"]["firstName"]
-    print('Name - ',firstName,lastName,'ID - ',lightspeedID)
-    
-    
-    # email = json_data['Customer']['Contact']['Emails']['ContactEmail']['address']
-    # customerTypeID = json_data['Customer']['customerTypeID']
-    # customerType = ''
-    # if customerTypeID == '1':
-    #     customerType = 'Member'
-    # if customerTypeID == '3':
-    #     customerType = 'Non-member Volunteer'
-    # phones = json_data['Customer']['Contact']['Phones']['ContactPhone']
-    # homePhone = ''
-    # mobilePhone = ''
-    # for phone in phones:
-    #     if phone['useType'] == 'Home':
-    #         homePhone = phone['number']
-    #     if phone['useType'] == 'Mobile':
-    #         mobilePhone = phone['number']
     memberName = firstName + ' ' + lastName
-    # return jsonify(lightspeedID=lightspeedID,villageID=villageID,memberName=memberName,\
-    # email=email,homePhone=homePhone,mobilePhone=mobilePhone,customerType=customerType)
+
+    # DISPLAY SALES DATA
+    saleID = json_data['Sale'][0]['saleID']
+    #print ('saleID - ',saleID)
+    saleID = json_data['Sale'][1]['saleID']
+    #print ('saleID - ',saleID)
+
+    # WANT TO LIST - 
+    #saleID itemID description                 amount
+    # 2011   123   Member Annual Fee             75
+    # 2087   999   A010 - Home Study ...         10
+    sales = json_data['Sale']
+    for sale in sales:
+        #print (sale)
+        print('---------------------------------------------')
+        print(sale['SaleItems'])
+        print('sale[saleID],sale[total])')
+        print (sale['saleID'],sale['total'])
+        print('=============================================')
+        #items = json_data['Prices']
+        pprint.pprint (sale['SaleLines']['SaleLine'][0]['Item'])
+        #'Prices': {'ItemPrice': [{'amount': '75',
+        #pprint.pprint (sale['SaleLines']['SaleLine'][0]['Item'])
+    
     return jsonify(lightspeedID=lightspeedID,memberName=memberName),200
 
 def refreshToken():
