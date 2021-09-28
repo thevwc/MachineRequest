@@ -290,19 +290,26 @@ def listTransactions():
         json_data = response.json()
         msg = "Operation failed"
         return jsonify(msg=msg),200
-    
+    #print('type of object - ',type(json_data))
+    #print('----------- keys ----------------')
+    #print(json_data.keys())
+    #print(json_data['Sales'])
+
     #Were any sales found?
     count = json_data['@attributes']['count']
     if count == 0:
             print('count is 0')
             return jsonify(msg='Count = 0'),200
-    salelines = json_data('SaleLines')
-    for saleline in salelines
-        pprint.pprint(json_data['SaleLine'])
+    #salelines = json_data(['SaleLines'])
+    #pprint.pprint ('salelines - ',salelines,' type - ',type(salelines))
+    print('------------------ salelines -----------------')
+    pprint.pprint (json_data)
+    #for saleline in salelines
+    #    pprint.pprint(json_data['SaleLine'])
     # Show json data ....
-    print('--------  show json data returned --------------')
-    pprint.pprint(json_data['Sale'])
-    print('--------  end of returned data -----------------')
+    #print('--------  show json data returned --------------')
+    #pprint.pprint(json_data['Sale'])
+    #print('--------  end of returned data -----------------')
     try:
         lightspeedID = json_data['Sale'][0]['Customer']['customerID']
     except:
@@ -325,17 +332,37 @@ def listTransactions():
     # 2087   999   A010 - Home Study ...         10
     sales = json_data['Sale']
     for sale in sales:
-        #print (sale)
-        print('---------------------------------------------')
-        print(sale['SaleItems'])
-        print('sale[saleID],sale[total])')
-        print (sale['saleID'],sale['total'])
         print('=============================================')
-        #items = json_data['Prices']
-        pprint.pprint (sale['SaleLines']['SaleLine'][0]['Item'])
-        #'Prices': {'ItemPrice': [{'amount': '75',
-        #pprint.pprint (sale['SaleLines']['SaleLine'][0]['Item'])
-    
+        print ('saleID - ',sale['saleID'],' total - ',sale['total'])
+        print('lastname - ',sale['Customer']['lastName'])
+
+        print('_______________  SaleLines  ______________________________')
+        slines = json_data['Sale'][0]['SaleLines']
+        pprint.pprint(slines)
+
+        print('//////////////////////  Sale 0 items ///////////////////')
+        print('saleID - ',sale['saleID'], ' total - ',sale['total'])
+        itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][0]['Item']['itemID']
+        description = json_data['Sale'][0]['SaleLines']['SaleLine'][0]['Item']['description']
+        print('Item ID - ',itemID, 'Description - ',description)
+        
+        itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][1]['Item']['itemID']
+        description = json_data['Sale'][0]['SaleLines']['SaleLine'][1]['Item']['description']
+        print('Item ID - ',itemID, 'Description - ',description)
+
+        itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][2]['Item']['itemID']
+        description = json_data['Sale'][0]['SaleLines']['SaleLine'][2]['Item']['description']
+        print('Item ID - ',itemID, 'Description - ',description)
+
+        print('//////////////////////  Sale 1 items ///////////////////')
+        itemID = json_data['Sale'][1]['SaleLines']['SaleLine'][0]['Item']['itemID']
+        description = json_data['Sale'][1]['SaleLines']['SaleLine'][0]['Item']['description']
+        print('Item ID - ',itemID, 'Description - ',description)
+        
+        itemID = json_data['Sale'][1]['SaleLines']['SaleLine'][1]['Item']['itemID']
+        description = json_data['Sale'][1]['SaleLines']['SaleLine'][1]['Item']['description']
+        print('Item ID - ',itemID,'Description - ',description)
+
     return jsonify(lightspeedID=lightspeedID,memberName=memberName),200
 
 def refreshToken():

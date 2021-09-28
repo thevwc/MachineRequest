@@ -27,16 +27,24 @@
     color: var(--main-txt-color);
     border-bottom:white 3px;
 }
+.hdg2 {
+    background-color: lightgrey;
+    width: 876px;
+    padding-top:15px;
+    text-align: center;
+}
 .title {
     grid-area:titleArea;
     padding-top:2px;
     font-size:1rem;
+    padding-left:10px;
 }
 .version {
     grid-area:versionArea;
     font-size:.75rem;
     padding-top:5px;
     align-items: right;
+    padding-right: 10px;
 }
 
 #location {
