@@ -255,12 +255,15 @@ textarea {
 
 }
 .modal-dialog {
-    width:360px;
+    width:900px;
     height:600px !important;
 }
 .modal-content {
-    height:60%;
+    height:100%;
     background-color:#BBD6EC;
+}
+.modal-body {
+    overflow: scroll;
 }
 /* iPad portrait */
 @media (min-width: 768px) {

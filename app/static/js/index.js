@@ -189,8 +189,9 @@ function listTransactions() {
                 return
             }
             console.log(data)
-            msg = 'Name - ' + data.memberName + '\nLightspeed ID - ' + data.lightspeedID 
-            alert(msg)
+            
+            msg =  data.transList
+            modalAlert("Transactions",msg)
         })
     })   
 }

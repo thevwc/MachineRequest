@@ -261,11 +261,8 @@ def duesPayment():
 @app.route('/listTransactions', methods=['POST']) 
 def listTransactions():
     req = request.get_json()
-    print('----------  Start of test  ---------------')
     villageID = req["villageID"]
     lightspeedID = req["lightspeedID"]
-    print('villageID - ',villageID)
-    print('lightspeedID - ',lightspeedID)
     if lightspeedID == None or lightspeedID == '':
         msg = "Missing lightspeedID"
         return msg,200
@@ -277,8 +274,6 @@ def listTransactions():
     url = 'https://api.lightspeedapp.com/API/Account/' 
     url += app.config['ACCOUNT_ID']
     url += '/Sale.json?load_relations=["Customer","SaleLines.Item"]&customerID=~,' + lightspeedID
-    #print('------  url for listTransactions follows  ----------------------------------------------')
-    #print('url - ',url)
     
     headers = {'authorization': 'Bearer ' + token}
     try:
@@ -290,26 +285,18 @@ def listTransactions():
         json_data = response.json()
         msg = "Operation failed"
         return jsonify(msg=msg),200
+
     #print('type of object - ',type(json_data))
     #print('----------- keys ----------------')
     #print(json_data.keys())
-    #print(json_data['Sales'])
+    #pprint.pprint(json_data)
 
     #Were any sales found?
     count = json_data['@attributes']['count']
     if count == 0:
             print('count is 0')
             return jsonify(msg='Count = 0'),200
-    #salelines = json_data(['SaleLines'])
-    #pprint.pprint ('salelines - ',salelines,' type - ',type(salelines))
-    print('------------------ salelines -----------------')
-    pprint.pprint (json_data)
-    #for saleline in salelines
-    #    pprint.pprint(json_data['SaleLine'])
-    # Show json data ....
-    #print('--------  show json data returned --------------')
-    #pprint.pprint(json_data['Sale'])
-    #print('--------  end of returned data -----------------')
+
     try:
         lightspeedID = json_data['Sale'][0]['Customer']['customerID']
     except:
@@ -320,50 +307,52 @@ def listTransactions():
     firstName = json_data['Sale'][0]["Customer"]["firstName"]
     memberName = firstName + ' ' + lastName
 
-    # DISPLAY SALES DATA
-    saleID = json_data['Sale'][0]['saleID']
-    #print ('saleID - ',saleID)
-    saleID = json_data['Sale'][1]['saleID']
-    #print ('saleID - ',saleID)
+    # START BUILDING transList FOR DISPLAY TO USER
+    transList = "<h3>Name - " + memberName + "</h3>"
+    transList += "<div>Lightspeed ID #" + lightspeedID + "</div><br>"
 
     # WANT TO LIST - 
     #saleID itemID description                 amount
     # 2011   123   Member Annual Fee             75
     # 2087   999   A010 - Home Study ...         10
     sales = json_data['Sale']
+    
+    saleCount =  0
     for sale in sales:
-        print('=============================================')
-        print ('saleID - ',sale['saleID'],' total - ',sale['total'])
-        print('lastname - ',sale['Customer']['lastName'])
+        saleCount += 1
+        saleID = sale['saleID']
+        total = sale['total']
+        
+        transList += "<h5>Sale ID #" + saleID + "</h5>"
+        transList += "<table>"
+        transList += "<th>Item #</th>"
+        transList += "<th>Description</th>"
 
-        print('_______________  SaleLines  ______________________________')
+        # GET THE SaleLines 'object'
         slines = json_data['Sale'][0]['SaleLines']
-        pprint.pprint(slines)
 
-        print('//////////////////////  Sale 0 items ///////////////////')
-        print('saleID - ',sale['saleID'], ' total - ',sale['total'])
         itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][0]['Item']['itemID']
         description = json_data['Sale'][0]['SaleLines']['SaleLine'][0]['Item']['description']
-        print('Item ID - ',itemID, 'Description - ',description)
-        
+        transList += "<tr><td>"+itemID + "</td><td>"+description+ "</td></tr>"
+
         itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][1]['Item']['itemID']
         description = json_data['Sale'][0]['SaleLines']['SaleLine'][1]['Item']['description']
-        print('Item ID - ',itemID, 'Description - ',description)
+        transList += "<tr><td>"+itemID + "</td><td>"+description+ "</td></tr>"
 
         itemID = json_data['Sale'][0]['SaleLines']['SaleLine'][2]['Item']['itemID']
         description = json_data['Sale'][0]['SaleLines']['SaleLine'][2]['Item']['description']
-        print('Item ID - ',itemID, 'Description - ',description)
+        transList += "<tr><td>"+itemID + "</td><td>"+description+ "</td></tr>"
 
-        print('//////////////////////  Sale 1 items ///////////////////')
         itemID = json_data['Sale'][1]['SaleLines']['SaleLine'][0]['Item']['itemID']
         description = json_data['Sale'][1]['SaleLines']['SaleLine'][0]['Item']['description']
-        print('Item ID - ',itemID, 'Description - ',description)
-        
+        transList += "<tr><td>"+itemID + "</td><td>"+description+ "</td></tr>"
+
         itemID = json_data['Sale'][1]['SaleLines']['SaleLine'][1]['Item']['itemID']
         description = json_data['Sale'][1]['SaleLines']['SaleLine'][1]['Item']['description']
-        print('Item ID - ',itemID,'Description - ',description)
+        transList += "<tr><td>"+itemID + "</td><td>"+description+ "</td></tr>"
 
-    return jsonify(lightspeedID=lightspeedID,memberName=memberName),200
+        transList += "</table>"
+    return jsonify(lightspeedID=lightspeedID,memberName=memberName,transList=transList),200
 
 def refreshToken():
     import requests
