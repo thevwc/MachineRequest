@@ -9,51 +9,14 @@
 <div class="parent">
     <div class="hdg">
         <div class="title" style=text-align:left>
-            <div><h2>LIGHTSPEED INTERFACE</h2></div>
+            <div><h2>Flask Template</h2></div>
         </div>
         <div class="version" style=text-align:right>
-            <h3>ver. Oct 1, 2021</h3>
+            <h3>ver. Jan 6, 2022</h3>
         </div>  
     </div>
-    <div class="hdg2">
-        <h6>Members without a lightspeed ID (or not in Lightspeed database) -  {{withoutLightspeedID}}</h6>
-    </div>
-    <div id="printReportBtns">
-        <div id="column1">
-            <div>
-                <button id='updatelightspeedID' type="button" class='btn btn-sm btn-primary' onclick='updatelightspeedID()'>Update VWC DB w/Lightspeed IDs</button>
-            </div>
-            <div id="location" style=margin-top:20px>
-                <form class = "filterItems "></form>
-                    <label for="shopChoice">Location: </label>
-                    <select id="shopChoice" name="shopList" style="height: 25px;font-size: 1em;">
-                        <option id='shop1' value="RA">Rolling Acres</option>
-                        <option id='shop2' value="BW">Brownwood</option>
-                    </select>
-                </form>
-            </div>
-        </div>
-   
-        <div id="column2">
-            
-            <!-- <h6>daily send eMail changes</h6>
-            <h6>receive dues/initiation Transactions; compare to membership records</h6>
-            <h6>List Recent Sales</h6> -->
-            <div>
-                <label for="lightspeedID">Lightspeed ID - </label>
-                <input type="text" id="lightspeedID" style=width:50px value = ''>
-            </div>
-            <div>
-                <button type="button"
-                    class='btn btn-sm btn-primary' 
-                    style=width:250px 
-                    onclick='retrieveCustomerByLightspeedID()'>
-                    Display Data In Lightspeed Database</button>
-            </div>
-            <br>
-            <br>
-            <button type="button" class='btn btn-sm btn-primary' onclick='addCustomer()'>Test Add Customer</button>
-        </div>
+    
+        
 
         <div id="column3">
             <div id="memberOptions" style=margin-top:20px>
@@ -62,22 +25,22 @@
                     <option 
                         class="optName" 
                         value="{{n.memberName}}" 
-                        data-lightspeed="{{n.lightspeedID}}"
+                        
                         data-member="{{n.memberID}}"
-                    </option>{{n.memberName}}{{n.lightspeedID}}</option>
+                    </option>{{n.memberName}}</option>
                 {% endfor %}
                 </select>
                 <input id='memberID' type="hidden" value=''>
             </div>
             <div class="memberReports">
                 <!-- PRINT BUTTONS TO PROVIDE LINKS TO ROUTES -->
-                <ul style="list-style-type:none;">
-                    <li><button id='getCustByPythonID' class='btn btn-sm btn-primary' disabled onclick="retrieveCustomerByVillageID()">Display selected customer</button></li>
-                    <li>{{lsID}}{{memberName}}{{villageID}}</li>
-                    <li><button id='prtTransactionsID' class='btn btn-sm btn-primary' disabled onclick='listTransactions()'>List Member's Sales Transactions</button></li>
+                <!-- <ul style="list-style-type:none;"> -->
+                    <!-- <li><button id='getCustByPythonID' class='btn btn-sm btn-primary' disabled onclick="retrieveCustomerByVillageID()">Display selected customer</button></li> -->
+                    <!-- <li>{{lsID}}{{memberName}}{{villageID}}</li> -->
+                    <!-- <li><button id='prtTransactionsID' class='btn btn-sm btn-primary' disabled onclick='listTransactions()'>List Member's Sales Transactions</button></li> -->
                     
                     <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
-                </ul>
+                <!-- </ul> -->
             </div>
         </div>
     </div>
