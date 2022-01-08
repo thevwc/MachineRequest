@@ -7,43 +7,56 @@
 {% block app_content %}
 
 <div class="parent">
-    <div class="hdg">
-        <div class="title" style=text-align:left>
-            <div><h2>Flask Template</h2></div>
+    <!-- HEADING SECTION -->
+    <div class="heading">
+        <h2>Flask Template Heading</h2>
+    </div>
+
+    <!-- VERSION SECTION -->
+    <div class="version">
+        <h3>ver. Jan 8, 2022</h3>
+    </div>  
+        
+    <!-- SELECT MEMBER SECTION -->
+    <div class="selectMember">
+        <div>
+            <select id="selectpicker" class='selectpicker' style='margin-bottom:20px' title='Find a member ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
+            {% for n in nameDict %}
+                <option 
+                    class="optName" 
+                    value="{{n.memberName}}" 
+                    data-member="{{n.memberID}}"
+                </option>{{n.memberName}}</option>
+            {% endfor %}
+            </select>
         </div>
-        <div class="version" style=text-align:right>
-            <h3>ver. Jan 6, 2022</h3>
-        </div>  
+        
+    </div>
+
+    <!-- CONTACT INFO -->
+    <div class="contactInfo">
+        <div class="row">
+            <label class="col contactLabel">Name</label>
+            <span id="memberName" class="col contactData">
+        </div>
+        <div class="row">
+           <label class="col contactLabel">Village ID</label>
+            <span id="villageID" class="col contactData">
+        </div>
+        <div class="row">
+            <label class="col contactLabel">Home phone</label>
+            <span id="homePhone" class="col contactData" >
+        </div>
+        <div class="row">
+            <label class="col contactLabel">Mobile phone</label>
+            <span id="mobilePhone" class="col contactData">
+        </div>
+        <div class="row">
+            <label class="col contactLabel">Email</label>
+            <span id="eMail" class="col contactData">
+        </div>
     </div>
     
-        
-
-        <div id="column3">
-            <div id="memberOptions" style=margin-top:20px>
-                <select id="selectpicker" class='selectpicker' style='margin-bottom:20px' title='Find a member ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
-                {% for n in nameDict %}
-                    <option 
-                        class="optName" 
-                        value="{{n.memberName}}" 
-                        
-                        data-member="{{n.memberID}}"
-                    </option>{{n.memberName}}</option>
-                {% endfor %}
-                </select>
-                <input id='memberID' type="hidden" value=''>
-            </div>
-            <div class="memberReports">
-                <!-- PRINT BUTTONS TO PROVIDE LINKS TO ROUTES -->
-                <!-- <ul style="list-style-type:none;"> -->
-                    <!-- <li><button id='getCustByPythonID' class='btn btn-sm btn-primary' disabled onclick="retrieveCustomerByVillageID()">Display selected customer</button></li> -->
-                    <!-- <li>{{lsID}}{{memberName}}{{villageID}}</li> -->
-                    <!-- <li><button id='prtTransactionsID' class='btn btn-sm btn-primary' disabled onclick='listTransactions()'>List Member's Sales Transactions</button></li> -->
-                    
-                    <!-- <li><button id='getCustBYjsID' class='btn btn-primary' disabled onclick='retrieveCustomerJS()'>Retrieve a customer (via js)</button></li> -->
-                <!-- </ul> -->
-            </div>
-        </div>
-    </div>
 </div>  <!-- END OF PARENT WRAPPER -->
 
 

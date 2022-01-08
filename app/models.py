@@ -60,7 +60,7 @@ class Member(db.Model):
 
     Home_Phone = db.Column(db.String(14))
     Cell_Phone = db.Column(db.String(14))
-    eMail = db.Column(db.String(50))
+    eMail = db.Column('E-Mail',db.String(50))
     Dues_Paid=db.Column(db.Boolean)
     NonMember_Volunteer=db.Column(db.Boolean)
     Restricted_From_Shop = db.Column(db.Boolean)
@@ -84,7 +84,7 @@ class Member(db.Model):
     Nov_resident = db.Column(db.Boolean)
     Dec_resident = db.Column(db.Boolean)
 
-    Alt_Adddress = db.Column(db.String(30))
+    Alt_Address = db.Column(db.String(30))
     Alt_City = db.Column(db.String(25))
     Alt_State = db.Column(db.String(2))
     Alt_Zip = db.Column(db.String(10))
@@ -135,7 +135,7 @@ class Member(db.Model):
     isSpecialProjects = db.Column(db.Boolean)
     Manager = db.Column(db.Boolean)
     isVP = db.Column(db.Boolean)
-    lightspeedID = db.Column(db.String(20))
+    LightspeedID = db.Column(db.String(20))
     fullName = column_property(First_Name + " " + Last_Name)
     # Relationships
     #activities = db.relationship('MemberActivity', backref='member')
