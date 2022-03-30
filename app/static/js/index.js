@@ -1,22 +1,43 @@
 // index.js
 
-// EVENT LISTENERS
-document.getElementById("selectpicker").addEventListener("change",getContactInfo)
+shopChoice = document.getElementById("shopChoice")
 
+// EVENT LISTENERS
+document.getElementById("machineSelected").addEventListener("change",displayMachineCertifications)
+document.getElementById("memberSelected").addEventListener("change",displayMemberCertifications)
+shopChoice.addEventListener("change",locationChange)
 
 // FUNCTIONS
-function getContactInfo() {
-    var e = document.getElementById("selectpicker");
+
+// SHOW/HIDE MACHINE LIST OPTIONS BASED ON LOCATION SELECTION
+function locationChange() {
+    // SHOW ALL MACHINES
+    $('.optMachineName').each(function(){
+        $(this).show();
+    })
+    if (shopChoice.value != 'BOTH') {
+        // HIDE OPTION IF THE data.location MATCHES THE SELECTED LOCATION
+        let currentLocation = shopChoice.value
+        $('.optMachineName').each(function(){
+            var sData = $(this).data('location');
+            if (sData != currentLocation){
+                $(this).hide();
+            }
+        })
+    }
+}
+function displayMachineCertifications() {
+    var e = document.getElementById("machineSelected");
     var option = e.options[e.selectedIndex];
     
     //var attrs = option.attributes;
     
-    villageID = $('option:selected', this).attr("data-member");
+    machineID = $('option:selected', this).attr("data-machineID");
     
     var dataToSend = {
         villageID: villageID
     };
-    fetch(`${window.origin}/getMemberContactInfo`, {
+    fetch(`${window.origin}/displayMachineData`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(dataToSend),
@@ -25,26 +46,52 @@ function getContactInfo() {
             "content-type": "application/json"
         })
     })
-    .then(function (response) {
-        if (response.status != 200) {
-            console.log(`Response status was not 200: ${response.status}`);
-            return ;
+    .then((res) => res.json())
+    .then((data) => {
+        console.log('data.msg - ' + data.msg)
+        if (data.msg == "Machine not found") {
+            modalAlert('Machine Lookup',data.msg)
+            return
         }
-        response.json().then(function (data) {
-            // Was the member found in the lightspeed database?
-            if (data.hasOwnProperty('msg')){
-                modalAlert('ERROR',data.msg)
-                return
-            }
-            // Populate form
-            document.getElementById('memberName').innerHTML = data.memberName
-            document.getElementById('villageID').innerHTML = data.memberID
-            document.getElementById('homePhone').innerHTML = data.homePhone
-            document.getElementById('mobilePhone').innerHTML = data.mobilePhone
-            document.getElementById('eMail').innerHTML = data.eMail   
-        })
+        // Populate machine fields; show machine fields
+        console.log('show machine data')
+        // Build list of members certified for this machine
+        console.log('building list of members certified, if any')
+        return
     })
 }
+    function displayMemberCertifications() {
+        var e = document.getElementById("memberSelected");
+        var option = e.options[e.selectedIndex]; 
+        villageID = $('option:selected', this).attr("data-memberID");
+        
+        var dataToSend = {
+            villageID: villageID
+        };
+        fetch(`${window.origin}/displayMemberData`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(dataToSend),
+            cache: "no-cache",
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+        })
+    .then((res) => res.json())
+    .then((data) => {
+        console.log('data.msg - ' + data.msg)
+        if (data.msg == "Member not found") {
+            modalAlert('Member Lookup',data.msg)
+            return
+        }
+        // Populate member fields; show member fields
+        console.log('show member contact data')
+        // Build list of machines certified and not certified for this member
+        console.log('building list of all possible machines for this location (BOTH, RA, or BW')
+        return
+        })
+    }
+
 
 
 

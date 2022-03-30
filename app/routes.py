@@ -25,51 +25,107 @@ from flask_mail import Mail, Message
 mail=Mail(app)
 import requests
 
-@app.route('/')
-@app.route('/index/')
-@app.route('/index', methods=['GET'])
+# temp code
+# @app.route('/index')
+# def index():
+#     print ('/index found')
+#     return
+
+# LOAD INITIAL LOGIN PAGE
+@app.route('/',methods=['GET','POST'])
+@app.route('/login',methods=['GET','POST'])
+def login():
+    print('......................................................................')
+    
+    if request.method != 'POST':
+        return render_template("login.html")
+
+    # PROCESS DATA FROM LOGIN FORM
+    print('... POST request from /login')
+    memberID = request.form['memberID']
+    password = request.form['password']
+    print("member ID - ",memberID," password - ",password)
+    
+    return render_template("login.html")
+
+# MAIN PAGE
+@app.route('/index')
 def index():
-    # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
-    nameDict=[]
-    nameItems=[]
-    sqlSelect = "SELECT Last_Name, First_Name, Nickname, Member_ID FROM tblMember_Data "
-    sqlSelect += "ORDER BY Last_Name, First_Name "
+     # BUILD ARRAY OF MACHINE NAMES FOR DROPDOWN LIST OF MACHINES
+    #machineNames=[]
+    sqlMachines = "SELECT machineID, machineDesc, machineLocation + ' - ' + machineDesc as machineDisplayName, machineLocation "
+    sqlMachines += "FROM MachinesRequiringCertification "
+    sqlMachines += "ORDER BY machineDesc, machineLocation"
+    #print('sqlMachines - ',sqlMachines)
+    machineList = db.engine.execute(sqlMachines)
+    if machineList == None:
+        flash('No names to list.','danger')
+    # for m in machineList:
+    #     print('Machine ID - ' + m.machineID,'Desc - ' + m.machineDesc,'Display name -' + m.machineDisplayName)
 
-    nameList = db.engine.execute(sqlSelect)
-    position = 0
-    for n in nameList:
-        position += 1
-        if n.Last_Name != None and n.First_Name != None:
-            lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
-            if (n.Nickname != None and n.Nickname != ''):
-                lastFirst += ' (' + n.Nickname + ')'
-        else:
-            lastFirst = ''
+    # CREATE OBJECT OF NAMES FOR DROPDOWN LIST OF MEMBERS
+    sqlNames = "SELECT Last_Name + ', ' + First_Name + ' (' + Member_ID + ')' as memberDisplayName,"
+    sqlNames += " Member_ID as villageID FROM tblMember_Data "
+    sqlNames += "WHERE Dues_Paid <> 0 "
+    sqlNames += "ORDER BY Last_Name, First_Name "
 
-        nameItems = {
-            'memberName':lastFirst,
-            'memberID':n.Member_ID
-        }
-        
-        nameDict.append(nameItems)
-
-    return render_template("index.html",nameDict=nameDict)
+    memberList = db.engine.execute(sqlNames)
+    if memberList == None:
+        flash('No names to list.','danger')
    
+    # CREATE OBJECT OF NAMES FOR DROPDOWN LIST OF INSTRUCTORS
+    sqlNames = "SELECT Last_Name + ', ' + First_Name + ' (' + Member_ID + ')' as memberDisplayName,"
+    sqlNames += " Member_ID as villageID FROM tblMember_Data "
+    sqlNames += "WHERE machineCertificationStaff = 1 "
+    sqlNames += "ORDER BY Last_Name, First_Name "
 
-# DISPLAY MEMBER CONTACT INFO
-@app.route("/getMemberContactInfo",methods=['POST'])
-def getMemberContactInfo():
+    instructorList = db.engine.execute(sqlNames)
+    if instructorList == None:
+        flash('No names to list.','danger')
+   
+    return render_template("index.html",machineList=machineList,memberList=memberList,instructorList=instructorList)
+    
+@app.route('/getMemberLoginData',methods=['POST'])
+def getMemberLoginData():
     req = request.get_json()
-    memberID = req["villageID"]
+    memberID = req["memberID"]
+    req = request.get_json()
+    password = req["password"]
 
-    # GET MEMBER NAME
-    member = db.session.query(Member).filter(Member.Member_ID== memberID).first()
+    #  LOOK UP MEMBER ID
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     if member == None:
-        msg = "ERROR - Member not found"
-        return jsonify(msg=msg)
+        msg = "This village ID was not found."
+        return jsonify(msg=msg,status=200)
     
     memberName = member.First_Name + ' ' + member.Last_Name
     if member.Nickname != '' and member.Nickname != None:
         memberName = member.First_Name + ' (' + member.Nickname + ') ' + member.Last_Name
-    return jsonify(eMail=member.eMail,memberName=memberName,memberID=member.Member_ID,lightspeedID=member.LightspeedID, homePhone=member.Home_Phone,cellPhone=member.Cell_Phone)
+
+    if password != member.Password:
+        msg = "The password does not match the password on file for <br>" + memberName + "."
+        return jsonify(msg=msg,status=200)
     
+    if member.machineCertificationStaff != True:
+        msg = "You are not currently authorized to use this application."
+        return jsonify(msg=msg)
+
+    msg = "Authorized"
+    return jsonify(msg=msg,status=200)
+    
+@app.route('/displayMachineData')
+def displayMachineData():
+    req = request.get_json()
+    machineID = req["machineID"]
+
+    msg = 'Test machine data'
+    return jsonify(msg=msg)
+
+@app.route('/displayMemberData')
+def displayMemberData():
+    req = request.get_json()
+    villageID = req["villageID"]
+
+
+    msg = 'Test member data'
+    return jsonify(msg=msg)

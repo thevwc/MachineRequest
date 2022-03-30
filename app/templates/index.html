@@ -3,60 +3,144 @@
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 {% endblock %}
 {% block app_content %}
 
 <div class="parent">
     <!-- HEADING SECTION -->
     <div class="heading">
-        <h2>Flask Template Heading</h2>
+        <h2>Machine Certification</h2>
     </div>
 
     <!-- VERSION SECTION -->
     <div class="version">
-        <h3>ver. Jan 9, 2022</h3>
+        <h5>ver. Mar 30, 2022</h5>
     </div>  
-        
-    <!-- SELECT MEMBER SECTION -->
-    <div class="selectMember">
-        <div>
-            <select id="selectpicker" class='selectpicker' style='margin-bottom:20px' title='Find a member ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
-            {% for n in nameDict %}
-                <option 
-                    class="optName" 
-                    value="{{n.memberName}}" 
-                    data-member="{{n.memberID}}"
-                </option>{{n.memberName}}</option>
-            {% endfor %}
+      
+    <!-- SELECTION AREA -->
+    
+    <!-- locations -->
+    <div class="locations">
+        <form class = "filterItems ">
+            <label for="shopChoice">Location: </label>
+            <select id="shopChoice" name="shopList" style="height:25px; width:150px; font-size: 1em;">
+                <option id="both" value="BOTH" >Both</option>
+                <option id='RA' value="RA">Rolling Acres</option>
+                <option id='BW' value="BW">Brownwood</option>
             </select>
-        </div>
-        
+        </form>
     </div>
 
-    <!-- CONTACT INFO -->
-    <div class="contactInfo">
-        <div class="row">
-            <label class="col contactLabel">Name</label>
-            <span id="memberName" class="col contactData">
-        </div>
-        <div class="row">
-           <label class="col contactLabel">Village ID</label>
-            <span id="villageID" class="col contactData">
-        </div>
-        <div class="row">
-            <label class="col contactLabel">Home phone</label>
-            <span id="homePhone" class="col contactData" >
-        </div>
-        <div class="row">
-            <label class="col contactLabel">Mobile phone</label>
-            <span id="mobilePhone" class="col contactData">
-        </div>
-        <div class="row">
-            <label class="col contactLabel">Email</label>
-            <span id="eMail" class="col contactData">
-        </div>
+    <!--list of machines -->
+    <div class="machines">
+        <!-- <label for="machineSelected">Machine data: </label> -->
+        <select 
+            id='machineSelected' 
+            title='Select a machine ...' 
+            data-live-search=true 
+            data-live-search-style="contains" 
+            data-width='auto'>
+            <option class="optMachines" value="">Select a machine ...</option>
+            {% for m in machineList %}
+                console.log({{m.machineDisplayName}})
+                <option 
+                    class="optMachineName" 
+                    data-machineID={{m.machineID}} 
+                    data-location={{m.machineLocation}} 
+                    value='{{m.machineDisplayName}}'>
+                    {{m.machineDisplayName}}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!--list of members -->
+    <div class="members" >
+        <!-- <label for="memberSelected">Member data: </label> -->
+        <select 
+            id='memberSelected' 
+            class='memberSelection' 
+            title='Select a member ...' 
+            data-live-search=true 
+            data-live-search-style="contains" 
+            data-width='auto'>
+            <option class="optMembers" value="">Select a member ...</option>
+            {% for mbr in memberList %}
+                <option  
+                    class="optMembers" 
+                    data-villageID={{mbr.villageID}}
+                    value={{mbr.memberDisplayName}}>
+                    {{mbr.memberDisplayName}}
+                </option>
+            {% endfor %}
+        </select>
     </div>
     
+     <!--list of instructors -->
+     <div class="instructors" >
+        <!-- <label for="instructorSelected">Instructor data: </label> -->
+        <select 
+            id='instructorSelected' 
+            class='instructorSelection' 
+            title='Select an instructor ...' 
+            data-live-search=true 
+            data-live-search-style="contains" 
+            data-width='auto'>
+            <option class="optInstructors" value="">Select an instructor ...</option>
+            {% for i in instructorList %}
+                <option  
+                    class="optinstructors" 
+                    data-villageID={{i.villageID}}
+                    value={{i.instructorDisplayName}}>
+                    {{i.instructorDisplayName}}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="machineSection">
+        <div style="text-align:center">MACHINE SECTION</div>
+        <!-- LIST INSTRUCTORS OR MEMBERS -->
+        <div id="instructorsORmembers" style="text-align:center">
+            <button id="machineInstructorBtn" class="btn btn-sm btn-primary">Instructors</button>
+            <button id="machineMemberBtn" class="btn btn-sm btn-success">Members</button>
+        </div>
+        <!-- MACHINE DATA -->
+        <!-- machineID   machineDesc   machineLocation -->
+
+    </div>
+
+    <div id="memberSection">
+        <div style="text-align:center">MEMBER SECTION</div>
+        <!-- MEMBERS CERTIFIED FOR THIS MACHINE -->
+        <!-- last, first (nick)  member ID -->
+
+
+        <!-- MEMBER DATA -->
+        <!-- last, first (nick)  member ID -->
+        <!-- home phone -->
+        <!-- mobile phone -->
+        <!-- email -->
+
+        <!-- LIST ALL MACHINES WITH CHECKBOX FOR MEMBER IS CERTIFIED -->
+        <!-- checkbox    machineID    machineDesc    machineLocation -->
+    </div>  
+    
+    <div id="instructorSection">
+        <div style="text-align:center">INSTRUCTOR SECTION</div>
+        <!-- MEMBERS OF machineCertificationStaff -->
+        <!-- last, first (nick)  member ID -->
+
+        <!-- INSTRUCTOR DATA -->
+        <!-- last, first (nick)  member ID -->
+        <!-- home phone -->
+        <!-- mobile phone -->
+        <!-- email -->
+
+        <!-- LIST ALL MACHINES WITH CHECKBOX FOR WHICH INSTRUCTOR MAY CERTIFY -->
+        <!-- checkbox    machineID    machineDesc    machineLocation -->
+    </div>  
 </div>  <!-- END OF PARENT WRAPPER -->
 
 

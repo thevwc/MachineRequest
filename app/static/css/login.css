@@ -1,0 +1,98 @@
+          
+    body{
+            background-color:blue;
+            text-align:center;
+        }
+        
+    body .form_header{
+        background-color:rgb(232, 236, 241);
+        text-align:left;
+    }
+    body .form_wrapper{
+        display:inline-block;
+        background-color: rgb(232, 236, 241);
+        border-radius: 10px;
+        height: auto;
+        padding: 5px 15px;
+        margin: 5% auto;
+        margin-left: auto;
+        margin-right: auto;
+        text-align:left;
+        font-size: 1.5em; /* 30px/16=1.5em */
+    }
+    input[type=text] {
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 24px;
+        background-color: white;
+        background-position: 10px 10px; 
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+    }
+    input[type=password] {
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 24px;
+        background-color: white;
+        background-position: 10px 10px; 
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+    }
+    input[type=button], input[type=submit], input[type=reset] {
+        background-color: rgb(54, 175, 60);
+        box-sizing: border-box; 
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        color: white;
+        
+        text-decoration: none;
+        margin: 4px 2px;
+        cursor: pointer;
+        
+        font-size: 1em; /* 25px/16=1em */
+        width:50%;
+        margin-left:25%;
+        margin-right:25%
+    }
+
+    /* input:invalid:required {
+        border: 2px solid red;
+    }
+      
+    input:valid {
+    border: 2px solid black;
+    } */
+      
+    .vertical-menu {
+            width: 200px;
+    }
+    .vertical-menu a {
+        background-color: #eee;
+        color: black;
+        display: block;
+        padding: 12px;
+        text-decoration: none;
+    }
+    .vertical-menu a:hover {
+        background-color: #ccc;
+    }
+    .vertical-menu a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .modal-dialog {
+        width:900px;
+        height:600px !important;
+    }
+    .modal-content {
+        height:25%;
+        background-color:#BBD6EC;
+    }
+    .modal-body {
+        overflow: scroll;
+    }
+    

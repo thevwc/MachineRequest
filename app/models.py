@@ -136,6 +136,8 @@ class Member(db.Model):
     Manager = db.Column(db.Boolean)
     isVP = db.Column(db.Boolean)
     LightspeedID = db.Column(db.String(20))
+    Password = db.Column(db.String(30))
+    machineCertificationStaff = db.Column(db.Boolean)
     fullName = column_property(First_Name + " " + Last_Name)
     # Relationships
     #activities = db.relationship('MemberActivity', backref='member')
@@ -281,6 +283,7 @@ class WaitList(db.Model):
     ApplicantDeclines = db.Column(db.Date)
     NoLongerInterested = db.Column(db.Date)
     PlannedCertificationDate = db.Column(db.Date)
+    machineCertificationStaff = db.Column(db.Boolean)
     fullName = column_property(FirstName + " " + LastName)
 
 class KeysTable(db.Model):
@@ -291,3 +294,20 @@ class KeysTable(db.Model):
     DateAssigned = db.Column(db.Date)
     MemberID = db.Column(db.String(6))
     Reason = db.Column(db.String(45))
+
+class MachinesRequiringCertification(db.Model):
+    __tablename__ = 'machinesRequiringCertification'
+    __table_args__ = {"schema": "dbo"}
+    ID = db.Column(db.Integer)
+    machineID = db.Column(db.String(20), primary_key=True,autoincrement=True)
+    machineDesc = db.Column(db.String(50))
+    machineLocation = db.Column(db.String(2))
+    
+class MemberMachineCertifications(db.Model):
+    __tablename__ = 'memberMachineCertifications'
+    __table_args__ = {"schema": "dbo"}
+    ID = db.Column(db.Integer)
+    memberID = db.Column(db.String(6), primary_key=True)
+    machineID = db.Column(db.String(20), primary_key=True)
+    dateCertified = db.Column(db.Date)
+    certifiedBy = db.Column(db.String(6))
