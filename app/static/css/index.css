@@ -94,8 +94,13 @@
         border:2px solid black;
         padding-top:10px;
         margin-top:10px;
-        display:block;
+        display:none;
     }
+    #instructorsORmembersBtns {
+        text-align:center;
+        display:none;
+    }
+
     #memberSection {
         grid-area:detailArea;
         background-color: lightblue;
@@ -210,10 +215,10 @@
         width:100%;
         display: grid;
         grid-template-columns:1fr 1fr 1fr 1fr;
-        grid-template-rows: 50px 30px 30px 200px;
+        grid-template-rows: 50px 30px 600px;
         grid-template-areas:"hdgArea hdgArea hdgArea versionArea"
                             "locationsArea machinesArea membersArea instructorsArea" 
-                            "detailArea . . .";
+                            ".detail1Area detail2Area detail3Area";
         gap:0px;
         background-color:lightgray;
         top:0; bottom:0; left:0; right:0;
@@ -280,6 +285,30 @@
         width:300px;
     }
     
+    #machineSection {
+        grid-area:detail1Area;
+        background-color: lightcoral;
+        border:2px solid black;
+        padding-top:10px;
+        margin-top:10px;
+        display:block;
+    }
+    #memberSection {
+        grid-area:detail2Area;
+        background-color: lightblue;
+        border:2px solid black;
+        padding-top:10px;
+        margin-top:10px;
+        display:block;
+    }
+    #instructorSection {
+        grid-area:detail3Area;
+        background-color: lightgreen;
+        border:2px solid black;
+        padding-top:10px;
+        margin-top:10px;
+        display:block;
+    }
     .contactInfo {
         border-color: blue;
         border-radius: 10%;

@@ -295,7 +295,7 @@ class KeysTable(db.Model):
     MemberID = db.Column(db.String(6))
     Reason = db.Column(db.String(45))
 
-class MachinesRequiringCertification(db.Model):
+class Machines(db.Model):
     __tablename__ = 'machinesRequiringCertification'
     __table_args__ = {"schema": "dbo"}
     ID = db.Column(db.Integer)

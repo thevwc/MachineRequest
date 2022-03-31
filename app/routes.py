@@ -7,12 +7,13 @@ import pdfkit
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
-MonitorWeekNote, CoordinatorsSchedule, ControlVariables, DuesPaidYears, Contact
+MonitorWeekNote, CoordinatorsSchedule, ControlVariables, DuesPaidYears, Contact, Machines
 from app import app
 from app import db
 from sqlalchemy import func, case, desc, extract, select, update, text
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DBAPIError
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql import text as SQLQuery
 
 import datetime as dt
 from datetime import date, datetime, timedelta
@@ -53,7 +54,7 @@ def login():
 def index():
      # BUILD ARRAY OF MACHINE NAMES FOR DROPDOWN LIST OF MACHINES
     #machineNames=[]
-    sqlMachines = "SELECT machineID, machineDesc, machineLocation + ' - ' + machineDesc as machineDisplayName, machineLocation "
+    sqlMachines = "SELECT machineID, machineDesc, machineLocation + ' - ' + machineDesc + ' (' + machineID + ')' as machineDisplayName, machineLocation "
     sqlMachines += "FROM MachinesRequiringCertification "
     sqlMachines += "ORDER BY machineDesc, machineLocation"
     #print('sqlMachines - ',sqlMachines)
@@ -74,7 +75,7 @@ def index():
         flash('No names to list.','danger')
    
     # CREATE OBJECT OF NAMES FOR DROPDOWN LIST OF INSTRUCTORS
-    sqlNames = "SELECT Last_Name + ', ' + First_Name + ' (' + Member_ID + ')' as memberDisplayName,"
+    sqlNames = "SELECT Last_Name + ', ' + First_Name + ' (' + Member_ID + ')' as instructorDisplayName,"
     sqlNames += " Member_ID as villageID FROM tblMember_Data "
     sqlNames += "WHERE machineCertificationStaff = 1 "
     sqlNames += "ORDER BY Last_Name, First_Name "
@@ -82,7 +83,6 @@ def index():
     instructorList = db.engine.execute(sqlNames)
     if instructorList == None:
         flash('No names to list.','danger')
-   
     return render_template("index.html",machineList=machineList,memberList=memberList,instructorList=instructorList)
     
 @app.route('/getMemberLoginData',methods=['POST'])
@@ -113,13 +113,46 @@ def getMemberLoginData():
     msg = "Authorized"
     return jsonify(msg=msg,status=200)
     
-@app.route('/displayMachineData')
+@app.route('/displayMembersCertifiedOnSpecificMachine',methods=['GET','POST'])
 def displayMachineData():
+    print('/displayMembersCertifiedOnSpecificMachine')
+    
     req = request.get_json()
     machineID = req["machineID"]
+    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+    if machine == None:
+        msg = "This machine ID was not found."
+        return jsonify(msg=msg,status=200)
+    machineDesc = machine.machineDesc
+    machineLocation = machine.machineLocation
 
-    msg = 'Test machine data'
-    return jsonify(msg=msg)
+    # GET MEMBERS CERTIFIED FOR THIS MACHINE
+    certifiedDict = []
+    certifiedItem = []
+    sp = "EXEC membersCertifiedForSpecificMachine '" + machineID + "'"
+    sql = SQLQuery(sp)
+    certified = db.engine.execute(sql)
+    for c in certified:
+        print('certified - ',c.member_ID,c.machineID,c.dateCertified,c.certifiedBy)
+        certifiedItem = {
+            'memberID':c.member_ID,
+            'machineID':c.machineID,
+            'dateCertified':c.dateCertified,
+            'certifiedBy':c.certifiedBy
+        }
+        certifiedDict.append(certifiedItem)
+        
+    # print('certified - ',certified)
+    # if certified == None:
+    #     print('no rows found')
+    #     flash('There is no one certified.')
+    # print('... before for c in ...')
+    # for c in certified:
+    #     print('... within for c in ...')
+    #     print(c.member_ID,c.machineID,c.dateCertified,c.certifiedBy)
+
+    msg = 'Machine found'
+    return jsonify(msg=msg,machineDesc=machineDesc,certifiedDict=certifiedDict)
 
 @app.route('/displayMemberData')
 def displayMemberData():
