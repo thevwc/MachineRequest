@@ -109,6 +109,11 @@
         margin-top:10px;
         display:none;
     }
+    .memberName {
+        margin-left:30px;
+        border:2px solid blue;
+    }
+
     #instructorSection {
         grid-area:detailArea;
         background-color: lightgreen;

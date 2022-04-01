@@ -115,8 +115,6 @@ def getMemberLoginData():
     
 @app.route('/displayMembersCertifiedOnSpecificMachine',methods=['GET','POST'])
 def displayMachineData():
-    print('/displayMembersCertifiedOnSpecificMachine')
-    
     req = request.get_json()
     machineID = req["machineID"]
     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
@@ -125,34 +123,70 @@ def displayMachineData():
         return jsonify(msg=msg,status=200)
     machineDesc = machine.machineDesc
     machineLocation = machine.machineLocation
-
+    
     # GET MEMBERS CERTIFIED FOR THIS MACHINE
     certifiedDict = []
     certifiedItem = []
     sp = "EXEC membersCertifiedForSpecificMachine '" + machineID + "'"
     sql = SQLQuery(sp)
     certified = db.engine.execute(sql)
+
     for c in certified:
-        print('certified - ',c.member_ID,c.machineID,c.dateCertified,c.certifiedBy)
+        memberName = c.Last_Name + ', ' + c.First_Name
+        if c.Nickname is not None:
+            if len(c.Nickname) > 0 :
+                memberName += ' (' + c.Nickname + ')'
+       
+        instructorID = c.certifiedBy
+        instructor = db.session.query(Member).filter(Member.Member_ID == instructorID).first()
+        if (instructor == None):
+            instructorName = "Unknown"
+        else:
+            instructorName = instructor.Last_Name + ', ' + instructor.First_Name
+            if instructor.Nickname is not None:
+                if len(instructor.Nickname) > 0 :
+                    instructorName += ' (' + instructor.Nickname + ')'
+
         certifiedItem = {
-            'memberID':c.member_ID,
+            'memberID':c.villageID,
+            'memberName':memberName,
             'machineID':c.machineID,
             'dateCertified':c.dateCertified,
-            'certifiedBy':c.certifiedBy
+            'certifiedBy':instructorName
         }
         certifiedDict.append(certifiedItem)
-        
-    # print('certified - ',certified)
-    # if certified == None:
-    #     print('no rows found')
-    #     flash('There is no one certified.')
-    # print('... before for c in ...')
-    # for c in certified:
-    #     print('... within for c in ...')
-    #     print(c.member_ID,c.machineID,c.dateCertified,c.certifiedBy)
-
+    
     msg = 'Machine found'
-    return jsonify(msg=msg,machineDesc=machineDesc,certifiedDict=certifiedDict)
+    return jsonify(msg=msg,machineLocation=machineLocation,machineID=machineID,machineDesc=machineDesc,certifiedDict=certifiedDict)
+
+@app.route('/displayMachineInstructors',methods=['GET','POST'])
+def displayMachineInstructors():
+    req = request.get_json()
+    machineID = req["machineID"]
+    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+    if machine == None:
+        msg = "This machine ID was not found."
+        return jsonify(msg=msg,status=200)
+    machineDesc = machine.machineDesc
+    machineLocation = machine.machineLocation
+    
+    # GET INSTRUCTOR FOR THIS MACHINE
+    instructorsList = []
+    sp = "EXEC instructorsForSpecificMachine '" + machineID + "'"
+    sql = SQLQuery(sp)
+    instructors = db.engine.execute(sql)
+    if instructors == None:
+        return jsonify(msg="No instructors have been assigned.")
+       
+    for i in instructors:
+        instructorName = i.First_Name 
+        if i.Nickname is not None:
+            if len(i.Nickname) > 0 :
+                instructorName += ' (' + i.Nickname + ')'
+        instructorName += ' ' + i.Last_Name
+        print('Instructor name - ',instructorName)
+        instructorsList.append(instructorName)
+    return jsonify(msg="Instructors found",instructorsList=instructorsList)
 
 @app.route('/displayMemberData')
 def displayMemberData():

@@ -307,7 +307,15 @@ class MemberMachineCertifications(db.Model):
     __tablename__ = 'memberMachineCertifications'
     __table_args__ = {"schema": "dbo"}
     ID = db.Column(db.Integer)
-    memberID = db.Column(db.String(6), primary_key=True)
+    member_ID = db.Column(db.String(6), primary_key=True)
     machineID = db.Column(db.String(20), primary_key=True)
     dateCertified = db.Column(db.Date)
     certifiedBy = db.Column(db.String(6))
+
+class MachineInstructors(db.Model):
+    __tablename__ = 'machineInstructors'
+    __table_args__ = {"schema": "dbo"}
+    ID = db.Column(db.Integer)
+    member_ID = db.Column(db.String(6), primary_key=True)
+    machineID = db.Column(db.String(20), primary_key=True)
+    
