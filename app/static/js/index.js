@@ -9,16 +9,14 @@ const instructorSection = document.getElementById("instructorSection")
 const largeScreen = window.matchMedia("(min-width: 992px)")
 const machineInstructorBtn = document.getElementById("machineInstructorBtn")
 const machineMemberBtn = document.getElementById("machineMemberBtn")
-const instructorsORmembersBtns = document.getElementById("instructorsORmembersBtns")
+const machineInstructorsAndMembers = document.getElementById("machineInstructorsAndMembers")
 
 // EVENT LISTENERS
 shopChoice.addEventListener("change",locationChange)
-machineSelected.addEventListener("click",machineChange)
+machineSelected.addEventListener("click",machineClicked)
 memberSelected.addEventListener("change",memberChange)
 instructorSelected.addEventListener("change",instructorChange)
 largeScreen.addEventListener("change",handleMediaChange)
-machineInstructorBtn.addEventListener("click",displayMachineInstructors)
-machineMemberBtn.addEventListener("click",displayMembersCertifiedOnSpecificMachine)
 
 
 // CODE EXECUTED EVERY TIME
@@ -45,7 +43,7 @@ function locationChange() {
     }
 }
 
-function machineChange() {
+function machineClicked() {
     // CLEAR OTHER SELECTIONS
     if (machineSelected.selectedIndex != 0) {
         memberSelected.selectedIndex = 0
@@ -61,8 +59,8 @@ function machineChange() {
         instructorSection.style.display="none"
     }
     // GET MACHINE DATA TO DISPLAY
-    instructorsORmembersBtns.style.display="block"
-    
+    machineInstructorsAndMembers.style.display="block"
+    displayMachineInstructorsAndMembers()
 }
 
 function memberChange() {
@@ -96,13 +94,14 @@ function instructorChange() {
     }
     // GET INSTRUCTOR CONTACT DATA TO DISPLAY
 }
-function displayMembersCertifiedOnSpecificMachine() {
+// function displayMembersCertifiedOnSpecificMachine() {
+function displayMachineInstructorsAndMembers() {
     let e = document.getElementById("machineSelected");
     machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
     let dataToSend = {
         machineID: machineID
     };
-    fetch(`${window.origin}/displayMembersCertifiedOnSpecificMachine`, {
+    fetch(`${window.origin}/displayMachineInstructorsAndMembers`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(dataToSend),
@@ -117,46 +116,55 @@ function displayMembersCertifiedOnSpecificMachine() {
             modalAlert('Machine Lookup',data.msg)
             return
         }
-        // Populate machine fields; show machine fields
-        // machineLocation = data.machineLocation
-        // machineDesc = data.machineDesc
-        // find parent element
-        // hdgParent = document.getElementById('machineData')
-        // while (hdgParent.firstChild) {
-        //     hdgParent.removeChild(hdgParent.lastChild);
-        // }
-        // var spanLocation = document.createElement('span')
-        // spanLocation.classList.add('Location')
-        // spanLocation.innerHTML = machineLocation
-        // hdgParent.appendChild(spanLocation)
-
-        // var spanMachineID = document.createElement('span')
-        // spanMachineID.classList.add('MachineID')
-        // spanMachineID.innerHTML = machineID
-        // hdgParent.appendChild(spanMachineID)
-
-        // var spanMachineDesc =document.createElement('span')
-        // spanMachineDesc.classList.add('Description')
-        // spanMachineDesc.innerHTML = machineDesc
-        // hdgParent.appendChild(spanMachineDesc)
-       
-        // Build list of members certified for this machine
-        certified = data.certifiedDict
-        if (certified.length == 0){
-            modalAlert('Certification','No members are certified for this machine.')
-            return
+        // Clear previous instructor data
+        dtlParent = document.getElementById('machineInstructors')
+        while (dtlParent.firstChild) {
+            dtlParent.removeChild(dtlParent.lastChild);
         }
+
+        // Build list of instructors
+        instructors = data.instructorsList
+        if (instructors.length == 0) {
+            const divNoInstructors = document.createElement('div')
+            divNoInstructors.classList.add('NoInstructors')
+            divNoInstructors.innerHTML = "No instructors assigned."
+            divNoInstructors.style.width = '200px'
+            dtlParent.appendChild(divNoInstructors)
+        }
+        else {
+            for (i=0;i<instructors.length;i++) {
+                const divName = document.createElement('div')
+                divName.classList.add('InstructorName')
+                divName.innerHTML = instructors[i]
+                divName.style.width = '200px'
+                divName.style.margin = 'auto'
+                dtlParent.appendChild(divName)
+            }
+        }
+
+        // Clear previous certified member data
         dtlParent = document.getElementById('membersCertified')
         while (dtlParent.firstChild) {
             dtlParent.removeChild(dtlParent.lastChild);
         }
-        for (const element of certified) {
-            var spanName = document.createElement('div')
-            spanName.classList.add('MemberName')
-            spanName.innerHTML = element['memberName']
-            spanName.style.width = '200px'
-            spanName.style.margin = 'auto'
-            dtlParent.appendChild(spanName)
+        // Build list of members certified for this machine
+        certified = data.certifiedDict
+        if (certified.length == 0){
+            const divNoMembers = document.createElement('div')
+            divNoMembers.classList.add('NoInstructors')
+            divNoMembers.innerHTML = "No instructors assigned."
+            divNoMembers.style.width = '200px'
+            dtlParent.appendChild(divNoMembers)
+        }
+        else {
+            for (const element of certified) {
+                var divMemberName = document.createElement('div')
+                divMemberName.classList.add('MemberName')
+                divMemberName.innerHTML = element['memberName']
+                divMemberName.style.width = '200px'
+                divMemberName.style.margin = 'auto'
+                dtlParent.appendChild(divMemberName)
+            }
         }
         return
     })
@@ -222,50 +230,41 @@ function handleMediaChange(e) {
     }
 }
 
-function displayMachineInstructors() {
-    console.log('display machine Instructors routine')
-    let e = document.getElementById("machineSelected");
-    machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
-    let dataToSend = {
-        machineID: machineID
-    };
-    fetch(`${window.origin}/displayMachineInstructors`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(dataToSend),
-        cache: "no-cache",
-        headers: new Headers({
-            "content-type": "application/json"
-        })
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        if (data.status = 201) {
-            modalAlert('Machine Lookup',data.msg)
-            return
-        }
-    })
-    // Build list of instructors for this machine
-    instructors = data.instructors
-    if (instructors.length == 0){
-        modalAlert('Certification','No instructors have been approved for this machine.')
-        return
-    }
-    dtlParent = document.getElementById('machineInstructors')
-    while (dtlParent.firstChild) {
-        dtlParent.removeChild(dtlParent.lastChild);
-    }
-    for (const element of instructors) {
-        var spanName = document.createElement('div')
-        spanName.classList.add('InstructorName')
-        spanName.innerHTML = element['instructorName']
-        spanName.style.width = '200px'
-        spanName.style.margin = 'auto'
-        dtlParent.appendChild(spanName)
-    }
-    return
-
-}
+// function displayMachineInstructors() {
+//     console.log('display machine Instructors routine')
+//     let e = document.getElementById("machineSelected");
+//     machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
+//     let dataToSend = {
+//         machineID: machineID
+//     };
+//     fetch(`${window.origin}/displayMachineInstructors`, {
+//         method: "POST",
+//         credentials: "include",
+//         body: JSON.stringify(dataToSend),
+//         cache: "no-cache",
+//         headers: new Headers({
+//             "content-type": "application/json"
+//         })
+//     })
+//     .then((res) => res.json())
+//     .then((data) => {
+//         console.log('status - '+data.status)
+        
+//         if (data.status == 400) {
+//             modalAlert('Machine Lookup',data.msg)
+//             return
+//         }
+    
+//         // Build list of instructors for this machine
+        
+//         if (data-status == 201){
+//             modalAlert('Certification','No instructors have been approved for this machine.')
+//             return
+//         }
+        
+//         return
+//     })
+// }
 
 
 // END OF FUNCTIONS
