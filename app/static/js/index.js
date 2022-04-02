@@ -116,19 +116,28 @@ function displayMachineInstructorsAndMembers() {
             modalAlert('Machine Lookup',data.msg)
             return
         }
-        // Clear previous instructor data
-        dtlParent = document.getElementById('machineInstructors')
+        // Clear previous instructor and member data
+        dtlParent = document.getElementById('machineInstructorsAndMembers')
         while (dtlParent.firstChild) {
             dtlParent.removeChild(dtlParent.lastChild);
         }
 
-        // Build list of instructors
+        // Display Instructor heading
+        const divInstructorHdg = document.createElement('div')
+        divInstructorHdg.classList.add('InstructorListHdg')
+        divInstructorHdg.innerHTML = "Instructors:"
+        divInstructorHdg.style.textAlign = 'left'
+        divInstructorHdg.style.marginLeft = '30px'
+        dtlParent.appendChild(divInstructorHdg)
+
+        // Display List of Instructors
         instructors = data.instructorsList
         if (instructors.length == 0) {
             const divNoInstructors = document.createElement('div')
             divNoInstructors.classList.add('NoInstructors')
             divNoInstructors.innerHTML = "No instructors assigned."
-            divNoInstructors.style.width = '200px'
+            divNoInstructors.style.width = '400px'
+            divNoInstructors.style.paddingLeft = '60px'
             dtlParent.appendChild(divNoInstructors)
         }
         else {
@@ -136,33 +145,40 @@ function displayMachineInstructorsAndMembers() {
                 const divName = document.createElement('div')
                 divName.classList.add('InstructorName')
                 divName.innerHTML = instructors[i]
-                divName.style.width = '200px'
-                divName.style.margin = 'auto'
+                divName.style.paddingLeft = '60px'
+                divName.style.width = '400px'
+            
                 dtlParent.appendChild(divName)
             }
         }
 
-        // Clear previous certified member data
-        dtlParent = document.getElementById('membersCertified')
-        while (dtlParent.firstChild) {
-            dtlParent.removeChild(dtlParent.lastChild);
-        }
-        // Build list of members certified for this machine
+        // Display 'Certified Members' heading
+        const divMemberHdg = document.createElement('div')
+        divMemberHdg.classList.add('MemberListHdg')
+        divMemberHdg.innerHTML = "Certified Members:"
+        divMemberHdg.style.textAlign = 'left'
+        divMemberHdg.style.paddingTop = '30px'
+        divMemberHdg.style.paddingLeft = '30px'
+        dtlParent.appendChild(divMemberHdg)
+
+        // Display list of members certified for this machine
         certified = data.certifiedDict
         if (certified.length == 0){
+            // If no members, display message
             const divNoMembers = document.createElement('div')
-            divNoMembers.classList.add('NoInstructors')
-            divNoMembers.innerHTML = "No instructors assigned."
-            divNoMembers.style.width = '200px'
+            divNoMembers.classList.add('NoMembers')
+            divNoMembers.innerHTML = "No members have been certified."
+            divNoMembers.style.width = '400px'
+            divNoMembers.style.marginLeft = '60px'
             dtlParent.appendChild(divNoMembers)
         }
         else {
             for (const element of certified) {
                 var divMemberName = document.createElement('div')
-                divMemberName.classList.add('MemberName')
+                divMemberName.classList.add('CertifiedMemberName')
                 divMemberName.innerHTML = element['memberName']
-                divMemberName.style.width = '200px'
-                divMemberName.style.margin = 'auto'
+                divMemberName.style.width = '400px'
+                divMemberName.style.marginLeft = '60px'
                 dtlParent.appendChild(divMemberName)
             }
         }

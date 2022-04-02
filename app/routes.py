@@ -140,8 +140,6 @@ def displayMachineData():
                     instructorName += ' (' + i.Nickname + ')'
             instructorName += ' ' + i.Last_Name
             instructorsList.append(instructorName)
-    print('...... instructorsList ......')
-    print(instructorsList)
 
     # GET MEMBERS CERTIFIED FOR THIS MACHINE
     certifiedDict = []

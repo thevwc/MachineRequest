@@ -13,7 +13,7 @@
     .parent {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 40px 30px 30px 30px 30px 30px 200px;
+        grid-template-rows: 40px 30px 30px 30px 30px 30px auto;
         grid-template-areas:"hdgArea" 
                             "versionArea"
                             "locationsArea"
@@ -97,10 +97,14 @@
         display:none;
     }
     #machineInstructorsAndMembers {
-        text-align:center;
         display:none;
+        padding-top:20px;
     }
 
+    #InstructorListHdg {
+        text-align: center;
+        background-color: aqua;
+    }
     #memberSection {
         grid-area:detailArea;
         background-color: lightblue;
@@ -141,7 +145,7 @@
         width:100%;
         display: grid;
         grid-template-columns:1fr 1fr 1fr;
-        grid-template-rows: 50px 30px 30px 30px 200px;
+        grid-template-rows: 50px 30px 30px 30px auto;
         grid-template-areas: "hdgArea hdgArea versionArea"
                              "locationsArea machinesArea machinesArea"
                              ".             membersArea membersArea"
