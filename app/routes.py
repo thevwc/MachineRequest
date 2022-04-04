@@ -7,7 +7,8 @@ import pdfkit
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
-MonitorWeekNote, CoordinatorsSchedule, ControlVariables, DuesPaidYears, Contact, Machines
+MonitorWeekNote, CoordinatorsSchedule, ControlVariables, DuesPaidYears, Contact, Machines, \
+MachineInstructors, MemberMachineCertifications
 from app import app
 from app import db
 from sqlalchemy import func, case, desc, extract, select, update, text
@@ -188,19 +189,6 @@ def displayMachineData():
     return jsonify(msg=msg,status=status,machineLocation=machineLocation,machineID=machineID,
     machineDesc=machineDesc,instructorsList=instructorsList,certifiedDict=certifiedDict)
 
-# @app.route('/displayMachineInstructors',methods=['GET','POST'])
-# def displayMachineInstructors():
-#     req = request.get_json()
-#     machineID = req["machineID"]
-#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-#     if machine == None:
-#         msg = "Machine ID " + machineID + " was not found."
-#         return jsonify(msg=msg,status=400)
-#     machineDesc = machine.machineDesc
-#     machineLocation = machine.machineLocation
-    
-
-#     return jsonify(msg='',status=200,instructorsList=instructorsList)
 
 @app.route('/displayMemberData',methods=['POST'])
 def displayMemberData():
@@ -218,11 +206,84 @@ def displayMemberData():
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
+            mbrName += ' (' + mbr.Nickname + ')'
     memberName += ' ' + mbr.Last_Name
-    mobilePhone = mbr.mobilePhone
-    homePhone = mbr.homePhone
-    eMail = mdb.eMail
+    mobilePhone = mbr.Cell_Phone
+    homePhone = mbr.Home_Phone
+    eMail = mbr.eMail
 
     
     return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)
+
+@app.route('/displayMachineInstructors',methods=['GET','POST'])
+def displayMachineInstructors():
+    req = request.get_json()
+    instructorID = req["instructorID"]
+    instructor = db.session.query(Member).filter(Member.Member_ID == instructorID).first()
+    if instructor == None:
+        msg = "Instructor ID " + machineID + " was not found."
+        return jsonify(msg=msg,status=201)
+    instructorName = instructor.First_Name
+    if instructor.Nickname is not None:
+        if len(instructor.Nickname) > 0 :
+            instructorName += ' (' + instructor.Nickname + ')'
+    instructorName += ' ' + instructor.Last_Name
+    mobilePhone = instructor.Cell_Phone
+    homePhone = instructor.Home_Phone
+    eMail = instructor.eMail
+    msg="Instructor found."
+
+    # Get all machines and mark those this instructor may certifify
+    certifiedDict = []
+    certifiedItem = []
+    machines = db.session.query(Machines)
+    for m in machines:
+        instructorCertified = db.session.query(MachineInstructors)\
+            .filter(MachineInstructors.machineID == m.machineID)\
+            .filter(MachineInstructors.member_ID == instructorID).scalar() is not None
+        print(m.machineID,instructorCertified)
+    
+    
+    # sp = "EXEC membersCertifiedForSpecificMachine '" + machineID + "'"
+    # sql = SQLQuery(sp)
+    # certified = db.engine.execute(sql)
+    # if certified == None:
+    #     memberName = 'No members have been certified.'
+    #     certifiedItem = {
+    #             'memberID':'',
+    #             'memberName':memberName,
+    #             'machineID':machineID,
+    #             'dateCertified':'',
+    #             'certifiedBy':''
+    #     }
+    #     certifiedDict.append(certifiedItem)
+    # else:
+    #     for c in certified:
+    #         memberName = c.First_Name
+    #         if c.Nickname is not None:
+    #             if len(c.Nickname) > 0 :
+    #                 memberName += ' (' + c.Nickname + ')'
+    #         memberName += ' ' + c.Last_Name
+
+    #         instructorID = c.certifiedBy
+    #         instructor = db.session.query(Member).filter(Member.Member_ID == instructorID).first()
+    #         if (instructor == None):
+    #             instructorName = "Unknown"
+    #         else:
+    #             instructorName = instructor.Last_Name + ', ' + instructor.First_Name
+    #             if instructor.Nickname is not None:
+    #                 if len(instructor.Nickname) > 0 :
+    #                     instructorName += ' (' + instructor.Nickname + ')'
+
+    #         certifiedItem = {
+    #             'memberID':c.villageID,
+    #             'memberName':memberName,
+    #             'machineID':c.machineID,
+    #             'dateCertified':c.dateCertified,
+    #             'certifiedBy':instructorName
+    #         }
+    #         certifiedDict.append(certifiedItem)
+    # msg="Success"
+    # status=200
+    
+    return jsonify(msg=msg,status=200,instructorName=instructorName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)

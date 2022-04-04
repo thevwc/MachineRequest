@@ -126,7 +126,10 @@
         margin-top:10px;
         display:none;
     }
-    
+    #instructorData {
+        margin-left:100px;
+    }
+
 .modal-dialog {
     width:900px;
     height:600px !important;

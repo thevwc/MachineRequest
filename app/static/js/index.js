@@ -96,15 +96,14 @@ function instructorChange() {
     if (instructorSelected.selectedIndex != 0) {
         machineSelected.selectedIndex = 0
         memberSelected.selectedIndex = 0
-        instructorsORmembersBtns.style.display="none"
     }
     // HIDE MACHINE AND MEMBER SECTIONS IF NOT ON LARGE SCREEN
     if (!largeScreen.matches) {
         machineSection.style.display="none"
         memberSection.style.display="none"
-        instructorSection.style.display="block"
     }
     // GET INSTRUCTOR CONTACT DATA TO DISPLAY
+    displayMachineInstructorData()
 }
 
 function displayMachineInstructorsAndMembers() {
@@ -238,17 +237,17 @@ function displayMemberCertifications(villageID,location) {
     dtlParent.appendChild(divMemberName)
 
     var divHomePhone = document.createElement('div')
-    divHomePhone.innerHTML = data.homePhone
+    divHomePhone.innerHTML = "Home phone " + data.homePhone
     divHomePhone.style.textAlign='right'
     dtlParent.appendChild(divHomePhone)
 
     var divMobilePhone = document.createElement('div')
-    divMobilePhone.innerHTML = data.mobilePhone
+    divMobilePhone.innerHTML = "Mobile phone " + data.mobilePhone
     divMobilePhone.style.textAlign='right'
     dtlParent.appendChild(divMobilePhone)
 
     var divEmail = document.createElement('div')
-    divEmail.innerHTML = data.eMail
+    divEmail.innerHTML = "Email " + data.eMail
     divEmail.style.textAlign='right'
     dtlParent.appendChild(divEmail)
     // Populate member fields; show member fields
@@ -286,41 +285,68 @@ function handleMediaChange(e) {
     }
 }
 
-// function displayMachineInstructors() {
-//     console.log('display machine Instructors routine')
-//     let e = document.getElementById("machineSelected");
-//     machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
-//     let dataToSend = {
-//         machineID: machineID
-//     };
-//     fetch(`${window.origin}/displayMachineInstructors`, {
-//         method: "POST",
-//         credentials: "include",
-//         body: JSON.stringify(dataToSend),
-//         cache: "no-cache",
-//         headers: new Headers({
-//             "content-type": "application/json"
-//         })
-//     })
-//     .then((res) => res.json())
-//     .then((data) => {
-//         console.log('status - '+data.status)
+function displayMachineInstructorData() {
+    console.log('display machine Instructors routine')
+    let e = document.getElementById("instructorSelected");
+    instructorID = e.options[e.selectedIndex].getAttribute('data-villageid')
+    let dataToSend = {
+        instructorID: instructorID
+    };
+    fetch(`${window.origin}/displayMachineInstructors`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        console.log('status - '+data.status)
+        if (data.msg == "Instructor not found") {
+            modalAlert("Instructor Lookup",data.msg)
+        }
+
+        if (data.status == 400) {
+            modalAlert('Machine Lookup',data.msg)
+            return
+        }
+        // Clear previous instructor and member data
+        dtlParent = document.getElementById('instructorData')
+        while (dtlParent.firstChild) {
+            dtlParent.removeChild(dtlParent.lastChild);
+        }
         
-//         if (data.status == 400) {
-//             modalAlert('Machine Lookup',data.msg)
-//             return
-//         }
-    
-//         // Build list of instructors for this machine
+        // Display Instructor Contact Data
+        var divInstructorName = document.createElement('div')
+        divInstructorName.innerHTML = data.instructorName
+        divInstructorName.style.textAlign='left'
+        dtlParent.appendChild(divInstructorName)
+
+        var divHomePhone = document.createElement('div')
+        divHomePhone.innerHTML = "Home phone - " + data.homePhone
+        divHomePhone.style.textAlign='left'
+        dtlParent.appendChild(divHomePhone)
+
+        var divMobilePhone = document.createElement('div')
+        divMobilePhone.innerHTML = "Mobile phone - " + data.mobilePhone
+        divMobilePhone.style.textAlign='left'
+        dtlParent.appendChild(divMobilePhone)
+
+        var divEmail = document.createElement('div')
+        divEmail.innerHTML = "Email - " + data.eMail
+        divEmail.style.textAlign='left'
+        dtlParent.appendChild(divEmail)
         
-//         if (data-status == 201){
-//             modalAlert('Certification','No instructors have been approved for this machine.')
-//             return
-//         }
         
-//         return
-//     })
-// }
+        // Display machines instructor may certify with check boxes
+
+
+        
+        return
+    })
+}
 
 
 // END OF FUNCTIONS
