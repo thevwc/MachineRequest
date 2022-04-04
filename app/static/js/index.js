@@ -1,5 +1,7 @@
 // index.js
 const shopChoice = document.getElementById("shopChoice")
+console.log('shopChoice - '+shopChoice.value)
+
 const machineSelected = document.getElementById("machineSelected")
 const memberSelected = document.getElementById("memberSelected")
 const instructorSelected = document.getElementById("instructorSelected")
@@ -68,7 +70,6 @@ function memberChange() {
     if (memberSelected.selectedIndex != 0) {
         machineSelected.selectedIndex = 0
         instructorSelected.selectedIndex = 0
-        instructorsORmembersBtns.style.display="none"
     }
     // HIDE MACHINE AND INSTRUCTOR SECTIONS IF NOT ON LARGE SCREEN
     if (!largeScreen.matches) { 
@@ -77,6 +78,17 @@ function memberChange() {
         instructorSection.style.display="none"
     }
     // GET MEMBER CONTACT INFO TO DISPLAY
+    console.log(' ... call displayMemberCertifications')
+    let option = memberSelected.options[memberSelected.selectedIndex]; 
+    villageID = memberSelected.options[memberSelected.selectedIndex].getAttribute('data-villageid')
+    // ...................................
+    // ....PROGRAM ERRORS AT THE NEXT LINE  
+    location=shopChoice.value
+    //shopLocation = document.getElementById("shopChoice")
+    //location=shopLocation.value
+    // ....................................
+    
+    displayMemberCertifications(villageID,location)
 }
 
 function instructorChange() {
@@ -94,7 +106,7 @@ function instructorChange() {
     }
     // GET INSTRUCTOR CONTACT DATA TO DISPLAY
 }
-// function displayMembersCertifiedOnSpecificMachine() {
+
 function displayMachineInstructorsAndMembers() {
     let e = document.getElementById("machineSelected");
     machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
@@ -123,7 +135,7 @@ function displayMachineInstructorsAndMembers() {
         }
 
         // Display Instructor heading
-        const divInstructorHdg = document.createElement('div')
+        var divInstructorHdg = document.createElement('div')
         divInstructorHdg.classList.add('InstructorListHdg')
         divInstructorHdg.innerHTML = "Instructors:"
         divInstructorHdg.style.textAlign = 'left'
@@ -133,7 +145,7 @@ function displayMachineInstructorsAndMembers() {
         // Display List of Instructors
         instructors = data.instructorsList
         if (instructors.length == 0) {
-            const divNoInstructors = document.createElement('div')
+            var divNoInstructors = document.createElement('div')
             divNoInstructors.classList.add('NoInstructors')
             divNoInstructors.innerHTML = "No instructors assigned."
             divNoInstructors.style.width = '400px'
@@ -142,7 +154,7 @@ function displayMachineInstructorsAndMembers() {
         }
         else {
             for (i=0;i<instructors.length;i++) {
-                const divName = document.createElement('div')
+                var divName = document.createElement('div')
                 divName.classList.add('InstructorName')
                 divName.innerHTML = instructors[i]
                 divName.style.paddingLeft = '60px'
@@ -153,7 +165,7 @@ function displayMachineInstructorsAndMembers() {
         }
 
         // Display 'Certified Members' heading
-        const divMemberHdg = document.createElement('div')
+        var divMemberHdg = document.createElement('div')
         divMemberHdg.classList.add('MemberListHdg')
         divMemberHdg.innerHTML = "Certified Members:"
         divMemberHdg.style.textAlign = 'left'
@@ -165,7 +177,7 @@ function displayMachineInstructorsAndMembers() {
         certified = data.certifiedDict
         if (certified.length == 0){
             // If no members, display message
-            const divNoMembers = document.createElement('div')
+            var divNoMembers = document.createElement('div')
             divNoMembers.classList.add('NoMembers')
             divNoMembers.innerHTML = "No members have been certified."
             divNoMembers.style.width = '400px'
@@ -173,7 +185,7 @@ function displayMachineInstructorsAndMembers() {
             dtlParent.appendChild(divNoMembers)
         }
         else {
-            for (const element of certified) {
+            for (var element of certified) {
                 var divMemberName = document.createElement('div')
                 divMemberName.classList.add('CertifiedMemberName')
                 divMemberName.innerHTML = element['memberName']
@@ -185,41 +197,69 @@ function displayMachineInstructorsAndMembers() {
         return
     })
 }
-    function displayMemberCertifications() {
-        let e = document.getElementById("memberSelected");
-        let option = e.options[e.selectedIndex]; 
-        villageID = $('option:selected', this).attr("data-memberid");
-        location = shopChoice.value
-
-        let dataToSend = {
-            villageID: villageID,
-            location: location
-        };
-        fetch(`${window.origin}/displayMemberData`, {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify(dataToSend),
-            cache: "no-cache",
-            headers: new Headers({
-                "content-type": "application/json"
-            })
+function displayMemberCertifications(villageID,location) {
+    console.log('villageID - '+villageID)
+    console.log('location - '+location)
+    let dataToSend = {
+        villageID: villageID,
+        location: location
+    };
+    fetch(`${window.origin}/displayMemberData`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
         })
-    .then((res) => res.json())
-    .then((data) => {
-        console.log('data.msg - ' + data.msg)
-        if (data.msg == "Member not found") {
-            modalAlert('Member Lookup',data.msg)
-            return
-        }
-        // Populate member fields; show member fields
-
-        console.log('show member contact data')
-        // Build list of machines certified and not certified for this member
-        
-        console.log('building list of all possible machines for this location (BOTH, RA, or BW')
+    })
+.then((res) => res.json())
+.then((data) => {
+    console.log('data.msg - ' + data.msg)
+    if (data.msg == "Member not found") {
+        modalAlert('Member Lookup',data.msg)
         return
-        })
     }
+    // Clear previous member data
+    dtlParent = document.getElementById('memberData')
+    while (dtlParent.firstChild) {
+        dtlParent.removeChild(dtlParent.lastChild)
+    }
+
+    // Display name and contact info
+    members = data.memberList
+    if (members.length == 0) {
+        modalAlert("ERROR","Member ID not found.")
+        return
+    }
+    var divMemberName = document.createElement('div')
+    divMemberName.innerHTML = data.memberName
+    divMemberName.style.textAlign='center'
+    dtlParent.appendChild(divMemberName)
+
+    var divHomePhone = document.createElement('div')
+    divHomePhone.innerHTML = data.homePhone
+    divHomePhone.style.textAlign='right'
+    dtlParent.appendChild(divHomePhone)
+
+    var divMobilePhone = document.createElement('div')
+    divMobilePhone.innerHTML = data.mobilePhone
+    divMobilePhone.style.textAlign='right'
+    dtlParent.appendChild(divMobilePhone)
+
+    var divEmail = document.createElement('div')
+    divEmail.innerHTML = data.eMail
+    divEmail.style.textAlign='right'
+    dtlParent.appendChild(divEmail)
+    // Populate member fields; show member fields
+
+    console.log('show member contact data')
+    // Build list of machines certified and not certified for this member
+    
+    console.log('building list of all possible machines for this location (BOTH, RA, or BW')
+    return
+    })
+}
 
 
 function modalAlert(title,msg) {

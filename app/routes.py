@@ -159,10 +159,12 @@ def displayMachineData():
         certifiedDict.append(certifiedItem)
     else:
         for c in certified:
-            memberName = c.Last_Name + ', ' + c.First_Name
+            memberName = c.First_Name
             if c.Nickname is not None:
                 if len(c.Nickname) > 0 :
                     memberName += ' (' + c.Nickname + ')'
+            memberName += ' ' + c.Last_Name
+
             instructorID = c.certifiedBy
             instructor = db.session.query(Member).filter(Member.Member_ID == instructorID).first()
             if (instructor == None):
@@ -186,24 +188,41 @@ def displayMachineData():
     return jsonify(msg=msg,status=status,machineLocation=machineLocation,machineID=machineID,
     machineDesc=machineDesc,instructorsList=instructorsList,certifiedDict=certifiedDict)
 
-@app.route('/displayMachineInstructors',methods=['GET','POST'])
-def displayMachineInstructors():
-    req = request.get_json()
-    machineID = req["machineID"]
-    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-    if machine == None:
-        msg = "Machine ID " + machineID + " was not found."
-        return jsonify(msg=msg,status=400)
-    machineDesc = machine.machineDesc
-    machineLocation = machine.machineLocation
+# @app.route('/displayMachineInstructors',methods=['GET','POST'])
+# def displayMachineInstructors():
+#     req = request.get_json()
+#     machineID = req["machineID"]
+#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+#     if machine == None:
+#         msg = "Machine ID " + machineID + " was not found."
+#         return jsonify(msg=msg,status=400)
+#     machineDesc = machine.machineDesc
+#     machineLocation = machine.machineLocation
     
 
-    return jsonify(msg='',status=200,instructorsList=instructorsList)
+#     return jsonify(msg='',status=200,instructorsList=instructorsList)
 
-@app.route('/displayMemberData')
+@app.route('/displayMemberData',methods=['POST'])
 def displayMemberData():
     req = request.get_json()
+    print('req - ',req)
+    
     villageID = req["villageID"]
+    location = req["location"]
+    mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
+    if (member == None):
+        msg="Member not found"
+        status=400
+        return jsonify(msg=msg,status=status)
 
-    msg = 'Test member data'
-    return jsonify(msg=msg)
+    memberName = mbr.First_Name
+    if mbr.Nickname is not None:
+        if len(mbr.Nickname) > 0 :
+            memberName += ' (' + mbr.Nickname + ')'
+    memberName += ' ' + mbr.Last_Name
+    mobilePhone = mbr.mobilePhone
+    homePhone = mbr.homePhone
+    eMail = mdb.eMail
+
+    
+    return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)
