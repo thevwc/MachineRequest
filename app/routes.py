@@ -36,18 +36,13 @@ import requests
 # LOAD INITIAL LOGIN PAGE
 @app.route('/',methods=['GET','POST'])
 @app.route('/login',methods=['GET','POST'])
-def login():
-    print('......................................................................')
-    
+def login(): 
     if request.method != 'POST':
         return render_template("login.html")
 
     # PROCESS DATA FROM LOGIN FORM
-    print('... POST request from /login')
     memberID = request.form['memberID']
     password = request.form['password']
-    print("member ID - ",memberID," password - ",password)
-    
     return render_template("login.html")
 
 # MAIN PAGE
@@ -58,13 +53,11 @@ def index():
     sqlMachines = "SELECT machineID, machineDesc, machineLocation + ' - ' + machineDesc + ' (' + machineID + ')' as machineDisplayName, machineLocation "
     sqlMachines += "FROM MachinesRequiringCertification "
     sqlMachines += "ORDER BY machineDesc, machineLocation"
-    #print('sqlMachines - ',sqlMachines)
+    
     machineList = db.engine.execute(sqlMachines)
     if machineList == None:
         flash('No names to list.','danger')
-    # for m in machineList:
-    #     print('Machine ID - ' + m.machineID,'Desc - ' + m.machineDesc,'Display name -' + m.machineDisplayName)
-
+    
     # CREATE OBJECT OF NAMES FOR DROPDOWN LIST OF MEMBERS
     sqlNames = "SELECT Last_Name + ', ' + First_Name + ' (' + Member_ID + ')' as memberDisplayName,"
     sqlNames += " Member_ID as villageID FROM tblMember_Data "
@@ -192,13 +185,11 @@ def displayMachineData():
 
 @app.route('/displayMemberData',methods=['POST'])
 def displayMemberData():
-    req = request.get_json()
-    print('req - ',req)
-    
+    req = request.get_json() 
     villageID = req["villageID"]
     location = req["location"]
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
-    if (member == None):
+    if (mbr == None):
         msg="Member not found"
         status=400
         return jsonify(msg=msg,status=status)
@@ -211,7 +202,7 @@ def displayMemberData():
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
-
+    msg="Success"
     
     return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)
 
@@ -234,56 +225,22 @@ def displayMachineInstructors():
     msg="Instructor found."
 
     # Get all machines and mark those this instructor may certifify
-    certifiedDict = []
-    certifiedItem = []
+    machineDict = []
+    machineItem = []
     machines = db.session.query(Machines)
     for m in machines:
         instructorCertified = db.session.query(MachineInstructors)\
             .filter(MachineInstructors.machineID == m.machineID)\
             .filter(MachineInstructors.member_ID == instructorID).scalar() is not None
-        print(m.machineID,instructorCertified)
-    
-    
-    # sp = "EXEC membersCertifiedForSpecificMachine '" + machineID + "'"
-    # sql = SQLQuery(sp)
-    # certified = db.engine.execute(sql)
-    # if certified == None:
-    #     memberName = 'No members have been certified.'
-    #     certifiedItem = {
-    #             'memberID':'',
-    #             'memberName':memberName,
-    #             'machineID':machineID,
-    #             'dateCertified':'',
-    #             'certifiedBy':''
-    #     }
-    #     certifiedDict.append(certifiedItem)
-    # else:
-    #     for c in certified:
-    #         memberName = c.First_Name
-    #         if c.Nickname is not None:
-    #             if len(c.Nickname) > 0 :
-    #                 memberName += ' (' + c.Nickname + ')'
-    #         memberName += ' ' + c.Last_Name
-
-    #         instructorID = c.certifiedBy
-    #         instructor = db.session.query(Member).filter(Member.Member_ID == instructorID).first()
-    #         if (instructor == None):
-    #             instructorName = "Unknown"
-    #         else:
-    #             instructorName = instructor.Last_Name + ', ' + instructor.First_Name
-    #             if instructor.Nickname is not None:
-    #                 if len(instructor.Nickname) > 0 :
-    #                     instructorName += ' (' + instructor.Nickname + ')'
-
-    #         certifiedItem = {
-    #             'memberID':c.villageID,
-    #             'memberName':memberName,
-    #             'machineID':c.machineID,
-    #             'dateCertified':c.dateCertified,
-    #             'certifiedBy':instructorName
-    #         }
-    #         certifiedDict.append(certifiedItem)
-    # msg="Success"
-    # status=200
-    
-    return jsonify(msg=msg,status=200,instructorName=instructorName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)
+        
+        machineItem = {
+            'machineID': m.machineID,
+            'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
+            'machineLocation': m.machineLocation,
+            'instructorCertified':instructorCertified
+        }
+        
+        machineDict.append(machineItem)
+        msg="Success"
+    return jsonify(msg=msg,status=200,instructorName=instructorName,mobilePhone=mobilePhone,\
+        homePhone=homePhone,eMail=eMail,machineDict=machineDict)

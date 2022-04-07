@@ -14,10 +14,10 @@ const machineMemberBtn = document.getElementById("machineMemberBtn")
 const machineInstructorsAndMembers = document.getElementById("machineInstructorsAndMembers")
 
 // EVENT LISTENERS
-shopChoice.addEventListener("change",locationChange)
+shopChoice.addEventListener("click",locationChange)
 machineSelected.addEventListener("click",machineClicked)
-memberSelected.addEventListener("change",memberChange)
-instructorSelected.addEventListener("change",instructorChange)
+memberSelected.addEventListener("click",memberClicked)
+instructorSelected.addEventListener("click",instructorChange)
 largeScreen.addEventListener("change",handleMediaChange)
 
 
@@ -65,12 +65,16 @@ function machineClicked() {
     displayMachineInstructorsAndMembers()
 }
 
-function memberChange() {
+function memberClicked() {
     // CLEAR OTHER SELECTIONS
-    if (memberSelected.selectedIndex != 0) {
-        machineSelected.selectedIndex = 0
-        instructorSelected.selectedIndex = 0
+    if (memberSelected.selectedIndex == 0) {
+        return
     }
+
+    // SET MACHINE AND INSTRUCTOR LISTS TO FIRST OPTION
+    machineSelected.selectedIndex = 0
+    instructorSelected.selectedIndex = 0
+
     // HIDE MACHINE AND INSTRUCTOR SECTIONS IF NOT ON LARGE SCREEN
     if (!largeScreen.matches) { 
         machineSection.style.display="none"
@@ -78,17 +82,18 @@ function memberChange() {
         instructorSection.style.display="none"
     }
     // GET MEMBER CONTACT INFO TO DISPLAY
-    console.log(' ... call displayMemberCertifications')
     let option = memberSelected.options[memberSelected.selectedIndex]; 
     villageID = memberSelected.options[memberSelected.selectedIndex].getAttribute('data-villageid')
+    
     // ...................................
     // ....PROGRAM ERRORS AT THE NEXT LINE  
-    location=shopChoice.value
+    //location=shopChoice.value
+    //location = 'RA'
     //shopLocation = document.getElementById("shopChoice")
     //location=shopLocation.value
     // ....................................
     
-    displayMemberCertifications(villageID,location)
+    displayMemberCertifications(villageID,"RA")
 }
 
 function instructorChange() {
@@ -226,11 +231,6 @@ function displayMemberCertifications(villageID,location) {
     }
 
     // Display name and contact info
-    members = data.memberList
-    if (members.length == 0) {
-        modalAlert("ERROR","Member ID not found.")
-        return
-    }
     var divMemberName = document.createElement('div')
     divMemberName.innerHTML = data.memberName
     divMemberName.style.textAlign='center'
@@ -238,22 +238,18 @@ function displayMemberCertifications(villageID,location) {
 
     var divHomePhone = document.createElement('div')
     divHomePhone.innerHTML = "Home phone " + data.homePhone
-    divHomePhone.style.textAlign='right'
+    divHomePhone.style.textAlign='left'
     dtlParent.appendChild(divHomePhone)
 
     var divMobilePhone = document.createElement('div')
     divMobilePhone.innerHTML = "Mobile phone " + data.mobilePhone
-    divMobilePhone.style.textAlign='right'
+    divMobilePhone.style.textAlign='left'
     dtlParent.appendChild(divMobilePhone)
 
     var divEmail = document.createElement('div')
     divEmail.innerHTML = "Email " + data.eMail
-    divEmail.style.textAlign='right'
+    divEmail.style.textAlign='left'
     dtlParent.appendChild(divEmail)
-    // Populate member fields; show member fields
-
-    console.log('show member contact data')
-    // Build list of machines certified and not certified for this member
     
     console.log('building list of all possible machines for this location (BOTH, RA, or BW')
     return
@@ -286,7 +282,6 @@ function handleMediaChange(e) {
 }
 
 function displayMachineInstructorData() {
-    console.log('display machine Instructors routine')
     let e = document.getElementById("instructorSelected");
     instructorID = e.options[e.selectedIndex].getAttribute('data-villageid')
     let dataToSend = {
@@ -303,7 +298,6 @@ function displayMachineInstructorData() {
     })
     .then((res) => res.json())
     .then((data) => {
-        console.log('status - '+data.status)
         if (data.msg == "Instructor not found") {
             modalAlert("Instructor Lookup",data.msg)
         }
@@ -341,12 +335,69 @@ function displayMachineInstructorData() {
         
         
         // Display machines instructor may certify with check boxes
+        // Clear previous data from 'instructorMachines' div
+        var instructorMachinesParent = document.getElementById('instructorMachines')
+        while (instructorMachinesParent.firstChild) {
+            instructorMachinesParent.removeChild(instructorMachinesParent.lastChild);
+        }
 
+        machine = data.machineDict
+        if (machine.length == 0){
+            // If no machines, display message
+            var divNoMachines = document.createElement('div')
+            divNoMachines.innerHTML = "No machines have been defined."
+            divNoMachines.style.width = '400px'
+            divNoMachines.style.marginLeft = '60px'
+            instructorMachinesParent.appendChild(divNoMachines)
+            return
+        }
+            
+        // BUILD HEADINGS FOR LIST OF MACHINES
+        var breakElement = document.createElement('br')
+        instructorMachinesParent.appendChild(breakElement)
 
-        
+        var divHdgRow = document.createElement('div')
+        divHdgRow.classList.add('row', 'headings')
+        divHdgRow.innerHTML="<h6>May certify the following -</h6>"
+        divHdgRow.margin='auto'
+        instructorMachinesParent.appendChild(divHdgRow)
+
+        for (m of machine) {
+            // BUILD THE ROW
+            var divRow = document.createElement('div')
+            divRow.classList.add('row', 'instrMachRow')
+            
+            var chkInput = document.createElement('input')
+            chkInput.type="checkbox"
+            chkInput.id = m['machineID']
+            chkInput.classList.add('col-1')
+            chkInput.classList.add('canCertify')
+            if (m['instructorCertified']) {
+                chkInput.checked = true
+                chkInput.innerHTML = 'True'
+            }
+            else {
+                chkInput.innerHTML = 'False'
+            }
+            divRow.appendChild(chkInput)
+
+            var divColMachineDesc = document.createElement('div')
+            divColMachineDesc.classList.add('col-6')
+            divColMachineDesc.classList.add('clsMachineDesc')
+            divColMachineDesc.innerHTML = m['machineDesc']
+            divRow.appendChild(divColMachineDesc)
+
+            var divColMachineLoc = document.createElement('div')
+            divColMachineLoc.classList.add('col-1', 'clsMachineLocation')
+            divColMachineLoc.innerHTML = m['machineLocation']
+            divRow.appendChild(divColMachineLoc)
+
+            // ADD THE ROW TO THE DETAIL SECTION
+            instructorMachinesParent.appendChild(divRow)
+        }
+   
         return
     })
 }
-
 
 // END OF FUNCTIONS

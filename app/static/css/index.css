@@ -63,7 +63,7 @@
         margin:auto;
     }
     #machineSelected {
-        width:200px;
+        width:250px;
     }
     
     .members {
@@ -74,7 +74,7 @@
         margin:auto;
     }                         
     #memberSelected {
-        width:200px;
+        width:250px;
     }
 
     .instructors {
@@ -85,7 +85,7 @@
         margin:auto;
     }                         
     #instructorSelected {
-        width:200px;
+        width:250px;
     }
 
     #machineSection {
@@ -129,7 +129,15 @@
     #instructorData {
         margin-left:100px;
     }
-
+    #instructorMachines {
+        padding-left: 30px
+    }
+    #instructorMachinesDetail {
+        padding-left: 20px
+    }
+    .headings {
+        text-align:center;
+    }
 .modal-dialog {
     width:900px;
     height:600px !important;
