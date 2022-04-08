@@ -197,7 +197,7 @@ def displayMemberData():
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            mbrName += ' (' + mbr.Nickname + ')'
+            memberName += ' (' + mbr.Nickname + ')'
     memberName += ' ' + mbr.Last_Name
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone

@@ -225,33 +225,97 @@ function displayMemberCertifications(villageID,location) {
         return
     }
     // Clear previous member data
-    dtlParent = document.getElementById('memberData')
-    while (dtlParent.firstChild) {
-        dtlParent.removeChild(dtlParent.lastChild)
+    memberData = document.getElementById('memberData')
+    while (memberData.firstChild) {
+        memberData.removeChild(memberData.lastChild)
     }
+    // Create table
+    table = document.createElement('table')
+    table.style="margin:auto"
+
+    tableCaption = document.createElement('caption')
+    tableCaption.style = "caption-side:top;text-align:center"
+    tableCaption.innerHTML = data.memberName
+    table.appendChild(tableCaption)
+
+    tableBody = document.createElement('tbody')
+    table.appendChild(tableBody)
+
+
+    // Build data lines td1 - Home phone, td2 - mobile phone, td3 - email
+    
+    tableRow = document.createElement("tr")
+    td1Lbl = document.createElement("td")
+    td1Data = document.createElement("td")
+    td1Lbl.innerHTML="Home phone:"
+    td1Data.innerHTML= data.homePhone
+    td1Data.style="text-Align:right"
+    tableRow.appendChild(td1Lbl)
+    tableRow.appendChild(td1Data)
+    tableBody.appendChild(tableRow)
+    
+    tableRow = document.createElement("tr")
+    td2Lbl = document.createElement("td")
+    td2Data = document.createElement("td")
+    td2Lbl.innerHTML="Mobile phone:"
+    td2Data.innerHTML= data.mobilePhone
+    td2Data.style="text-Align:right"
+    tableRow.appendChild(td2Lbl)
+    tableRow.appendChild(td2Data)
+    tableBody.appendChild(tableRow)
+
+    tableRow = document.createElement("tr")
+    td3Lbl = document.createElement("td")
+    td3Data = document.createElement("td")
+    td3Lbl.innerHTML="Email:"
+    td3Data.innerHTML= data.eMail
+    td3Data.style="text-Align:right"
+    tableRow.appendChild(td3Lbl)
+    tableRow.appendChild(td3Data)
+    tableBody.appendChild(tableRow)
+
+    memberData.appendChild(table)
+    // tableColLbl = document.createElement("td")
+    // tableColLbl.innerHTML="Mobile phone:"
+    // tableRow.appendChild(tableColLbl)
+    // tableColData = document.createElement("td")
+    // tableColData.innerHTML= data.mobilePhone
+    // tableColData.style="text-Align:right"
+    // tableRow.appendChild(tableColData)
+    // contactTableBody.appendChild(tableRow)
+
+    // Build eMail line
+    // tableCol = document.createElement("td")
+    // tableCol.innerHTML="Email:"
+    // tableRow.appendChild(tableCol)
+    // tableCol.innerHTML= data.eMail
+    // tableCol.style="text-Align:right"
+    // tableRow.appendChild(tableCol)
+    // contactTableBody.appendChild(tableRow)
+
 
     // Display name and contact info
-    var divMemberName = document.createElement('div')
-    divMemberName.innerHTML = data.memberName
-    divMemberName.style.textAlign='center'
-    dtlParent.appendChild(divMemberName)
+    // var divMemberName = document.createElement('div')
+    // divMemberName.innerHTML = data.memberName
+    // divMemberName.style.textAlign='center'
+    // dtlParent.appendChild(divMemberName)
 
-    var divHomePhone = document.createElement('div')
-    divHomePhone.innerHTML = "Home phone " + data.homePhone
-    divHomePhone.style.textAlign='left'
-    dtlParent.appendChild(divHomePhone)
+    // var divHomePhone = document.createElement('div')
+    // divHomePhone.innerHTML = "Home phone " + data.homePhone
+    // divHomePhone.style.textAlign='left'
+    // dtlParent.appendChild(divHomePhone)
 
-    var divMobilePhone = document.createElement('div')
-    divMobilePhone.innerHTML = "Mobile phone " + data.mobilePhone
-    divMobilePhone.style.textAlign='left'
-    dtlParent.appendChild(divMobilePhone)
+    // var divMobilePhone = document.createElement('div')
+    // divMobilePhone.innerHTML = "Mobile phone " + data.mobilePhone
+    // divMobilePhone.style.textAlign='left'
+    // dtlParent.appendChild(divMobilePhone)
 
-    var divEmail = document.createElement('div')
-    divEmail.innerHTML = "Email " + data.eMail
-    divEmail.style.textAlign='left'
-    dtlParent.appendChild(divEmail)
+    // var divEmail = document.createElement('div')
+    // divEmail.innerHTML = "Email " + data.eMail
+    // divEmail.style.textAlign='left'
+    // dtlParent.appendChild(divEmail)
     
-    console.log('building list of all possible machines for this location (BOTH, RA, or BW')
+   
     return
     })
 }
@@ -382,7 +446,7 @@ function displayMachineInstructorData() {
             divRow.appendChild(chkInput)
 
             var divColMachineDesc = document.createElement('div')
-            divColMachineDesc.classList.add('col-6')
+            divColMachineDesc.classList.add('col-8')
             divColMachineDesc.classList.add('clsMachineDesc')
             divColMachineDesc.innerHTML = m['machineDesc']
             divRow.appendChild(divColMachineDesc)
