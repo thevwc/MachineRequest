@@ -202,9 +202,43 @@ def displayMemberData():
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
+
+    # Get all machines and mark those where this member is certified
+    machineDict = []
+    machineItem = []
+    machines = db.session.query(Machines)
+    for m in machines:
+        memberCertified = db.session.query(MemberMachineCertifications)\
+            .filter(MemberMachineCertifications.machineID == m.machineID)\
+            .filter(MemberMachineCertifications.member_ID == villageID).first() 
+        if memberCertified == None:
+            dateCertified = ''
+            certifiedByName = ''
+            certified = False
+        else:
+            dateCertified = memberCertified.dateCertified.smtp('%m-%d-%y')
+            certifiedByName = memberCertified.First_Name
+            if memberCertified.Nickname != None:
+                if len(memberCertified.Nickname) > 0:
+                    certifiedByName += ' (' +  memberCertified.Nickname + ')'
+                certifiedByName += memberCertified.Last_Name
+            certified = True
+
+        machineItem = {
+            'machineID': m.machineID,
+            'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
+            'machineLocation': m.machineLocation,
+            'dateCertified':dateCertified,
+            'certifiedByName':certifiedByName,
+            'certified':certified
+        }
+        print(machineItem)
+
+        machineDict.append(machineItem)
     msg="Success"
     
-    return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail)
+    return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,\
+        homePhone=homePhone,eMail=eMail,machineDict=machineDict)
 
 @app.route('/displayMachineInstructors',methods=['GET','POST'])
 def displayMachineInstructors():
