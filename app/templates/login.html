@@ -6,37 +6,37 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 {% endblock %}
 {% block app_content %}
+    <!-- <input type='text' name='letter1' class='letter' maxlength='1'> 
+    <input type='text' name='letter2' class='letter' maxlength='1'>
+    <input type='text' name='letter3' class='letter' maxlength='1'>
+    <input type='text' name='letter4' class='letter' maxlength='1'>
+    <input type='text' name='letter5' class='letter' maxlength='1'>
+         -->
     <head>
-        <title>Machine Certification</title>
+        <title>Machine Request</title>
     </head>
     <body>
         
 
-    <h1 style="color:white;">Machine Certification</h1>
-    <h2 style="color:white;">Login</h2>
+    <h1 style="color:white;">Machine Request</h1>
+    
     <div class = "form_wrapper">
-      <form id="loginID">
-        <p>
-            <label for="memberID">Village ID</label><br>
-            <input id="memberID" name="memberID" required size="6" type="text" value=""><br> 
-        </p>
-        <p>
-            <label for="password">Password</label><br>
-            <input id="password" name="password" required size="20" type="password" value=""><br>  
-        </p>
+        <form id="loginID">
+            <p>
+                <label for="memberID">Village ID</label><br>
+                <input id="memberID" name="memberID" required size="6" type="text" value=""><br> 
+            </p>
+            <p><input id="submitBtn" name="submit" type="submit" value="Login" text-align:center></p> 
         
-        <p><input id="submitBtn" name="submit" type="submit" value="Login" text-align:center></p>
-      </form>
-    </div>
 
-    <hr>
-        <span style="color: red">
-        <ul>
-            
-            <h1></h1>
-            
-        </ul>
-        </span>
+            <hr>
+            <span style="color: white">
+                <ul>   
+                    <h1 id="memberName">sample</h1>   
+                </ul>
+            </span>
+        </form>
+    </div>
     </body>
 
 

@@ -4,6 +4,35 @@
     --main-padding: 10px;  
     --main-body-bg-color: lightgray;
   }
+.form_header{
+    background-color:rgb(232, 236, 241);
+    text-align:left;
+}
+.form_wrapper{
+    display:inline-block;
+    background-color: rgb(232, 236, 241);
+    border-radius: 10px;
+    height: auto;
+    padding: 5px 15px;
+    margin: 5% auto;
+    margin-left: auto;
+    margin-right: auto;
+    text-align:left;
+    font-size: 1.5em; /* 30px/16=1.5em */
+}
+input[type=text] {
+    width: 200px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    color:blue;
+    font-size: 36px;
+    background-color: white;
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 40px;
+}
+
 /* Phone layout (default) */
 @media only screen and (max-width: 600px) {
     body {
@@ -12,22 +41,21 @@
 }
     .parent {
         display: grid;
+        width:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 40px 30px 30px 30px 30px 30px 1fr;
-        grid-template-areas:"hdgArea" 
-                            "versionArea"
-                            "locationsArea"
-                            "machinesArea"
-                            "membersArea"
-                            "instructorsArea"
-                            "detailArea";
+        grid-template-rows: 100px 120px 100px 600px;
+        grid-template-areas:"hdgArea"
+                            "villageIDArea" 
+                            "nameArea"
+                            "machinesArea";
         grid-gap:0em;
         border-color: black; 
         background-color: lightgray;               
     }
-    .heading {
+    #heading {
         grid-area: hdgArea;
         display:grid;
+        width:100%;
         padding-top: 0px;
         padding-bottom:0px;
         text-align: center;
@@ -36,113 +64,46 @@
         border-bottom:white 3px;
     }
 
-    .version {
-        grid-area:versionArea;
+    #villageIDsection {
+        grid-area: villageIDArea;
         font-size:.75rem;
-        padding-top:3px;
+        padding-top:2px;
         text-align:center;
         background-color: navy;
         color:white;
-    }
-    
-    .locations {
-        grid-area:locationsArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        padding-left:0px;
+        border:1px solid navy;
         margin:auto;
+        margin-top:20px;
     }
-    #locationSelected {
-        width:175px;
-    }
-    .machines {
-        grid-area:machinesArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        padding-left:0px;
-        margin:auto;
-    }
-    #machineSelected {
-        width:250px;
-    }
-    
-    .members {
-        grid-area:membersArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        padding-left:0px;
-        margin:auto;
-    }                         
-    #memberSelected {
-        width:250px;
-    }
-
-    .instructors {
-        grid-area:instructorsArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        padding-left:0px;
-        margin:auto;
-    }                         
-    #instructorSelected {
-        width:250px;
-    }
-
-    #machineSection {
-        grid-area:detailArea;
-        
-        border:2px solid black;
-        padding-top:10px;
-        margin-top:10px;
-        width:300px;
-        margin:auto;
-        /* display:none; */
-    }
-    #machineInstructorsAndMembers {
-        /* display:none; */
-        padding-top:20px;
-    }
-
-    #InstructorListHdg {
-        text-align: center;
-        background-color: aqua;
-    }
-    #memberSection {
-        grid-area:detailArea;
-        /* border:2px solid black; */
-        padding-top:10px;
-        margin-top:10px;
-        width:300px;
-        margin:auto;
-        /* display:none; */
-    }
-    .memberName {
-        margin-left:30px;
-        border:2px solid blue;
-    }
-
-    #instructorSection {
-        grid-area:detailArea;
-        background-color: lightgreen;
-        border:2px solid black;
-        padding-top:10px;
-        margin-top:10px;
-        width:500px;
-        margin:auto;
-        /* display:none; */
-    }
-    #instructorData {
-        margin-left:100px;
-    }
-    #instructorMachines {
-        padding-left: 30px
-    }
-    #instructorMachinesDetail {
-        padding-left: 20px
-    }
-    .headings {
+    #memberName {
+        grid-area:nameArea;
+        padding-top:2px;
         text-align:center;
+        color:blue;
+        border:1px solid green;
+        font-size: 2em;
+        margin:auto;
     }
+    
+    #machineSection {
+        grid-area:machinesArea;
+        border:2px solid black;
+        background-color: green;
+        color:white;
+        padding-top:10px;
+        margin-top:10px;
+        width:300px;
+        margin:auto;
+        /* display:none; */
+    }
+   
+    #footer {
+        grid-area: footerArea;
+        background-color: lightgray;
+        width:100%;
+        text-align: center;
+    }
+ 
 .modal-dialog {
     width:900px;
     height:600px !important;
@@ -160,18 +121,16 @@
     .parent {
         width:100%;
         display: grid;
-        grid-template-columns:1fr 1fr 1fr;
-        grid-template-rows: 50px 30px 30px 30px auto;
-        grid-template-areas: "hdgArea hdgArea versionArea"
-                             "locationsArea machinesArea machinesArea"
-                             ".             membersArea membersArea"
-                             ".             instructorsArea instructorsArea"
-                             ". detailArea .";  
+        grid-template-columns:1fr;
+        grid-template-rows: 50px 30px 30px auto;
+        grid-template-areas: "hdgArea"
+                             "villageIDArea"
+                             "nameArea"
+                             "machinesArea";                        
         gap:0px;
-        margin:0 0; 
-        
-        
+        margin:0 0;         
     }
+
     .heading {
         grid-area: hdgArea;
         display:grid;
@@ -184,8 +143,8 @@
         border-bottom:white 3px;
     }
 
-    .version {
-        grid-area:versionArea;
+    .memberName {
+        grid-area:nameArea;
         font-size:.75rem;
         text-align:right;
         padding-top:7px;
@@ -193,45 +152,20 @@
         color:white;
         padding-right:20px;
     }
-    .locations {
-        grid-area:locationsArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        margin:0px;
-        
-    }
-    .machines {
+   
+    #machineSection {
         grid-area:machinesArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        margin:0px;
         
-    }
-    #machineSelected {
+        border:2px solid black;
+        padding-top:10px;
+        margin-top:10px;
         width:300px;
+        margin:auto;
+        /* display:none; */
     }
+   
     
-    .members {
-        grid-area:membersArea;
-        padding-top:5px;
-        padding-bottom:0px;
-        margin:0px;
-        
-    }                         
-    #memberSelected {
-        width:300px;
-    }
-
-    .instructors {
-        grid-area:instructorsArea;
-        padding-top:0px;
-        padding-bottom:0px;
-        padding-left:0px;
-        margin:0;
-    }                         
-    #instructorSelected {
-        width:300px;
-    }
+  
 }
 
 /* Laptop to monitor size */
@@ -240,11 +174,12 @@
         width:100%;
         height: 100%;
         display: grid;
-        grid-template-columns:1fr 1fr 1fr 1fr;
-        grid-template-rows: 50px 30px 1fr;
-        grid-template-areas:"hdgArea hdgArea hdgArea versionArea"
-                            "locationsArea machinesArea membersArea instructorsArea" 
-                            ".detail1Area detail2Area detail3Area";
+        grid-template-columns:1fr;
+        grid-template-rows: 50px 30px 30px 1fr;
+        grid-template-areas:"hdgArea"
+                            "villageIDArea"
+                            "nameArea"
+                            "machinesArea";                  
         gap:0px;
         background-color:lightgray;
         top:0; bottom:0; left:0; right:0;
@@ -261,8 +196,8 @@
         border-bottom:white 3px;
     }
 
-    .version {
-        grid-area:versionArea;
+    .memberName {
+        grid-area:nameArea;
         font-size:.75rem;
         padding-top:5px;
         padding-right:10px;
@@ -272,79 +207,13 @@
         color:white;
     }
 
-    .locations {
-        grid-area:locationsArea;
-        padding-top:0px;
-        padding-bottom:0px;
-        margin:0;
-        width:100%;
-
-    }
-    .machines {
-        grid-area:machinesArea;
-        padding-top:0px;
-        padding-bottom:0px;
-        margin:0;
-        width:100%;
-    }
-    #machineSelected {
-        width:300px;
-    }
-    
-    .members {
-        grid-area:membersArea;
-        padding-top:0px;
-        padding-bottom:0px;
-        margin:0;
-        width:100%;
-    }
-    #memberSelected {
-        width:300px;
-    }
-
-    .instructors {
-        grid-area:instructorsArea;
-        margin:auto;
-        width:100%;
-    }                         
-    #instructorSelected {
-        width:300px;
-    }
-    
     #machineSection {
-        grid-area:detail1Area;
+        grid-area:machinesArea;
         background-color: lightcoral;
         border:2px solid black;
         padding-top:10px;
         margin-top:10px;
         display:block;
     }
-    #memberSection {
-        grid-area:detail2Area;
-        background-color: lightblue;
-        border:2px solid black;
-        padding-top:10px;
-        margin-top:10px;
-        display:block;
-    }
-    #instructorSection {
-        grid-area:detail3Area;
-        background-color: lightgreen;
-        border:2px solid black;
-        padding-top:10px;
-        margin:auto;
-        margin-top:10px;
-        display:block;
-    }
-    #instructorMachines {
-        border:1px solid black;
-        /* margin-left:30px;
-        margin-right:0px;
-        padding-bottom: 200px; */
-    }
-
-    .instrMachRow {
-        padding-left:30px;
-    }
-    
+   
 }

@@ -20,6 +20,14 @@
         text-align:left;
         font-size: 1.5em; /* 30px/16=1.5em */
     }
+        /* 
+    input.letter {
+        width: 60px;
+        font-size: 3em;
+        text-align: center;
+        border: 1px solid black;
+    } */
+     
     input[type=text] {
         width: 100%;
         box-sizing: border-box;
@@ -31,17 +39,9 @@
         background-repeat: no-repeat;
         padding: 12px 20px 12px 40px;
     }
-    input[type=password] {
-        width: 100%;
-        box-sizing: border-box;
-        border: 2px solid #ccc;
-        border-radius: 4px;
-        font-size: 24px;
-        background-color: white;
-        background-position: 10px 10px; 
-        background-repeat: no-repeat;
-        padding: 12px 20px 12px 40px;
-    }
+
+    /* 
+     */
     input[type=button], input[type=submit], input[type=reset] {
         background-color: rgb(54, 175, 60);
         box-sizing: border-box; 
