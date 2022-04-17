@@ -1,37 +1,4 @@
-:root {
-    --main-bg-color: navy;
-    --main-txt-color: white;  
-    --main-padding: 10px;  
-    --main-body-bg-color: lightgray;
-  }
-.form_header{
-    background-color:rgb(232, 236, 241);
-    text-align:left;
-}
-.form_wrapper{
-    display:inline-block;
-    background-color: rgb(232, 236, 241);
-    border-radius: 10px;
-    height: auto;
-    padding: 5px 15px;
-    margin: 5% auto;
-    margin-left: auto;
-    margin-right: auto;
-    text-align:left;
-    font-size: 1.5em; /* 30px/16=1.5em */
-}
-input[type=text] {
-    width: 200px;
-    box-sizing: border-box;
-    border: 2px solid rgb(8, 1, 1);
-    border-radius: 4px;
-    color:blue;
-    font-size: 36px;
-    background-color: white;
-    background-position: 10px 10px; 
-    background-repeat: no-repeat;
-    padding: 12px 20px 12px 40px;
-}
+
 
 /* Phone layout (default) */
 @media only screen and (max-width: 600px) {
@@ -39,32 +6,19 @@ input[type=text] {
         background-color: var(--main-body-bg-color);
         height: 100%;
     }
-    
 }
     .parent {
         display: grid;
         width:100%;
         height:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 100px 120px 100px 200px auto;
+        grid-template-rows: 100px 200px 100px;
         grid-template-areas:"hdgArea"
-                            "villageIDArea" 
-                            "nameArea"
-                            "machinesArea"
+                            "ticketBodyArea"
                             "footerArea";
         grid-gap:0em;
-        background-color: lightgray;               
+        color:black;             
     }
-    .areaToPrint {
-        display:block;
-    }
-    /* .noPrint {
-        display:none;
-    }
-    .onScreen {
-        display:block;
-    } */
-
     #heading {
         grid-area: hdgArea;
         display:grid;
@@ -72,68 +26,30 @@ input[type=text] {
         padding-top: 0px;
         padding-bottom:0px;
         text-align: center;
-        background-color:navy;
-        color: var(--main-txt-color);
+        color: black;
     }
 
-    #villageIDsection {
-        grid-area: villageIDArea;
-        font-size:.75rem;
-        padding-top:2px;
-        text-align:center;
-        background-color: navy;
-        color:white;
-        border:1px solid navy;
-        margin:auto;
-        margin-top:20px;
-    }
-    #nameSection {
-        grid-area:nameArea;
-        padding-top:2px;
-        text-align:center;
-        font-size: 2em;
-        margin:auto;
-        margin-top: 20px;
-        text-align: center;
-    }
-    #memberName {
-        background-color: lightgray;
-        color:blue;
-        font-size: 1em;
-        text-align: center;
-    }
-    .headings {
-        text-align: center;
-    }
-    #machinesSection {
-        grid-area:machinesArea;
+    
+    #ticketBody {
+        grid-area:ticketBodyArea;
         color:black;
-        padding-top:10px;
+        padding-top:5px;
+        padding-left:0px;
+        padding-right: 0px;
         margin-top:50px;
-        width:90%;
+        width:100%;
+        text-align: center;
         margin:auto;
+        border: 1px solid black;
+        /* display:none; */
     }
-    .selectBtn {
-        font-size:0.75em;
-        padding-top:0px;
-        margin-left:20px;
-        margin-right:10px;
-        margin-top:0px;
-    }
-    .machineDesc {
-        font-size: 1rem;
-        color:black;
-    } 
+    
     #footer {
         grid-area: footerArea;
         width:100%;
         text-align: center;
     }
-
-    .ticket {
-        display:none;
-    }
-
+ 
 .modal-dialog {
     width:900px;
     height:600px !important;
@@ -172,6 +88,7 @@ input[type=text] {
         text-align: left;
         background-color:navy;
         color: var(--main-txt-color);
+        border-bottom:white 3px;
     }
 
     #nameSection {
@@ -223,6 +140,7 @@ input[type=text] {
         gap:0px;
         background-color:lightgray;
         top:0; bottom:0; left:0; right:0;
+        /* border:4px solid red; */
     }
     .heading {
         grid-area: hdgArea;
@@ -232,6 +150,7 @@ input[type=text] {
         text-align: left;
         background-color:navy;
         color: var(--main-txt-color);
+        border-bottom:white 3px;
     }
 
     #nameSection {
@@ -251,6 +170,8 @@ input[type=text] {
 
     #machinesSection {
         grid-area:machinesArea;
+        background-color: lightgoldenrodyellow;
+        border:2px solid black;
         padding-top:10px;
         margin-top:10px;
         display:block;
@@ -268,58 +189,4 @@ input[type=text] {
     .machineDesc {
         font-size: 1.5em;
     }
-}
-@media print {
-    .areaToPrint {
-        display:block;
-    }
-    .screenOnly {
-        display:none;
-    }
-
-    .ticket {
-        display: grid;
-        width:100%;
-        height:100%;
-        grid-template-columns: 1fr;
-        grid-template-rows: 100px 200px 100px;
-        grid-template-areas:"hdgArea"
-                            "ticketBodyArea"
-                            "footerArea";
-        grid-gap:0em;
-        color:black;             
-    }
-    #heading {
-        grid-area: hdgArea;
-        display:grid;
-        width:100%;
-        padding-top: 0px;
-        padding-bottom:0px;
-        text-align: center;
-        background-color: white;
-        color: black;
-    }
-
-    
-    #ticketBody {
-        grid-area:ticketBodyArea;
-        color:black;
-        padding-top:5px;
-        padding-left:0px;
-        padding-right: 0px;
-        margin-top:50px;
-        width:100%;
-        text-align: center;
-        margin:auto;
-        font-size: 2rem;
-        /* display:none; */
-    }
-    
-    #ticketFooter {
-        grid-area: footerArea;
-        width:100%;
-        text-align: center;
-        font-size: 2rem;
-    }
- 
 }

@@ -298,8 +298,8 @@ class KeysTable(db.Model):
 class Machines(db.Model):
     __tablename__ = 'machinesRequiringCertification'
     __table_args__ = {"schema": "dbo"}
-    ID = db.Column(db.Integer)
-    machineID = db.Column(db.String(20), primary_key=True,autoincrement=True)
+    ID = db.Column(db.Integer,autoincrement=True)
+    machineID = db.Column(db.String(20), primary_key=True)
     machineDesc = db.Column(db.String(50))
     machineLocation = db.Column(db.String(2))
     
@@ -319,3 +319,12 @@ class MachineInstructors(db.Model):
     member_ID = db.Column(db.String(6), primary_key=True)
     machineID = db.Column(db.String(20), primary_key=True)
     
+class MachineActivity(db.Model):
+    __tablename__ = 'machineActivity'
+    __table_args__ = {"schema": "dbo"}
+    ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    machineID = db.Column(db.String(20))
+    member_ID = db.Column(db.String(6))
+    startDateTime = db.Column(db.Date)
+    endDateTime = db.Column(db.Date)
+    shopLocation = db.Column(db.String(2))

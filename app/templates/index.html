@@ -7,11 +7,11 @@
 {% endblock %}
 {% block app_content %}
 
-<div class="parent">
+<div class="parent screenOnly">
     <!-- HEADING SECTION -->
     <div id="heading">
         <h2 style="text-align:center">Machine Request</h2>
-        <h3>Apr 10, 2022</h3>
+        <h3>{{todaysDate}}</h3>
     </div>
     
     <!-- SELECTION AREA -->
@@ -21,29 +21,42 @@
         </form>
     </div>
     
-    
-    <div id="memberSection">
-        <div id="memberData"></div>
-        <!-- MEMBERS CERTIFIED FOR THIS MACHINE -->
-        <div id="memberName">sample name</div>
-        
-
-        <!-- LIST ALL MACHINES WHERE MEMBER IS CERTIFIED -->
-        <!-- SELECT   machineDesc  machineLocation -->
+    <div id="nameSection">
+        <div id="memberName"></div>
     </div> 
-    <div class="machineSection">
-        <div style="text-align:center">Select a machine:</div>
-        <div id="machinesCertified">
-            <div>machine 1</div>
-            <div>machine 2</div>
-        </div>
+    
+    <div id="machinesSection"></div>
     
     <div id="footer">
-        <button id="cancelBtn">CANCEL</button>
-    </div>
+        <button id="clearBtn">CLEAR</button>
     </div>
 </div>  <!-- END OF PARENT WRAPPER -->
-
+<div class="ticket areaToPrint">
+    <div id="heading">
+        <h2 style="text-align:center">Machine Request</h2>
+        <h3 id="ticketDate">todays date</h3>
+    </div>
+    
+    <div id="ticketBody">
+        <div class="row">
+            <div id=ticketName class="col-12">Name</div>
+        </div>
+        <div class="row">
+            <div id=ticketMachineDesc class="col-12">machine desc</div>
+        </div>
+        <div class="row"></div>
+        <div class="row">
+            <div id=ticketMachineID class="col-12">
+                Key for machine # - machine ID
+            </div>
+        </div>
+    </div>
+    <div id="ticketFooter">
+        <div class="row">
+            <div class="col-12" style="text-align:center">Present this ticket to the tool crib attendant.</div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal for error messages. -->
 <div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-   labelledby="exampleModalCenterTitle" aria-hidden="true">
