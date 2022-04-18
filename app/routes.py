@@ -28,7 +28,7 @@ from flask_mail import Mail, Message
 mail=Mail(app)
 import requests
 
-from escpos.printer import Network
+#from escpos.printer import Network
 
 # LOAD INITIAL LOGIN PAGE
 
@@ -289,14 +289,13 @@ def printEpsonTicket():
     print(machine.machineDesc)
     print(todaysDateSTR)
     print('Key # '+ machineID)
-    print('-------------------------------------------')
-
+    
    
-    epsonPrinter = Network("192.168.12.126")
-    epsonPrinter.text = memberName + '\n'
-    epsonPrinter.text = todaysDateSTR + '\n'
-    epsonPrinter.text = machineDesc + "\n"
-    epsonPrinter.cut()
+    # epsonPrinter = Network("192.168.12.126")
+    # epsonPrinter.text = memberName + '\n'
+    # epsonPrinter.text = todaysDateSTR + '\n'
+    # epsonPrinter.text = machineDesc + "\n"
+    # epsonPrinter.cut()
     msg="Success"
     
     return jsonify(msg=msg)
