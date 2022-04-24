@@ -11,15 +11,18 @@
     <div id="heading">
         <h2 style="text-align:center">Machine Request</h2>
         <h3>{{todaysDate}}</h3>
+        <h3>{{location}}</h3>
     </div>
     
     <div id="ticketBody">
         <div class="row">
             <div class="col-12">{{memberName}}</div>
         </div>
+
         <div class="row">
             <div class="col-12">{{machineDesc}}</div>
         </div>
+
         <div class="row">
             <div class="col-12">
                 Key for machine # - {{machineID}}
@@ -44,7 +47,7 @@
                     onClick="window.history.back();">
                     CLOSE
                 </button>
-                <button onclick="window.print();" class="noPrint">Print Me</button>
+                <!-- <button onclick="window.print();" class="noPrint">Print Me</button> -->
             </div>
         </div>
     </div>

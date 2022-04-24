@@ -11,52 +11,47 @@
     <!-- HEADING SECTION -->
     <div id="heading">
         <h2 style="text-align:center">Machine Request</h2>
-        <h3>{{todaysDate}}</h3>
-    </div>
+        <h3 style="text-align:center">{{todaysDate}}</h3>
+	</div>
+
+	<div id="location">
+		<div id='locationID' style="font-size:2rem;text-align: center;">Rolling Acres</div>	
+		<button id="changeLocation" class="btn btn-sm btn-secondary" onclick="shopLocationChange()">Click to change location</button>
+	</div>
     
-    <!-- SELECTION AREA -->
-    <div id="villageIDsection">
-        <form action="" class="form-wrapper">
-            <input id="memberID" type="text" maxlength="6" width=200px>
-        </form>
-    </div>
-    
-    <div id="nameSection">
-        <div id="memberName"></div>
-    </div> 
-    
-    <div id="machinesSection"></div>
-    
+	<div id="notFoundID" >{{notFoundMsg}}</div>
+
+    <div id='keypadID' class="keypad">
+        <div id="displayID">
+          <input id="memberInput" type="text" autofocus="autofocus" class="calculator-screen" maxlength='6' placeholder="" value="">
+        </div>
+      
+        <div class="calculator-keys">
+          
+          <button type="button" value="1">1</button>
+          <button type="button" value="2">2</button>
+          <button type="button" value="3">3</button>
+      
+          <button type="button" value="4">4</button>
+          <button type="button" value="5">5</button>
+          <button type="button" value="6">6</button>
+      
+          <button type="button" value="7">7</button>
+          <button type="button" value="8">8</button>
+          <button type="button" value="9">9</button>
+      
+          <button type="button" class="all-clear" value="all-clear">CLR</button>
+          <button type="button" value="0">0</button>
+          <button id="enterKey" type="button" class="enter-key" value="enter">Enter</button>
+      
+        </div> <!-- END OF calculator-KEYS -->
+      </div>  <!-- END OF KEYPAD -->   
+
+	</div>
     <div id="footer">
-        <button id="clearBtn">CLEAR</button>
+        <!-- <button id="clearBtn">CLEAR</button> -->
     </div>
 </div>  <!-- END OF PARENT WRAPPER -->
-<div class="ticket areaToPrint">
-    <div id="heading">
-        <h2 style="text-align:center">Machine Request</h2>
-        <h3 id="ticketDate">todays date</h3>
-    </div>
-    
-    <div id="ticketBody">
-        <div class="row">
-            <div id=ticketName class="col-12">Name</div>
-        </div>
-        <div class="row">
-            <div id=ticketMachineDesc class="col-12">machine desc</div>
-        </div>
-        <div class="row"></div>
-        <div class="row">
-            <div id=ticketMachineID class="col-12">
-                Key for machine # - machine ID
-            </div>
-        </div>
-    </div>
-    <div id="ticketFooter">
-        <div class="row">
-            <div class="col-12" style="text-align:center">Present this ticket to the tool crib attendant.</div>
-        </div>
-    </div>
-</div>
 
 <!-- Modal for error messages. -->
 <div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-   labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -74,6 +69,46 @@
 				<div class="modal-footer">
 				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
 			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL FORM FOR APPLICATION START UP SETTINGS (bootstrap?)-->
+<div id="settingsModal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class='modal-title'> 
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+					<br>
+					<h4>The Villages Woodworkers Club</h4>
+				</div>
+			</div>
+			
+				<div class="modal-body">
+					<h5 style="text-decoration: underline;">START UP SETTINGS</h5>
+					<form action="">
+						<p style='text-align: left'>
+							<label>Year to display -</label>
+							<input id='yearDefault' type="text" style="width:50px; color:blue;font-weight: bold; " placeholder = '20xx'>
+						</p>
+						<p style='text-align: left'>
+							<label>Location - </label> 
+							<select id="shopDefault" name="shopDefault" style="height: 
+							25px;font-size: 1em;">
+								<option id='selectAshop' value="">Select a location ...</option>
+								<option id='shop1' value="RA">Rolling Acres</option>
+								<option id='shop2' value="BW">Brownwood</option>
+							</select>
+						</p>
+					</form>
+				</div>
+				<div class="modal-footer">
+			<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+			</div> 
 		</div>
 	</div>
 </div>

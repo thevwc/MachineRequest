@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/certifiedMachines.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+{% endblock %}
+{% block app_content %}
+
+<div class="parent screenOnly">
+    <!-- HEADING SECTION -->
+    <div id="heading">
+        <h2 style="text-align:center">Machine Request</h2>
+        <h3>{{todaysDate}}</h3>
+    </div>
+    <div id="location">
+        <div id='locationID' style="font-size:2rem;margin-top:5px;margin-right:10px">{{location}}</div>	
+    </div>
+    <div id="nameSection" style="text-align:center">
+        <div id="memberName">{{memberName}}</div>
+        <div id="memberID" style="display:none">{{memberID}}</div>
+    </div> 
+    
+    <!-- SELECTION AREA -->
+    <div id="machinesSection">
+        <table class="machines">
+            <thead class="selectLine">
+                <tr>
+                    <th>Select a machine -</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+                <tr></tr>
+                {% for c in certifiedMachines %}
+                <tr>
+                    <td>
+                        <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicket2('{{c.machineID}},{{villageID}}')">SELECT</button> -->
+                        <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicketPage('{{c.machineID}}')">SELECT</button> -->
+                        <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
+                    </td>
+                    <td>{{c.machineDesc}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    <div id="footer">
+        <button id="clearBtn" onclick="window.history.back()">CLEAR</button>
+    </div>
+</div>  <!-- END OF PARENT WRAPPER -->
+
+
+<div class="ticket areaToPrint">
+    <div id="heading">
+        <h2 style="text-align:center">Machine Request</h2>
+        <h3 id="ticketDate">todays date</h3>
+    </div>
+    
+    <div id="ticketBody">
+        <div class="row">
+            <div id=ticketName class="col-12">Name</div>
+        </div>
+        <div class="row">
+            <div id=ticketMachineDesc class="col-12">machine desc</div>
+        </div>
+        <div class="row"></div>
+        <div class="row">
+            <div id=ticketMachineID class="col-12">
+                Key for machine # - machine ID
+            </div>
+        </div>
+    </div>
+    <div id="ticketFooter">
+        <div class="row">
+            <div class="col-12" style="text-align:center">Present this ticket to the tool crib attendant.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for error messages. -->
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-   labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle"></h5>
+				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id=modalBody style=width:fit-content>
+			</div>
+			
+				<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/certifiedMachines.js') }}"> </script>
+{% endblock %}

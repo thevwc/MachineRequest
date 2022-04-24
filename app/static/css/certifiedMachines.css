@@ -124,7 +124,7 @@ color: #fff;
 }
 
 .all-clear:hover {
-background-color: gray;
+background-color: #f17377;
 }
   
 .equal-sign {
@@ -146,18 +146,18 @@ background-color: #4e9ed4;
         width:100%;
         height:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 80px 70px 50px auto 50px;
+        grid-template-rows: 80px 70px 50px 600px 50px;
         grid-template-areas:"hdgArea"
                             "locationArea"
-                            "notFoundArea"
-                            "keypadArea"
+                            "memberNameArea"
+                            "machinesArea"
                             "footerArea";
         grid-gap:0em;
         background-color: lightgray;               
     }
-    /* .areaToPrint {
-        display:block;
-    } */
+    .areaToPrint {
+        display:none;
+    }
    
     #heading {
         grid-area: hdgArea;
@@ -172,33 +172,110 @@ background-color: #4e9ed4;
         grid-area: locationArea;
         margin:auto;
         margin-top:0px;
-        width:100%;
         text-align: center;
         background-color: navy;
-        color: var(--main-txt-color);
+        color:white;
+        width:100%;
     }
-    #notFoundID {
-        width:50%;
-        text-align:center;
-        color:red;
-        margin:auto;
-        margin-top:30px;
-        font-size: 1.5rem;
+    /* thead {
+        margin-bottom:30px;
     }
-   
-    .keypad {
-        grid-area:keypadArea;
-        background-color: navy;
+    .selectLine {
+        margin-bottom: 20px;
+    } */
+    tbody td {
+        position:relative;
+        top:2rem;
+    }
+    .selectBtn {
+        margin-left:20px;
+        margin-right:40px;
+    }
+
+    #nameSection {
+        grid-area: memberNameArea;
         width:50%;
         margin:auto;
-        margin-top:150px;
+        /* margin-top:0px; */
+        font-size:1.5rem;
+        padding-top:0px;
+        color:navy;
+        display:block;
     }
     
+    #machinesSection {
+        grid-area: machinesArea;
+        width:50%;
+        height:400px;
+        margin:auto;
+        margin-top:50px;
+        overflow:auto;
+        border:1px solid navy;
+    }
     #footer {
         grid-area: footerArea;
         width:100%;
         text-align: center;
     }
 
+}
+@media print {
+    .parent {
+        background-color: white;
+    }
+
+    .areaToPrint {
+        display:block;
+    }
+    .screenOnly {
+        display:none;
+    }
+
+    .ticket {
+        display: grid;
+        width:40%;
+        height:100%;
+        grid-template-columns: 1fr;
+        grid-template-rows: 100px 200px 100px;
+        grid-template-areas:"hdgArea"
+                            "ticketBodyArea"
+                            "footerArea";
+        grid-gap:0em;
+        background-color: white;
+        color:black;             
+    }
+    #heading {
+        grid-area: hdgArea;
+        display:grid;
+        width:100%;
+        padding-top: 0px;
+        padding-bottom:0px;
+        text-align: center;
+        background-color: white;
+        color: black;
+    }
+
+    
+    #ticketBody {
+        grid-area:ticketBodyArea;
+        color:black;
+        padding-top:5px;
+        padding-left:0px;
+        padding-right: 0px;
+        margin-top:50px;
+        width:100%;
+        text-align: center;
+        margin:auto;
+        font-size: 2rem;
+        /* display:none; */
+    }
+    
+    #ticketFooter {
+        grid-area: footerArea;
+        width:100%;
+        text-align: center;
+        font-size: 2rem;
+    }
+ 
 }
 

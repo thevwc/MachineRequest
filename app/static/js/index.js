@@ -1,133 +1,157 @@
 // index.js
-window.focus()
-document.getElementById("memberID").focus();
 
-// Constants
-const memberID = document.getElementById('memberID')
-const clearBtn = document.getElementById('clearBtn')
-let currentMemberID = ''
+// Define variables
+var curNumber="";
+var entry = "";
+var currentLocation = ''
 
-// EventListeners
-memberID.addEventListener('keyup',inputKeypress)
-clearBtn.addEventListener('click',clearMemberData)
+// Define event listeners
+//shopLocationSelector = document.getElementById('shopLocationSelector')
+//shopLocationSelector.addEventListener('change',shopLocationChange)
+
+// Establish the current shop location
+if (localStorage.getItem('shopLocation')) {
+  currentLocation = localStorage.getItem('shopLocation')
+  if (currentLocation == 'RA') {
+    locationID.innerText = 'Rolling Acres'
+  }
+  else {
+    locationID.innerText = 'Brownwood'
+  }
+}  
+else {
+  // Initialize localStorage with 'RA'
+  locationID.innerText ='Rolling Acres'
+  currentLocation = 'RA'
+  localStorage.setItem('shopLocation',currentLocation)
+}  
+  
+  // console.log('currentLocation - '+currentLocation)
+  // document.getElementById('shopLocation').value = currentLocation
+  // keypad.style.display='block'
+  // window.focus()
+  // document.getElementById("memberInput").focus();
 
 
-// FUNCTIONS
+  // keypad.style.display='none'
+  // modalAlert('LOCATION','Please select a location.')
 
-function inputKeypress() {
-    inputData = memberID.value
-    //console.log('keyPress rtn - ' + inputData)
-    if (inputData.length < 6) {
-        return
+// keypad = document.getElementById('keypadID')
+
+function shopLocationChange() {
+    locationID = document.getElementById('locationID')
+    currentLocationName = locationID.innerText
+    if (currentLocationName == 'Rolling Acres') {
+      locationID.innerText = 'Brownwood'
+      currentLocation = 'BW'
+      localStorage.setItem('shopLocation','BW')
     }
-    if (inputData.length > 6) {
-        modalAlert('ERROR','Too many characters entered.')
-        return
+    else {
+      locationID.innerText = 'Rolling Acres'
+      currentLocation = 'RA'
+      localStorage.setItem('shopLocation','RA')
     }
-    console.log('... call lookupMember' + inputData)
-    currentMemberID = inputData 
-    lookupMember(inputData)
+    //   modalAlert('Location','Please select a location.')
+    //   return 
+    // }
+    // localStorage.setItem('shopLocation',currentLocation)
+    // keypad.style.display='block'
+    clearScreen()
+    // console.log('currentLocation - '+currentLocation)
+    // console.log('memberInput value - '+document.getElementById('memberInput').value)
 }
 
-function lookupMember(villageID) {
-    console.log('villageID - '+villageID)
-    //console.log('location - '+location)
-    shopLocation = 'BW'
+//   if (!localStorage.getItem('delaySec')) {
+//     localStorage.setItem('delaySec',5)
+//     delayInSeconds = 5
+//   }
+//   else {
+//     delayInSeconds = localStorage.getItem('delaySec')
+//   }
+//   delayInMilliseconds = delayInSeconds * 1000
+//   document.getElementById('delaySec').innerHTML = delayInSeconds + ' sec'
+//   document.getElementById('delayTimeID').value = delayInSeconds
 
-    let dataToSend = {
-        villageID: villageID,
-        location: shopLocation
-    };
+  
+  // SET UP LISTENER FOR BARCODE SCANNER INPUT
+  // memberInput = document.getElementById('memberInput')
+  // memberInput.addEventListener('input',checkForScannerInput)
+  
+  // SET UP LISTENERS FOR SETTINGS BUTTONS
+  // $(".cancelBtn").click(function() {
+  //   console.log('cancelBtn clicked ...')
+  //   $('#settingsModalID').modal('hide')
+  // })
 
-    fetch(`${window.origin}/lookUpMember`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(dataToSend),
-        cache: "no-cache",
-        headers: new Headers({
-            "content-type": "application/json"
-        })
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        clearMemberData()
-        if (data.status < 200 || data.status > 299) {
-            alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
-            return
-        }
-        
-        memberName = document.getElementById('memberName')
-        memberName.innerHTML = data.memberName
-        
-        if (data.status == 201) {
-            // Member not found
-            document.getElementById('memberID').value = ""
-            return
-        }
-        // SUCCESS - Member was found
-        // Build machine list
-        machinesSection = document.getElementById('machinesSection')
+  function cancelSettings() {
+    $('#settingsModalID').modal('hide')
+  }
 
-        machine = data.machineDict
-        if (machine.length == 0){
-            // If no machines, display message
-            var divNoMachines = document.createElement('div')
-            divNoMachines.innerHTML = "No machines have been certified for this member."
-            divNoMachines.style.width = '400px'
-            divNoMachines.style.margin = 'auto'
-            machinesSection.appendChild(divNoMachines)
-            return
-        }
-        
-        // BUILD HEADINGS FOR LIST OF MACHINES
-        // Insert a <br> after name
-        var breakElement = document.createElement('br')
-        nameSection.appendChild(breakElement)
+  function updateSettings(settingsForm) {
+    delayInSeconds = settingsForm.delayTime.value
+    localStorage.setItem('delaySec',delayInSeconds)
+    delayInMilliseconds = delayInSeconds * 1000  
+  }
 
-        // Display the prompt - Select a machine:
-        // machinesSection = document.getElementById('machinesSection')
-        // divHdg = document.createElement('div')
-        // divHdg.innerHTML = 'Select a machine:'
-        // divHdg.style.marginLeft='20px'
-        // machinesSection.appendChild(divHdg)
-      
-        // List the machines the member is certified
-        for (m of machine) {
-            // BUILD THE ROW
-            var divRow = document.createElement('div')
-            divRow.classList.add('row')
-            
-            var selectBtn = document.createElement('btn')
-            selectBtn.innerHTML = 'SELECT'
-            selectBtn.classList.add('btn', 'btn-primary','btn-sm','selectBtn')
-            var printTicketSTR = "printTicket('" + m['machineID'] + "')"
-            console.log('printTicketSTR - ',printTicketSTR)
-            //selectBtn.onclick = printTicketSTR
-            selectBtn.setAttribute('onclick',printTicketSTR);
-            divRow.appendChild(selectBtn)
-
-            var divMachineDesc = document.createElement('div')
-            divMachineDesc.innerHTML = m['machineDesc']
-            divMachineDesc.classList.add('machineDesc')
-
-            divRow.appendChild(divMachineDesc)
-
-            // ADD THE ROW TO THE DETAIL SECTION
-            machinesSection.appendChild(divRow)
-        }
-
-        return
-    })
-    
+  
+// CHECK FOR SCANNED DATA OR KEYPAD KEY STROKES; DATA WILL BE IN memberInput ELEMENT
+function checkForScannerInput() {
+    inputValue = memberInput.value
+    if (inputValue.length == 6) {
+      curNumber = inputValue
+      displayMemberCertifications(curNumber,currentLocation)
+    }
 }
 
-// function displayMachineInstructorsAndMembers() {
-//     let e = document.getElementById("machineSelected");
-//     machineID = e.options[e.selectedIndex].getAttribute('data-machineid')
+$("button").click(function() {    
+    entry = $(this).attr("value");
+    //alert('this - '+$(this).id)
+    if (entry == undefined) {
+      return
+    }
+    // WAS CLR KEY PRESSED?
+    if (entry === "all-clear") {
+      clearScreen();
+      return;
+    }
+
+    if (entry === "enter") {
+      modalAlert('KEY','Enter was clicked')
+      return
+    }
+    curNumber = curNumber + entry;
+    document.getElementById("memberInput").value = curNumber;
+
+    // IF 6 DIGITS HAVE BEEN ENTERED, CHECK FOR 'SETTINGS' CODE
+    if (curNumber.length == 6) {
+      villageID = curNumber
+      url = '/displayMemberData?villageID='+villageID+'&location='+currentLocation
+      window.location.href=url
+      return
+      }
+    //document.getElementById('memberInput').focus()
+    return
+})
+
+function clearScreen() {
+    entry='';
+    curNumber="";
+    document.getElementById("memberInput").value = "";
+    document.getElementById('notFoundID').innerHTML = ''
+  }
+
+
+// function lookupMember(villageID) {
+//     console.log('villageID - '+villageID)
+//     //console.log('location - '+location)
+//     shopLocation = 'BW'
+
 //     let dataToSend = {
-//         machineID: machineID
+//         villageID: villageID,
+//         location: shopLocation
 //     };
-//     fetch(`${window.origin}/displayMachineInstructorsAndMembers`, {
+
+//     fetch(`${window.origin}/lookUpMember`, {
 //         method: "POST",
 //         credentials: "include",
 //         body: JSON.stringify(dataToSend),
@@ -138,157 +162,179 @@ function lookupMember(villageID) {
 //     })
 //     .then((res) => res.json())
 //     .then((data) => {
-//         if (data.msg == "Machine not found") {
-//             modalAlert('Machine Lookup',data.msg)
+//         clearMemberData()
+//         if (data.status < 200 || data.status > 299) {
+//             alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
 //             return
 //         }
-//         // Clear previous instructor and member data
-//         dtlParent = document.getElementById('machineInstructorsAndMembers')
-//         while (dtlParent.firstChild) {
-//             dtlParent.removeChild(dtlParent.lastChild);
+        
+//         memberName = document.getElementById('memberName')
+//         memberName.innerHTML = data.memberName
+        
+//         if (data.status == 201) {
+//             // Member not found
+//             document.getElementById('memberID').value = ""
+//             return
 //         }
+//         // SUCCESS - Member was found
+//         // Build machine list
+//         machinesSection = document.getElementById('machinesSection')
 
-//         // Display Instructor heading
-//         var divInstructorHdg = document.createElement('div')
-//         divInstructorHdg.classList.add('InstructorListHdg')
-//         divInstructorHdg.innerHTML = "Instructors:"
-//         divInstructorHdg.style.textAlign = 'left'
-//         divInstructorHdg.style.marginLeft = '30px'
-//         dtlParent.appendChild(divInstructorHdg)
-
-//         // Display List of Instructors
-//         instructors = data.instructorsList
-//         if (instructors.length == 0) {
-//             var divNoInstructors = document.createElement('div')
-//             divNoInstructors.classList.add('NoInstructors')
-//             divNoInstructors.innerHTML = "No instructors assigned."
-//             divNoInstructors.style.width = '400px'
-//             divNoInstructors.style.paddingLeft = '60px'
-//             dtlParent.appendChild(divNoInstructors)
+//         machine = data.machineDict
+//         if (machine.length == 0){
+//             // If no machines, display message
+//             var divNoMachines = document.createElement('div')
+//             divNoMachines.innerHTML = "No machines have been certified for this member."
+//             divNoMachines.style.width = '400px'
+//             divNoMachines.style.margin = 'auto'
+//             machinesSection.appendChild(divNoMachines)
+//             return
 //         }
-//         else {
-//             for (i=0;i<instructors.length;i++) {
-//                 var divName = document.createElement('div')
-//                 divName.classList.add('InstructorName')
-//                 divName.innerHTML = instructors[i]
-//                 divName.style.paddingLeft = '60px'
-//                 divName.style.width = '400px'
+        
+//         // BUILD HEADINGS FOR LIST OF MACHINES
+//         // Insert a <br> after name
+//         var breakElement = document.createElement('br')
+//         nameSection.appendChild(breakElement)
+
+//         // Display the prompt - Select a machine:
+//         // machinesSection = document.getElementById('machinesSection')
+//         // divHdg = document.createElement('div')
+//         // divHdg.innerHTML = 'Select a machine:'
+//         // divHdg.style.marginLeft='20px'
+//         // machinesSection.appendChild(divHdg)
+      
+//         // List the machines the member is certified
+//         for (m of machine) {
+//             // BUILD THE ROW
+//             var divRow = document.createElement('div')
+//             divRow.classList.add('row')
             
-//                 dtlParent.appendChild(divName)
-//             }
+//             var selectBtn = document.createElement('btn')
+//             selectBtn.innerHTML = 'SELECT'
+//             selectBtn.classList.add('btn', 'btn-primary','btn-sm','selectBtn')
+//             var printTicketSTR = "printTicket('" + m['machineID'] + "')"
+//             console.log('printTicketSTR - ',printTicketSTR)
+//             //selectBtn.onclick = printTicketSTR
+//             selectBtn.setAttribute('onclick',printTicketSTR);
+//             divRow.appendChild(selectBtn)
+
+//             var divMachineDesc = document.createElement('div')
+//             divMachineDesc.innerHTML = m['machineDesc']
+//             divMachineDesc.classList.add('machineDesc')
+
+//             divRow.appendChild(divMachineDesc)
+
+//             // ADD THE ROW TO THE DETAIL SECTION
+//             machinesSection.appendChild(divRow)
 //         }
 
-//         // Display 'Certified Members' heading
-//         var divMemberHdg = document.createElement('div')
-//         divMemberHdg.classList.add('MemberListHdg')
-//         divMemberHdg.innerHTML = "Certified Members:"
-//         divMemberHdg.style.textAlign = 'left'
-//         divMemberHdg.style.paddingTop = '30px'
-//         divMemberHdg.style.paddingLeft = '30px'
-//         dtlParent.appendChild(divMemberHdg)
-
-//         // Display list of members certified for this machine
-//         certified = data.certifiedDict
-//         if (certified.length == 0){
-//             // If no members, display message
-//             var divNoMembers = document.createElement('div')
-//             divNoMembers.classList.add('NoMembers')
-//             divNoMembers.innerHTML = "No members have been certified."
-//             divNoMembers.style.width = '400px'
-//             divNoMembers.style.marginLeft = '60px'
-//             dtlParent.appendChild(divNoMembers)
-//         }
-//         else {
-//             for (var element of certified) {
-//                 var divMemberName = document.createElement('div')
-//                 divMemberName.classList.add('CertifiedMemberName')
-//                 divMemberName.innerHTML = element['memberName']
-//                 divMemberName.style.width = '400px'
-//                 divMemberName.style.marginLeft = '60px'
-//                 dtlParent.appendChild(divMemberName)
-//             }
-//         }
 //         return
 //     })
-// }
-// function displayMemberCertifications(villageID,location) {
-//     console.log('villageID - '+villageID)
-//     //console.log('location - '+location)
-//     let dataToSend = {
-//         villageID: villageID,
-//         location: location
-//     };
-//     fetch(`${window.origin}/displayMemberData`, {
-//         method: "POST",
-//         credentials: "include",
-//         body: JSON.stringify(dataToSend),
-//         cache: "no-cache",
-//         headers: new Headers({
-//             "content-type": "application/json"
-//         })
-//     })
-// .then((res) => res.json())
-// .then((data) => {
-//     console.log('data.msg - ' + data.msg)
-//     if (data.msg == "Member not found") {
-//         modalAlert('Member Lookup',data.msg)
-//         return
-//     }
     
-//     clearMemberData()
-//     memberData = document.getElementById('memberData')
-
-//     // Display member name
-//     var divMemberName = document.createElement('div')
-//     divMemberName.innerHTML = data.memberName
-//     divMemberName.style.fontSize = 'large'
-//     divMemberName.style.textAlign = 'center'
-//     divMemberName.style.margin = 'auto'
-//     memberData.appendChild(divMemberName)
-    
-
-//     machine = data.machineDict
-//     if (machine.length == 0){
-//         // If no machines, display message
-//         var divNoMachines = document.createElement('div')
-//         divNoMachines.innerHTML = "No machines have been certified."
-//         divNoMachines.style.width = '400px'
-//         divNoMachines.style.margin = 'auto'
-//         memberData.appendChild(divNoMachines)
-//         return
-//     }
-        
-//     // BUILD HEADINGS FOR LIST OF MACHINES
-//     var breakElement = document.createElement('br')
-//     memberData.appendChild(breakElement)
-
-//     var divHdgRow = document.createElement('div')
-//     divHdgRow.classList.add('row', 'headings')
-//     divHdgRow.innerHTML="<h6>Select one of the following -</h6>"
-//     divHdgRow.margin='auto'
-//     memberData.appendChild(divHdgRow)
-
-//     memberData.appendChild(breakElement)
-
-//     for (m of machine) {
-//         // BUILD THE ROW
-//         var divRow = document.createElement('div')
-//         divRow.classList.add('row')
-        
-//         var selectBtn = document.createElement('btn')
-//         selectBtn.innerHTML = 'SELECT'
-//         divRow.appendChild('selectBtn')
-
-//         var divMachineDesc = document.createElement('div')
-//         divMachineDesc.innerHTML = m['machineDesc']
-//         divRow.appendChild(divMachineDesc)
-
-//         // ADD THE ROW TO THE DETAIL SECTION
-//         memberData.appendChild(divRow)
-//     }
-//     return
-//     })
 // }
+
+function displayMemberCertificationsPage(villageID,location) {
+  window.location()
+}
+
+function displayMemberCertifications(villageID,location) {
+    console.log('villageID - '+villageID)
+    //console.log('location - '+location)
+    let dataToSend = {
+        villageID: villageID,
+        location: location
+    };
+    fetch(`${window.origin}/displayMemberData`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(dataToSend),
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    })
+.then((res) => res.json())
+.then((data) => {
+    console.log('data.msg - ' + data.msg)
+    if (data.msg == "Member not found") {
+        modalAlert('Member Lookup',data.msg)
+        clearScreen()
+        return
+    }
+    // Hide keypad
+    keypad.style.display='none'
+
+    // Erase member name
+    memberName = document.getElementById('memberName')
+    while (memberName.firstChild) {
+        memberName.removeChild(memberName.lastChild)
+    }
+
+    // Display member name
+    console.log('data.memberName - '+data.memberName)
+    var divMemberName = document.createElement('div')
+    divMemberName.innerHTML = data.memberName
+    divMemberName.style.fontSize = '1.5rem'
+    divMemberName.style.textAlign = 'center'
+    divMemberName.style.marginTop = '20px'
+    divMemberName.style.border='2px solid green'
+    memberName.appendChild(divMemberName)
+    
+    // Erase machine list
+    while (machinesCertified.firstChild) {
+      machinesCertified.removeChild(machinesCertified.lastChild)
+    }
+    machine = data.certifiedMachines
+    if (machine.length == 0){
+        // If no machines, display message
+        var divNoMachines = document.createElement('div')
+        divNoMachines.innerHTML = "No machines have been certified."
+        divNoMachines.style.width = '400px'
+        divNoMachines.style.margin = 'auto'
+        machinesCertified.appendChild(divNoMachines)
+        return
+    }
+        
+    // BUILD HEADINGS FOR LIST OF MACHINES
+    var breakElement = document.createElement('br')
+    machinesCertified.appendChild(breakElement)
+
+    var divHdgRow = document.createElement('div')
+    divHdgRow.classList.add('row', 'selectLine')
+    divHdgRow.innerHTML="<h6>Select one of the following -</h6>"
+    divHdgRow.style.marginTop='20px'
+    machinesCertified.appendChild(divHdgRow)
+
+    machinesCertified.appendChild(breakElement)
+
+    for (m of machine) {
+        // BUILD THE ROW
+        var divRow = document.createElement('div')
+        divRow.style.marginTop='10px'
+        divRow.classList.add('row')
+        
+        var selectBtn = document.createElement('btn')
+        selectBtn.innerHTML = 'SELECT'
+        selectBtn.classList.add('btn', 'btn-primary','btn-xs','selectBtn')
+        selectBtn.style.marginLeft= '110px'
+
+        var checkOutMachineSTR = "checkOutMachine('" + m['machineID'] + "')"
+        selectBtn.setAttribute('onclick',checkOutMachineSTR);
+        divRow.appendChild(selectBtn)
+
+        var divMachineDesc = document.createElement('div')
+        divMachineDesc.innerHTML = m['machineDesc']
+        divMachineDesc.style.fontSize='1.5rem'
+        divMachineDesc.style.marginLeft ='20px'
+        divMachineDesc.style.paddingTop='2px'
+        divRow.appendChild(divMachineDesc)
+
+        // ADD THE ROW TO THE DETAIL SECTION
+        machinesCertified.appendChild(divRow)
+    }
+    return
+    })
+}
 
 
 function modalAlert(title,msg) {
@@ -301,68 +347,68 @@ function closeModal() {
 	$('#myModalMsg').modal('hide')
 }
 
-function clearMemberData() {
-    // Clear previous member data
-    //memberID = document.getElementById('memberID')
-    memberID.value = ''
-    memberName = document.getElementById('memberName')
-    memberName.innerHTML = ''
-    machinesSection = document.getElementById('machinesSection')
+// function clearMemberData() {
+//     // Clear previous member data
+//     //memberID = document.getElementById('memberID')
+//     memberID.value = ''
+//     memberName = document.getElementById('memberName')
+//     memberName.innerHTML = ''
+//     machinesSection = document.getElementById('machinesSection')
 
-    // Erase machine list
-    while (machinesSection.firstChild) {
-        machinesSection.removeChild(machinesSection.lastChild)
-    }
-    window.focus()
-    document.getElementById("memberID").focus();
+//     // Erase machine list
+//     while (machinesSection.firstChild) {
+//         machinesSection.removeChild(machinesSection.lastChild)
+//     }
+//     window.focus()
+//     document.getElementById("memberID").focus();
 
-}
+// }
 
-function printTicket(machineID) {
-    console.log('machineID - '+machineID)
-    //alert('Print a ticket for '+ machineID)
-    //window.location.href = '/printTicket?machineID=' + machineID + '&villageID=' + currentMemberID  
+// function printTicket(machineID) {
+//     console.log('machineID - '+machineID)
+//     //alert('Print a ticket for '+ machineID)
+//     //window.location.href = '/printTicket?machineID=' + machineID + '&villageID=' + currentMemberID  
 
-    let dataToSend = {
-        villageID: currentMemberID,
-        machineID: machineID
-    };
+//     let dataToSend = {
+//         villageID: currentMemberID,
+//         machineID: machineID
+//     };
 
-    fetch(`${window.origin}/printTicket`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(dataToSend),
-        cache: "no-cache",
-        headers: new Headers({
-            "content-type": "application/json"
-        })
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        if (data.status < 200 || data.status > 299) {
-            alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
-            return
-        }
-        // Populate ticket
-        console.log('ticketDate - '+data.ticketDate)
+//     fetch(`${window.origin}/printTicket`, {
+//         method: "POST",
+//         credentials: "include",
+//         body: JSON.stringify(dataToSend),
+//         cache: "no-cache",
+//         headers: new Headers({
+//             "content-type": "application/json"
+//         })
+//     })
+//     .then((res) => res.json())
+//     .then((data) => {
+//         if (data.status < 200 || data.status > 299) {
+//             alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
+//             return
+//         }
+//         // Populate ticket
+//         console.log('ticketDate - '+data.ticketDate)
 
-        ticketDate = document.getElementById('ticketDate')
-        ticketDate.innerHTML = data.ticketDate
-        ticketName = document.getElementById('ticketName')
-        ticketName.innerHTML = data.ticketName
-        ticketMachineDesc = document.getElementById('ticketMachineDesc')
-        ticketMachineDesc.innerHTML = data.ticketMachineDesc
-        ticketMachineID = document.getElementById('ticketMachineID')
-        ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
+//         ticketDate = document.getElementById('ticketDate')
+//         ticketDate.innerHTML = data.ticketDate
+//         ticketName = document.getElementById('ticketName')
+//         ticketName.innerHTML = data.ticketName
+//         ticketMachineDesc = document.getElementById('ticketMachineDesc')
+//         ticketMachineDesc.innerHTML = data.ticketMachineDesc
+//         ticketMachineID = document.getElementById('ticketMachineID')
+//         ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
 
-        // Print ticket
-        window.print();
+//         // Print ticket
+//         window.print();
 
-        // Clear screen
-        clearMemberData()
-        return
-    })     
-}
+//         // Clear screen
+//         clearMemberData()
+//         return
+//     })     
+// }
 
 // function printTicket2(machineID) {
 //     let text = window.open();

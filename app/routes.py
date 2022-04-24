@@ -47,8 +47,8 @@ def login():
 @app.route('/index')
 def index():
     today=date.today()
-    todaySTR = today.strftime('%B %d, %Y')
-    return render_template("index.html",todaysDate=todaySTR)
+    todaysDate = today.strftime('%B %d, %Y')
+    return render_template("index.html",todaysDate=todaysDate)
     
 @app.route('/lookUpMember',methods=['POST'])
 def lookUpMember():
@@ -88,18 +88,25 @@ def lookUpMember():
 
     msg = "Member found."
     return jsonify(msg=msg,memberName=memberName,machineDict=machineDict,status=200)
-    
 
-@app.route('/displayMemberData',methods=['POST'])
+@app.route('/displayMemberData')
 def displayMemberData():
-    req = request.get_json() 
-    villageID = req["villageID"]
-    location = req["location"]
+    villageID=request.args.get('villageID')
+    locationAbbr=request.args.get('location')
+    if (locationAbbr == 'RA'):
+        locationName = 'Rolling Acres'
+    else:
+        locationName = 'Brownwood'
+
+    today=date.today()
+    todaysDate = today.strftime('%B %d, %Y')
+   
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
-        msg="Member not found"
-        status=400
-        return jsonify(msg=msg,status=status)
+        notFoundMsg = 'Member ID was not found.'
+        return render_template('index.html',todaysDate=todaysDate,notFoundMsg=notFoundMsg)
+    else:
+        notFoundMsg = ''
 
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
@@ -112,7 +119,7 @@ def displayMemberData():
 
     # Display machines with member certification
     # Get all machines and mark those this instructor may certifify
-    machineDict = []
+    certifiedMachines = []
     machineItem = []
     machines = db.session.query(Machines)
     for m in machines:
@@ -128,21 +135,23 @@ def displayMemberData():
             'machineLocation': m.machineLocation,
             'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y')
         }
-        print(machineItem)
-        machineDict.append(machineItem)
-
+        certifiedMachines.append(machineItem)
+        
     msg="Success"
-    
-    return jsonify(msg=msg,memberName=memberName,mobilePhone=mobilePhone,homePhone=homePhone,eMail=eMail,machineDict=machineDict)
+    today=date.today()
+    todaysDateSTR = today.strftime('%B %d, %Y')
 
-@app.route('/printTicket',methods=['POST'])
-def printTicket():
+    return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,memberID=villageID,memberName=memberName,certifiedMachines=certifiedMachines,location=locationName)
+
+@app.route('/printInlineTicket',methods=['POST'])
+def printInlineTicket():
+    print('/printInlineTicket')
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
     
-    # print('VillageID - ',villageID)
-    # print('MachineID - ',machineID)
+    print('VillageID - ',villageID)
+    print('MachineID - ',machineID)
 
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
@@ -191,8 +200,11 @@ def printTicket():
 
 @app.route('/printTicketPage')
 def printTicketPage():
+    print('/printTicketPage')
     villageID=request.args.get('villageID')
     machineID=request.args.get('machineID')
+    # print('VillageID - ',villageID)
+    # print('MachineID - ',machineID)
 
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
@@ -210,6 +222,8 @@ def printTicketPage():
     eMail = mbr.eMail
 
     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+    print('machine - ',machine)
+
     if (machine != None):
         machineDesc = machine.machineDesc
     else:
@@ -218,11 +232,12 @@ def printTicketPage():
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
 
-    print(memberName)
-    print(machineDesc)
-    print(todaysDateSTR)
-    print('Key # '+ machineID)
-    print('-------------------------------------------')
+    # print(memberName)
+    # print(machineDesc)
+    # print('desc - ',machine.machineDesc)
+    # print(todaysDateSTR)
+    # print('Key # '+ machineID)
+    # print('-------------------------------------------')
 
     return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
     
@@ -253,19 +268,27 @@ def printTicketPage():
 	# 	)
 	
 
-@app.route('/printEpsonTicket',methods=['POST'])
-def printEpsonTicket():
-    req = request.get_json() 
-    villageID = req["villageID"]
-    machineID = req["machineID"]
+@app.route('/printESCticket',methods=['GET'])
+def printESCticket():
+    print('/printESCticket')
+    villageID=request.args.get('villageID')
+    machineID=request.args.get('machineID')
+    locationAbbr = request.args.get('location')
+    if (locationAbbr == 'RA'):
+        locationName = 'Rolling Acres'
+    else:
+        locationName = 'Brownwood'
+
     print('VillageID - ',villageID)
     print('MachineID - ',machineID)
-
+    print('Location abbr - ',locationAbbr)
+    
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         msg="Member not found"
         status=400
-        return jsonify(msg=msg,status=status)
+        flash('Member not found.','Info')
+        return
 
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
@@ -283,11 +306,14 @@ def printEpsonTicket():
         machineDesc = "?"
 
     today=date.today()
-    todaysDateSTR = today.strftime('%B %d, %Y')
-
-    print(memberName)
-    print(machine.machineDesc)
-    print(todaysDateSTR)
+    todaysDate = today.strftime('%B %d, %Y')
+    print('Location - ',locationName)
+    print('Name - ',memberName)
+    print('Home phone - ',homePhone)
+    print('Mobile phone - ',mobilePhone)
+    print('Email - ',eMail)
+    print(machineDesc)
+    print(todaysDate)
     print('Key # '+ machineID)
     
    
@@ -296,6 +322,6 @@ def printEpsonTicket():
     # epsonPrinter.text = todaysDateSTR + '\n'
     # epsonPrinter.text = machineDesc + "\n"
     # epsonPrinter.cut()
-    msg="Success"
     
-    return jsonify(msg=msg)
+    
+    return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
