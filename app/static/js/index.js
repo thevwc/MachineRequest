@@ -126,7 +126,7 @@ $("button").click(function() {
     if (curNumber.length == 6) {
       villageID = curNumber
       url = '/displayMemberData?villageID='+villageID+'&location='+currentLocation
-      window.location.href=url
+      location.href=url
       return
       }
     //document.getElementById('memberInput').focus()

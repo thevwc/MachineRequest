@@ -1,7 +1,7 @@
 # routes.py
 
 from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
-import pdfkit
+
 
 
 from flask_bootstrap import Bootstrap
@@ -50,44 +50,55 @@ def index():
     todaysDate = today.strftime('%B %d, %Y')
     return render_template("index.html",todaysDate=todaysDate)
     
-@app.route('/lookUpMember',methods=['POST'])
-def lookUpMember():
-    req = request.get_json()
-    memberID = req["villageID"]
-    
-    #  LOOK UP MEMBER ID
-    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
-    if member == None:
-        msg = "Member ID " + memberID + " was not found."
-        memberName = msg
-        return jsonify(msg=msg,memberName=memberName,status=201)
-    
-    if member.Nickname != '' and member.Nickname != None:
-        memberName = member.First_Name + ' (' + member.Nickname + ') ' + member.Last_Name
-    else:
-        memberName = member.First_Name + ' ' + member.Last_Name
-    
-    # Get machines with member certification
-    machineDict = []
-    machineItem = []
-    machines = db.session.query(Machines)
-    for m in machines:
-        memberCertified = db.session.query(MemberMachineCertifications) \
-            .filter(MemberMachineCertifications.machineID == m.machineID) \
-            .filter(MemberMachineCertifications.member_ID == memberID).first()
-        if memberCertified is None:
-            continue
+# @app.route('/lookUpMember',methods=['POST'])
+# def lookUpMember():
+#     req = request.get_json()
+#     memberID = req["villageID"]
+#     shopLocation = req["shopLocation"]
 
-        machineItem = {
-            'machineID': m.machineID,
-            'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
-            'machineLocation': m.machineLocation,
-            'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y')
-        }
-        machineDict.append(machineItem)
+#     #  LOOK UP MEMBER ID
+#     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+#     if member == None:
+#         msg = "Member ID " + memberID + " was not found."
+#         memberName = msg
+#         return jsonify(msg=msg,memberName=memberName,status=201)
+    
+#     if member.Nickname != '' and member.Nickname != None:
+#         memberName = member.First_Name + ' (' + member.Nickname + ') ' + member.Last_Name
+#     else:
+#         memberName = member.First_Name + ' ' + member.Last_Name
+    
+    # # Get machines with member certification
+    # machineDict = []
+    # machineItem = []
+    # machines = db.session.query(Machines)\
+    #     .filter(Machines.machineLocation == shopLocation)\
+    #     .order_by(Machines.machineDesc)
+    # for m in machines:
+    #     memberCertified = db.session.query(MemberMachineCertifications) \
+    #         .filter(MemberMachineCertifications.machineID == m.machineID) \
+    #         .filter(MemberMachineCertifications.member_ID == memberID).first()
+    #     if memberCertified is None:
+    #         dateCertified = ''
+    #         certified = False
+    #     else:
+    #         dateCertified = memberCertified.dateCertified
+    #         # Is authorization still valid?
+    #         certificationDuration = memberCertified.certificationDuration
+    #         dateCertified = memberCertied.dateCertified.strftime("%m/%d/%Y")
+    #         certified = checkCertification(dateCertified,certificationDuration)
+            
+    #     machineItem = {
+    #         'machineID': m.machineID,
+    #         'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
+    #         'machineLocation': m.machineLocation,
+    #         'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y'),
+    #         'certified':certified
+    #     }
+    #     machineDict.append(machineItem)
 
-    msg = "Member found."
-    return jsonify(msg=msg,memberName=memberName,machineDict=machineDict,status=200)
+    # msg = "Member found."
+    # return jsonify(msg=msg,memberName=memberName,machines=machines,status=200)
 
 @app.route('/displayMemberData')
 def displayMemberData():
@@ -117,31 +128,75 @@ def displayMemberData():
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
 
-    # Display machines with member certification
-    # Get all machines and mark those this instructor may certifify
-    certifiedMachines = []
+    # Get machines with member certification
+    machineDict = []
     machineItem = []
-    machines = db.session.query(Machines)
+    machines = db.session.query(Machines)\
+        .filter(Machines.machineLocation == locationAbbr)\
+        .order_by(Machines.machineDesc)
     for m in machines:
         memberCertified = db.session.query(MemberMachineCertifications) \
             .filter(MemberMachineCertifications.machineID == m.machineID) \
             .filter(MemberMachineCertifications.member_ID == villageID).first()
         if memberCertified is None:
-            continue
+            dateCertified = ''
+            dateCertifiedSTR = ''
+            certified = False
+        else:
+            if memberCertified.dateCertified != None:
+                dateCertified = memberCertified.dateCertified
+                dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
+            else:
+                dateCertified = ''
+                dateCertifiedSTR = ''
 
+            # Is authorization still valid?
+            certificationDuration = memberCertified.certificationDuration
+            #dateCertified = memberCertified.dateCertified.strftime("%m/%d/%Y")
+            if dateCertified != None and certificationDuration != None:
+                certified = checkCertification(dateCertified,certificationDuration)
+            else:
+                certified = False
+        if certified:
+            certifiedMsg = 'CERTIFIED'
+        else:
+            certifiedMsg = ''
         machineItem = {
+            'certifiedMsg':certifiedMsg,
             'machineID': m.machineID,
             'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
             'machineLocation': m.machineLocation,
-            'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y')
+            'dateCertified':dateCertifiedSTR
+            
         }
-        certifiedMachines.append(machineItem)
+        
+        machineDict.append(machineItem)
+
+    # Display machines with member certification
+    # Get all machines and mark those this instructor may certifify
+    # certifiedMachines = []
+    # machineItem = []
+    # machines = db.session.query(Machines)
+    # for m in machines:
+    #     memberCertified = db.session.query(MemberMachineCertifications) \
+    #         .filter(MemberMachineCertifications.machineID == m.machineID) \
+    #         .filter(MemberMachineCertifications.member_ID == villageID).first()
+    #     if memberCertified is None:
+    #         continue
+
+    #     machineItem = {
+    #         'machineID': m.machineID,
+    #         'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
+    #         'machineLocation': m.machineLocation,
+    #         'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y')
+    #     }
+    #     certifiedMachines.append(machineItem)
         
     msg="Success"
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
 
-    return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,memberID=villageID,memberName=memberName,certifiedMachines=certifiedMachines,location=locationName)
+    return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,memberID=villageID,memberName=memberName,machineDict=machineDict,location=locationName)
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
@@ -325,3 +380,34 @@ def printESCticket():
     
     
     return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
+
+
+def checkCertification(dateCertified,certificationDuration):
+    if dateCertified == None:
+        return False
+
+    today=date.today()
+    delta = today - dateCertified
+    daysElapsed = delta.days  
+    certified = False  
+    if certificationDuration.rstrip() == 'UNL':
+        certified = True
+    if certificationDuration.rstrip() == '365 days':
+        if daysElapsed > 365:
+            certified = True
+    if certificationDuration.rstrip() == '180 days':
+        if daysElapsed > 180:
+            certified = True
+    if certificationDuration.rstrip() == '90 days':
+        if daysElapsed > 90:
+            certified = True
+    if certificationDuration.rstrip() == '60 days':
+        if daysElapsed > 60:
+            certified = True
+    if certificationDuration.rstrip() == '30 days':
+        if daysElapsed > 30:
+            certified = True
+    if certificationDuration.rstrip() == '7 days':
+        if daysElapsed > 7:
+            certified = True
+    return certified

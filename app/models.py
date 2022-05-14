@@ -311,6 +311,7 @@ class MemberMachineCertifications(db.Model):
     machineID = db.Column(db.String(20), primary_key=True)
     dateCertified = db.Column(db.Date)
     certifiedBy = db.Column(db.String(6))
+    certificationDuration = db.Column(db.String(10))
 
 class MachineInstructors(db.Model):
     __tablename__ = 'machineInstructors'

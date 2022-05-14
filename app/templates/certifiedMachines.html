@@ -32,7 +32,7 @@
             <tbody>
                 <tr></tr>
                 <tr></tr>
-                {% for c in certifiedMachines %}
+                {% for c in machineDict %}
                 <tr>
                     <td>
                         <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicket2('{{c.machineID}},{{villageID}}')">SELECT</button> -->
@@ -40,6 +40,8 @@
                         <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
                     </td>
                     <td>{{c.machineDesc}}</td>
+                    <td></td>
+                    <td>{{c.certifiedMsg}}</td>
                 </tr>
                 {%endfor%}
             </tbody>
