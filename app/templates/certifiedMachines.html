@@ -25,23 +25,26 @@
     <div id="machinesSection">
         <table class="machines">
             <thead class="selectLine">
-                <tr>
-                    <th>Select a machine -</th>
-                </tr>
+                
             </thead>
             <tbody>
                 <tr></tr>
                 <tr></tr>
                 {% for c in machineDict %}
-                <tr>
+                <tr height="35">
                     <td>
                         <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicket2('{{c.machineID}},{{villageID}}')">SELECT</button> -->
                         <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicketPage('{{c.machineID}}')">SELECT</button> -->
                         <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
                     </td>
-                    <td>{{c.machineDesc}}</td>
+                    <td width="400">{{c.machineDesc}}</td>
                     <td></td>
-                    <td>{{c.certifiedMsg}}</td>
+                    {% if c.authorizationStatus != "Expired" %}
+                        <td>{{c.certifiedMsg}}</td>
+                    {% else %}    
+                        <td><s>{{c.certifiedMsg}}</s></td>   
+                    {% endif %}
+                    
                 </tr>
                 {%endfor%}
             </tbody>
@@ -71,11 +74,14 @@
             <div id=ticketMachineID class="col-12">
                 Key for machine # - machine ID
             </div>
+            <div id="ticketBody">
+                
+            </div>
         </div>
     </div>
     <div id="ticketFooter">
         <div class="row">
-            <div class="col-12" style="text-align:center">Present this ticket to the tool crib attendant.</div>
+            <div class="col-12" style="text-align:center">Please select PRINT</div>
         </div>
     </div>
 </div>

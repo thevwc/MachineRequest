@@ -302,7 +302,9 @@ class Machines(db.Model):
     machineID = db.Column(db.String(20), primary_key=True)
     machineDesc = db.Column(db.String(50))
     machineLocation = db.Column(db.String(2))
-    
+    keyInToolCrib = db.Column(db.Boolean)
+    callKeyProvider = db.Column(db.Boolean)
+
 class MemberMachineCertifications(db.Model):
     __tablename__ = 'memberMachineCertifications'
     __table_args__ = {"schema": "dbo"}

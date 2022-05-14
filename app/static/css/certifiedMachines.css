@@ -177,12 +177,7 @@ background-color: #4e9ed4;
         color:white;
         width:100%;
     }
-    /* thead {
-        margin-bottom:30px;
-    }
-    .selectLine {
-        margin-bottom: 20px;
-    } */
+    
     tbody td {
         position:relative;
         top:2rem;
@@ -190,6 +185,9 @@ background-color: #4e9ed4;
     .selectBtn {
         margin-left:20px;
         margin-right:40px;
+        padding-top:0px;
+        padding-bottom: 3px;
+        height:25px;
     }
 
     #nameSection {
@@ -205,13 +203,15 @@ background-color: #4e9ed4;
     
     #machinesSection {
         grid-area: machinesArea;
-        width:50%;
-        height:400px;
+        width:60%;
+        height:600px;
         margin:auto;
         margin-top:50px;
         overflow:auto;
+        padding-right:20px;
         border:1px solid navy;
     }
+    
     #footer {
         grid-area: footerArea;
         width:100%;

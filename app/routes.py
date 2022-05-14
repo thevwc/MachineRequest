@@ -110,12 +110,12 @@ def displayMemberData():
         locationName = 'Brownwood'
 
     today=date.today()
-    todaysDate = today.strftime('%B %d, %Y')
-   
+    todaysDateSTR = today.strftime('%B %d, %Y')
+
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         notFoundMsg = 'Member ID was not found.'
-        return render_template('index.html',todaysDate=todaysDate,notFoundMsg=notFoundMsg)
+        return render_template('index.html',todaysDate=todaysDateSTR,notFoundMsg=notFoundMsg)
     else:
         notFoundMsg = ''
 
@@ -128,6 +128,14 @@ def displayMemberData():
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
 
+    # DATA TO RETURN
+    dateCertified = ''
+    dateCertifiedSTR = ''
+    certified = False
+    certifiedMsg = ''
+    authorizationExpired = False
+    authorizationStatus = ''
+
     # Get machines with member certification
     machineDict = []
     machineItem = []
@@ -138,64 +146,34 @@ def displayMemberData():
         memberCertified = db.session.query(MemberMachineCertifications) \
             .filter(MemberMachineCertifications.machineID == m.machineID) \
             .filter(MemberMachineCertifications.member_ID == villageID).first()
-        if memberCertified is None:
-            dateCertified = ''
-            dateCertifiedSTR = ''
-            certified = False
-        else:
-            if memberCertified.dateCertified != None:
-                dateCertified = memberCertified.dateCertified
-                dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
-            else:
-                dateCertified = ''
-                dateCertifiedSTR = ''
-
+        if memberCertified:
+            certifiedMsg = 'AUTHORIZED'
+            dateCertified = memberCertified.dateCertified
+            dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
             # Is authorization still valid?
             certificationDuration = memberCertified.certificationDuration
-            #dateCertified = memberCertified.dateCertified.strftime("%m/%d/%Y")
-            if dateCertified != None and certificationDuration != None:
-                certified = checkCertification(dateCertified,certificationDuration)
+            if certificationDuration != None:
+                authorizationExpired = checkCertification(dateCertified,certificationDuration)
             else:
-                certified = False
-        if certified:
-            certifiedMsg = 'CERTIFIED'
-        else:
-            certifiedMsg = ''
+                authorizationExpired = False
+            if authorizationExpired:
+                authorizationStatus = 'Valid'
+            else:
+                authorizationStatus = 'Expired'
+
         machineItem = {
-            'certifiedMsg':certifiedMsg,
             'machineID': m.machineID,
-            'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
+            'machineDesc': m.machineDesc,
             'machineLocation': m.machineLocation,
-            'dateCertified':dateCertifiedSTR
-            
+            'dateCertified':dateCertifiedSTR,
+            'certifiedMsg':certifiedMsg,
+            'authorizationStatus':authorizationStatus
         }
         
         machineDict.append(machineItem)
-
-    # Display machines with member certification
-    # Get all machines and mark those this instructor may certifify
-    # certifiedMachines = []
-    # machineItem = []
-    # machines = db.session.query(Machines)
-    # for m in machines:
-    #     memberCertified = db.session.query(MemberMachineCertifications) \
-    #         .filter(MemberMachineCertifications.machineID == m.machineID) \
-    #         .filter(MemberMachineCertifications.member_ID == villageID).first()
-    #     if memberCertified is None:
-    #         continue
-
-    #     machineItem = {
-    #         'machineID': m.machineID,
-    #         'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
-    #         'machineLocation': m.machineLocation,
-    #         'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y')
-    #     }
-    #     certifiedMachines.append(machineItem)
         
     msg="Success"
-    today=date.today()
-    todaysDateSTR = today.strftime('%B %d, %Y')
-
+    
     return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,memberID=villageID,memberName=memberName,machineDict=machineDict,location=locationName)
 
 @app.route('/printInlineTicket',methods=['POST'])
@@ -204,7 +182,7 @@ def printInlineTicket():
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
-    
+    shopLocation = req["location"]
     print('VillageID - ',villageID)
     print('MachineID - ',machineID)
 
@@ -224,16 +202,25 @@ def printInlineTicket():
     eMail = mbr.eMail
 
     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-    if (machine != None):
-        machineDesc = machine.machineDesc
-    else:
-        machineDesc = "?"
+    if (machine == None):
+        flash('Machine not found.','Danger')
+        return jsonify(msg='Machine not found.',status=201)
+
+    machineDesc = machine.machineDesc
+    keyInToolCrib = machine.keyInToolCrib
+    callKeyProvider = machine.callKeyProvider
+
+    # BUILD LIST OF KEY PROVIDERS
+    
+
+    # BUILD LIST OF MEMBERS WHO WILL ASSIST
+
 
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
     
     activityDateTime = today.strftime('%Y-%m-%d %H:%M')
-    shopLocation = 'BW'
+    
 
     # UPDATE MACHINE ACTIVITY TABLE
     #print(machineID,villageID,activityDateTime,shopLocation)
