@@ -236,7 +236,7 @@ background-color: #4e9ed4;
         width:40%;
         height:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 100px 200px 100px;
+        grid-template-rows: 100px 1fr 100px;
         grid-template-areas:"hdgArea"
                             "ticketBodyArea"
                             "footerArea";
@@ -260,16 +260,23 @@ background-color: #4e9ed4;
         grid-area:ticketBodyArea;
         color:black;
         padding-top:5px;
-        padding-left:0px;
+        padding-left:15px;
         padding-right: 0px;
         margin-top:50px;
         width:100%;
-        text-align: center;
         margin:auto;
         font-size: 2rem;
+        
         /* display:none; */
     }
-    
+    .msgLine1 {
+        text-align: center;
+        
+    }
+    .msgLine2 {
+        text-align: center;
+    }
+
     #ticketFooter {
         grid-area: footerArea;
         width:100%;

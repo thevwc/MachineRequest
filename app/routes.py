@@ -113,15 +113,11 @@ def displayMemberData():
 
     # test memberInShopNow
     #sp = "EXEC newMemberMachineCertification '" + memberID + "', '" + todaysDate + "',
-
-
     # sp = "EXEC memberInShopNow '" + villageID + "', '" + str(shopNumber) + "'"
     # print('sp - ',sp)
     # sql = SQLQuery
     # result = db.engine.execute(sql)
     # print('result - ',result)
-    
-
     # sqlSelectSM += "ORDER BY Last_Name, First_Name"
     # result = db.engine.execute(sqlSelectSM)
     # result_as_list = result.fetchall()
@@ -197,21 +193,21 @@ def displayMemberData():
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
-    print('/printInlineTicket')
+    #print('/printInlineTicket')
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
-    shopLocation = req["location"]
+    shopLocation = req["shopLocation"]
     isAuthorized = req["isAuthorized"]
     if shopLocation == 'RA':
         shopNumber = 1
     else:
         shopNumber = 2
 
-    print('VillageID - ',villageID)
-    print('MachineID - ',machineID)
-    print('shopNumber - ',shopNumber)
-    print('authorized - ',isAuthorized)
+    # print('VillageID - ',villageID)
+    # print('MachineID - ',machineID)
+    # print('shopNumber - ',shopNumber)
+    # print('authorized - ',isAuthorized)
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         msg="Member not found"
@@ -235,40 +231,43 @@ def printInlineTicket():
     machineDesc = machine.machineDesc
     keyInToolCrib = machine.keyInToolCrib
     callKeyProvider = machine.callKeyProvider
-
+    #return jsonify(msg='Success',status=200)
+    
     # BUILD LIST OF KEY PROVIDERS
-    sp = "EXEC keyProviders machineID"
-    sql = SQLQuery(sp)
-    keyProviders = db.engine.execute(sql)
+    # print('BUILD LIST OF KEY PROVIDERS')
+    # sp = "EXEC keyProviders machineID"
+    # sql = SQLQuery(sp)
+    # keyProviders = db.engine.execute(sql)
     keyProvidersDict = []
     keyProvidersItem = []
-    if keyProviders == None:
-        keyProvidersItem = {name:"No key providers assigned.",
-                        inShopNow:false}
-        keyProvidersDict.append(keyProvidersItem)
-    else:
-        for i in keyProviders:
-            inShopNow = inShopNow(i.villageID,shopNumber)
-            keyProvidersItem = {name:i.fnl_name,
-                        inshopNow:inshopNow}
-            keyProvidersDict.append(instructorName)
+    # if keyProviders == None:
+    #     keyProvidersItem = {name:"No key providers assigned.",
+    #                     inShopNow:false}
+    #     keyProvidersDict.append(keyProvidersItem)
+    # else:
+    #     for i in keyProviders:
+    #         inShopNow = inShopNow(i.villageID,shopNumber)
+    #         keyProvidersItem = {name:i.fnl_name,
+    #                     inshopNow:inshopNow}
+    #         keyProvidersDict.append(instructorName)
 
     # BUILD LIST OF MEMBERS WHO WILL ASSIST
-    sp = "EXEC machineAssistants machineID"
-    sql = SQLQuery(sp)
-    assistants = db.engine.execute(sql)
+    # print('BUILD LIST OF ASSISTANTS')
+    # sp = "EXEC machineAssistants machineID"
+    # sql = SQLQuery(sp)
+    # assistants = db.engine.execute(sql)
     assistantsDict = []
     assistantsItem = []
-    if assistants == None:
-        assistantsItem = {name:"No assistants assigned.",
-                        inShopNow:false}
-        assistantsDict.append(assistantsItem)
-    else:
-        for i in assistants:
-            inShopNow = inShopNow(i.villageID,shopNumber)
-            assistantsItem = {name:i.fnl_name,
-                        inshopNow:inshopNow}
-            assistantsDict.append(instructorName)
+    # if assistants == None:
+    #     assistantsItem = {name:"No assistants assigned.",
+    #                     inShopNow:false}
+    #     assistantsDict.append(assistantsItem)
+    # else:
+    #     for i in assistants:
+    #         inShopNow = inShopNow(i.villageID,shopNumber)
+    #         assistantsItem = {name:i.fnl_name,
+    #                     inshopNow:inshopNow}
+    #         assistantsDict.append(instructorName)
 
 
     today=date.today()
@@ -278,6 +277,7 @@ def printInlineTicket():
     
 
     # UPDATE MACHINE ACTIVITY TABLE
+    # if authorized ...
     #print(machineID,villageID,activityDateTime,shopLocation)
    
     # try:
@@ -289,13 +289,17 @@ def printInlineTicket():
     #     print('Error - ',error)
     #     db.session.rollback()
 
+
     # RETURN DATA TO CLIENT FOR PRINTING TICKET
-    msg='Success'
-    print('msg - ',msg)
-    return jsonify(msg=msg,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
+    # msg='Success'
+    # print('msg - ',msg)
+    #print('memberName - ',memberName)
+
+    return jsonify(msg='SUCCESS',status=200\
+        ,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
         ticketMachineDesc=machineDesc,ticketMachineID=machineID,\
-        keyInToolCrib=keyInToolCrib,callKeyProvider=callKeyProvider,
+        keyInToolCrib=keyInToolCrib,callKeyProvider=callKeyProvider,\
         keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
 @app.route('/printTicketPage')
