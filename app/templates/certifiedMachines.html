@@ -40,7 +40,7 @@
                     <td width="400">{{c.machineDesc}}</td>
                     <td></td>
                     {% if c.authorizationStatus != "Expired" %}
-                        <td>{{c.certifiedMsg}}</td>
+                        <td id="A{{c.machineID}}">{{c.certifiedMsg}}</td>
                     {% else %}    
                         <td><s>{{c.certifiedMsg}}</s></td>   
                     {% endif %}

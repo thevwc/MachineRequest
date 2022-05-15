@@ -7,11 +7,14 @@ function printInlineTicket(machineID) {
     villageID = document.getElementById('memberID').innerText
     location = localStorage.getItem('shopLocation')
     console.log('location - '+location)
+    isAuthorized = document.getElementById('A'+machineID).innerHTML
+    console.log('isAuthorized - ',isAuthorized)
 
     let dataToSend = {
         villageID: villageID,
         machineID: machineID,
-        location: location
+        location: location,
+        isAuthorized: isAuthorized
     };
 
     fetch(`${window.origin}/printInlineTicket`, {
@@ -47,12 +50,25 @@ function printInlineTicket(machineID) {
             ticketBody.removeChild(ticketBody.lastChild)
         }
         // If authorized and key provider ---
-        //if data.keyProvider{
+        if (data.callKeyProvider) {
+            keyProviders = data.keyProvidersDict
+            for (var element of keyProviders) {
+                console.log(element.name)
+            }
+        }
 
-        //}
+        // if authorized and assistants ---
+        
         //divRow1 = document.createElement('div')
         
         // If not authorized ---
+        if (data.keyInToolCrib) {
+            assistants = data.assistantsDict
+            for (var element of assistants) {
+                console.log(element.name)
+            }
+        }
+
         // Print ticket
         window.print();
 

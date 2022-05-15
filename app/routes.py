@@ -106,8 +106,27 @@ def displayMemberData():
     locationAbbr=request.args.get('location')
     if (locationAbbr == 'RA'):
         locationName = 'Rolling Acres'
+        shopNumber = 1
     else:
         locationName = 'Brownwood'
+        shopNumber = 2
+
+    # test memberInShopNow
+    #sp = "EXEC newMemberMachineCertification '" + memberID + "', '" + todaysDate + "',
+
+
+    # sp = "EXEC memberInShopNow '" + villageID + "', '" + str(shopNumber) + "'"
+    # print('sp - ',sp)
+    # sql = SQLQuery
+    # result = db.engine.execute(sql)
+    # print('result - ',result)
+    
+
+    # sqlSelectSM += "ORDER BY Last_Name, First_Name"
+    # result = db.engine.execute(sqlSelectSM)
+    # result_as_list = result.fetchall()
+    # for row in result_as_list:
+    # print(row)
 
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
@@ -183,9 +202,16 @@ def printInlineTicket():
     villageID = req["villageID"]
     machineID = req["machineID"]
     shopLocation = req["location"]
+    isAuthorized = req["isAuthorized"]
+    if shopLocation == 'RA':
+        shopNumber = 1
+    else:
+        shopNumber = 2
+
     print('VillageID - ',villageID)
     print('MachineID - ',machineID)
-
+    print('shopNumber - ',shopNumber)
+    print('authorized - ',isAuthorized)
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         msg="Member not found"
@@ -211,9 +237,38 @@ def printInlineTicket():
     callKeyProvider = machine.callKeyProvider
 
     # BUILD LIST OF KEY PROVIDERS
-    
+    sp = "EXEC keyProviders machineID"
+    sql = SQLQuery(sp)
+    keyProviders = db.engine.execute(sql)
+    keyProvidersDict = []
+    keyProvidersItem = []
+    if keyProviders == None:
+        keyProvidersItem = {name:"No key providers assigned.",
+                        inShopNow:false}
+        keyProvidersDict.append(keyProvidersItem)
+    else:
+        for i in keyProviders:
+            inShopNow = inShopNow(i.villageID,shopNumber)
+            keyProvidersItem = {name:i.fnl_name,
+                        inshopNow:inshopNow}
+            keyProvidersDict.append(instructorName)
 
     # BUILD LIST OF MEMBERS WHO WILL ASSIST
+    sp = "EXEC machineAssistants machineID"
+    sql = SQLQuery(sp)
+    assistants = db.engine.execute(sql)
+    assistantsDict = []
+    assistantsItem = []
+    if assistants == None:
+        assistantsItem = {name:"No assistants assigned.",
+                        inShopNow:false}
+        assistantsDict.append(assistantsItem)
+    else:
+        for i in assistants:
+            inShopNow = inShopNow(i.villageID,shopNumber)
+            assistantsItem = {name:i.fnl_name,
+                        inshopNow:inshopNow}
+            assistantsDict.append(instructorName)
 
 
     today=date.today()
@@ -236,9 +291,12 @@ def printInlineTicket():
 
     # RETURN DATA TO CLIENT FOR PRINTING TICKET
     msg='Success'
-    return jsonify(msg=msg,ticketName=memberName,ticketMobilePhone=mobilePhone,\
+    print('msg - ',msg)
+    return jsonify(msg=msg,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
-        ticketMachineDesc=machineDesc,ticketMachineID=machineID)
+        ticketMachineDesc=machineDesc,ticketMachineID=machineID,\
+        keyInToolCrib=keyInToolCrib,callKeyProvider=callKeyProvider,
+        keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
 @app.route('/printTicketPage')
 def printTicketPage():
@@ -398,3 +456,17 @@ def checkCertification(dateCertified,certificationDuration):
         if daysElapsed > 7:
             certified = True
     return certified
+
+
+def inShopNow(villageID,shopNumber):
+    sqlSelect = "SELECT [Member_ID] FROM [dbo].[tblMember_Activity] "
+    sqlSelect += "WHERE [Member_ID] = '" + villageID + "' " 
+    sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'US Eastern Standard Time' AS date) "
+    sqlSelect += "AND CAST([Check_Out_Date_Time] AS DATE) IS NULL "
+    sqlSelect += "AND [Shop_Number] = " + str(shopNumber)
+    print('sqlSelect - ',sqlSelect)
+    result = db.engine.execute(sqlSelect).scalar()
+    if result != None:
+        return True
+    else:
+        return False
