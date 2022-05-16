@@ -24,28 +24,22 @@
     <!-- SELECTION AREA -->
     <div id="machinesSection">
         <table class="machines">
-            <thead class="selectLine">
-                
-            </thead>
             <tbody>
-                <tr></tr>
-                <tr></tr>
                 {% for c in machineDict %}
-                <tr height="35">
-                    <td>
-                        <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicket2('{{c.machineID}},{{villageID}}')">SELECT</button> -->
-                        <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicketPage('{{c.machineID}}')">SELECT</button> -->
-                        <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
-                    </td>
-                    <td width="250">{{c.machineDesc}}</td>
-                   
-                    {% if c.authorizationExpired %}
-                        <td class='expired'>{{c.certifiedMsg}}</td>
-                    {% else %}    
-                        <td>{{c.certifiedMsg}}</td>   
-                    {% endif %}
-                    <td>{{c.expirationMsg}}</td>
-                </tr>
+                    <tr height="35">
+                        <td>
+                            <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
+                        </td>
+                        <td width="250" >{{c.machineDesc}}</td>
+                    
+                        {% if c.authorizationExpired %}
+                            <td class='expired'>{{c.certifiedMsg}} </td>
+                        {% else %}    
+                            <td>{{c.certifiedMsg}}</td>   
+                        {% endif %}
+
+                        <!-- <td class="expirationMsg">{{c.expirationMsg}}</td> -->
+                    </tr>
                 {%endfor%}
             </tbody>
         </table>

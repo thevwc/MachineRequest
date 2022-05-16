@@ -182,7 +182,7 @@ def displayMemberData():
             if certificationDuration.rstrip() != 'UNL':
                 authorizationExpirationDate = computedExpirationDate(dateCertified, certificationDuration)
                 #print('returned date - ',authorizationExpirationDate)
-                expirationMsg = ' until ' + authorizationExpirationDate.strftime('%m-%d-%Y')
+                expirationMsg = 'until ' + authorizationExpirationDate.strftime('%m-%d-%Y')
                 if isExpired(authorizationExpirationDate):
                     authorizationExpired = True
             else:
@@ -190,7 +190,7 @@ def displayMemberData():
                 # print('---------------------------------------------------')
                 # print(dateCertified,certificationDuration,expirationMsg)
                 # print('---------------------------------------------------')
-            
+        certifiedMsg += '   ' + expirationMsg    
         machineItem = {
             'machineID': m.machineID,
             'machineDesc': m.machineDesc,
@@ -199,7 +199,7 @@ def displayMemberData():
             'authorizationExpired':authorizationExpired,
             'expirationMsg':expirationMsg
         }
-        print(machineItem)
+        print('Item - ',machineItem)
         machineDict.append(machineItem)
         
     msg="Success"

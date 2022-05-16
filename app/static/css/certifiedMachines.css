@@ -177,11 +177,15 @@ background-color: #4e9ed4;
         color:white;
         width:100%;
     }
-    
+    tbody {
+        padding-top:20px;
+       
+    }
     tbody td {
         position:relative;
         top:2rem;
     }
+    
     .selectBtn {
         margin-left:20px;
         margin-right:40px;
@@ -189,12 +193,14 @@ background-color: #4e9ed4;
         padding-bottom: 3px;
         height:25px;
     }
-
+    .expirationMsg {
+        margin-left:20px;
+    }
     #nameSection {
         grid-area: memberNameArea;
         width:50%;
         margin:auto;
-        /* margin-top:0px; */
+        margin-top:20px; 
         font-size:1.5rem;
         padding-top:0px;
         color:navy;
@@ -203,7 +209,7 @@ background-color: #4e9ed4;
     
     #machinesSection {
         grid-area: machinesArea;
-        width:60%;
+        width:90%;
         height:600px;
         margin:auto;
         margin-top:50px;
