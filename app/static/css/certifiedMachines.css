@@ -220,6 +220,7 @@ background-color: #4e9ed4;
     .expired {
         text-decoration: line-through;
     }
+    
     #footer {
         grid-area: footerArea;
         width:100%;
@@ -279,12 +280,23 @@ background-color: #4e9ed4;
     }
     .msgLine1 {
         text-align: center;
-        
+        font-size:1rem;
     }
     .msgLine2 {
         text-align: center;
+        font-size:1rem;
     }
-
+    .kpRow {
+        margin-left:15px;
+    }
+    .kpName {
+        font-size: 1.25rem;
+        text-align: left;
+    }
+    .kpInShopNow {
+        font-size: 1rem;
+        text-align: left;
+    }
     #ticketFooter {
         grid-area: footerArea;
         width:100%;

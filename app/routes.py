@@ -50,56 +50,6 @@ def index():
     todaysDate = today.strftime('%B %d, %Y')
     return render_template("index.html",todaysDate=todaysDate)
     
-# @app.route('/lookUpMember',methods=['POST'])
-# def lookUpMember():
-#     req = request.get_json()
-#     memberID = req["villageID"]
-#     shopLocation = req["shopLocation"]
-
-#     #  LOOK UP MEMBER ID
-#     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
-#     if member == None:
-#         msg = "Member ID " + memberID + " was not found."
-#         memberName = msg
-#         return jsonify(msg=msg,memberName=memberName,status=201)
-    
-#     if member.Nickname != '' and member.Nickname != None:
-#         memberName = member.First_Name + ' (' + member.Nickname + ') ' + member.Last_Name
-#     else:
-#         memberName = member.First_Name + ' ' + member.Last_Name
-    
-    # # Get machines with member certification
-    # machineDict = []
-    # machineItem = []
-    # machines = db.session.query(Machines)\
-    #     .filter(Machines.machineLocation == shopLocation)\
-    #     .order_by(Machines.machineDesc)
-    # for m in machines:
-    #     memberCertified = db.session.query(MemberMachineCertifications) \
-    #         .filter(MemberMachineCertifications.machineID == m.machineID) \
-    #         .filter(MemberMachineCertifications.member_ID == memberID).first()
-    #     if memberCertified is None:
-    #         dateCertified = ''
-    #         certified = False
-    #     else:
-    #         dateCertified = memberCertified.dateCertified
-    #         # Is authorization still valid?
-    #         certificationDuration = memberCertified.certificationDuration
-    #         dateCertified = memberCertied.dateCertified.strftime("%m/%d/%Y")
-    #         certified = checkCertification(dateCertified,certificationDuration)
-            
-    #     machineItem = {
-    #         'machineID': m.machineID,
-    #         'machineDesc': m.machineDesc + ' ('+m.machineID + ')',
-    #         'machineLocation': m.machineLocation,
-    #         'dateCertified':memberCertified.dateCertified.strftime('%m-%d-%Y'),
-    #         'certified':certified
-    #     }
-    #     machineDict.append(machineItem)
-
-    # msg = "Member found."
-    # return jsonify(msg=msg,memberName=memberName,machines=machines,status=200)
-
 @app.route('/displayMemberData')
 def displayMemberData():
     villageID=request.args.get('villageID')
@@ -151,16 +101,11 @@ def displayMemberData():
         .order_by(Machines.machineDesc)
     for m in machines:
         # CLEAR VARIABLES
-        #dateCertified = ''
         certified = False
         certifiedMsg = ''
         authorizationExpired = False
-        #authorizationStatus = ''
         authorizationExpirationDate = ''
         expirationMsg = ''
-
-        print("========================================================================")
-        print('Machine ID - ',m.machineID,m.machineDesc,m.machineLocation)
 
         memberCertified = db.session.query(MemberMachineCertifications) \
             .filter(MemberMachineCertifications.machineID == m.machineID) \
@@ -169,15 +114,11 @@ def displayMemberData():
         if memberCertified:
             certifiedMsg = 'AUTHORIZED'
             dateCertified = memberCertified.dateCertified
-            # dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
-            # Is authorization still valid?
-            certificationDuration = memberCertified.certificationDuration
-            # if certificationDuration != None:
-            #     flash("Missing duration data.",'danger')
-            #     return
             
+            # Is authorization still valid?
+            certificationDuration = memberCertified.certificationDuration  
             authorizationExpired = False
-            #print('certificationDuration - ',certificationDuration)
+            
             # DETERMINE EXPIRATION DATE AND IF AUTHORIZATION HAS EXPIRED
             if certificationDuration.rstrip() != 'UNL':
                 authorizationExpirationDate = computedExpirationDate(dateCertified, certificationDuration)
@@ -187,9 +128,7 @@ def displayMemberData():
                     authorizationExpired = True
             else:
                 expirationMsg = '- PERMANENT'
-                # print('---------------------------------------------------')
-                # print(dateCertified,certificationDuration,expirationMsg)
-                # print('---------------------------------------------------')
+
         certifiedMsg += '   ' + expirationMsg    
         machineItem = {
             'machineID': m.machineID,
@@ -199,7 +138,7 @@ def displayMemberData():
             'authorizationExpired':authorizationExpired,
             'expirationMsg':expirationMsg
         }
-        print('Item - ',machineItem)
+        #print('Item - ',machineItem)
         machineDict.append(machineItem)
         
     msg="Success"
@@ -209,7 +148,6 @@ def displayMemberData():
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
-    #print('/printInlineTicket')
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
@@ -247,43 +185,46 @@ def printInlineTicket():
     machineDesc = machine.machineDesc
     keyInToolCrib = machine.keyInToolCrib
     callKeyProvider = machine.callKeyProvider
-    #return jsonify(msg='Success',status=200)
     
     # BUILD LIST OF KEY PROVIDERS
-    # print('BUILD LIST OF KEY PROVIDERS')
-    # sp = "EXEC keyProviders machineID"
-    # sql = SQLQuery(sp)
-    # keyProviders = db.engine.execute(sql)
+    sqlKP = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
+    sqlKP += "from tblMember_Data "
+    sqlKP += "left join machineInstructors on tblMember_Data.member_id = machineInstructors.member_id "
+    sqlKP += "where keyProvider = 1 and machineid = '" + machineID + "'"
+    
+    keyProviders = db.engine.execute(sqlKP)
     keyProvidersDict = []
     keyProvidersItem = []
-    # if keyProviders == None:
-    #     keyProvidersItem = {name:"No key providers assigned.",
-    #                     inShopNow:false}
-    #     keyProvidersDict.append(keyProvidersItem)
-    # else:
-    #     for i in keyProviders:
-    #         inShopNow = inShopNow(i.villageID,shopNumber)
-    #         keyProvidersItem = {name:i.fnl_name,
-    #                     inshopNow:inshopNow}
-    #         keyProvidersDict.append(instructorName)
-
+    if keyProviders == None:
+        keyProvidersItem = {name:"No key providers assigned.",
+                        inShopNow:false}
+        keyProvidersDict.append(keyProvidersItem)
+    else:
+        for i in keyProviders:
+            inShopNow = determineIfInShop(i.villageID,shopNumber)
+            keyProvidersItem = {'name':i.fnl_name,
+                        'inShopNow':inShopNow}
+            keyProvidersDict.append(keyProvidersItem)
+        
     # BUILD LIST OF MEMBERS WHO WILL ASSIST
-    # print('BUILD LIST OF ASSISTANTS')
-    # sp = "EXEC machineAssistants machineID"
-    # sql = SQLQuery(sp)
-    # assistants = db.engine.execute(sql)
+    sqlAssistants = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
+    sqlAssistants += "from tblMember_Data "
+    sqlAssistants += "left join machineInstructors on tblMember_Data.member_id = machineInstructors.member_id "
+    sqlAssistants += "where canAssist = 1 and machineid = '" + machineID + "'"
+    
+    assistants = db.engine.execute(sqlAssistants)
     assistantsDict = []
     assistantsItem = []
-    # if assistants == None:
-    #     assistantsItem = {name:"No assistants assigned.",
-    #                     inShopNow:false}
-    #     assistantsDict.append(assistantsItem)
-    # else:
-    #     for i in assistants:
-    #         inShopNow = inShopNow(i.villageID,shopNumber)
-    #         assistantsItem = {name:i.fnl_name,
-    #                     inshopNow:inshopNow}
-    #         assistantsDict.append(instructorName)
+    if assistants == None:
+        assistantsItem = {name:"No key providers assigned.",
+                        inShopNow:false}
+        assistantsDict.append(assistantsItem)
+    else:
+        for i in assistants:
+            inShopNow = determineIfInShop(i.villageID,shopNumber)
+            assistantsItem = {'name':i.fnl_name,
+                        'inShopNow':inShopNow}
+            assistantsDict.append(assistantsItem)
 
 
     today=date.today()
@@ -478,7 +419,6 @@ def printESCticket():
 #     return certified
 
 def computedExpirationDate(dateCertified,certificationDuration):
-    print('computedExpirationDate - ',dateCertified,certificationDuration)
     if certificationDuration.rstrip() == '365 days':
         expirationDate = dateCertified + timedelta(days=365)
         return expirationDate
@@ -503,21 +443,21 @@ def computedExpirationDate(dateCertified,certificationDuration):
 def isExpired (expirationDate):
     today=date.today()
     delta = today - expirationDate 
-    print('isExpired - ',expirationDate,delta.days)
     if delta.days > 0:
         return True
     else:
         return False
 
-def inShopNow(villageID,shopNumber):
-    sqlSelect = "SELECT [Member_ID] FROM [dbo].[tblMember_Activity] "
+def determineIfInShop(villageID,shopNumber):
+    sqlSelect = "SELECT Top 1 [Member_ID] FROM [dbo].[tblMember_Activity] "
     sqlSelect += "WHERE [Member_ID] = '" + villageID + "' " 
     sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'US Eastern Standard Time' AS date) "
     sqlSelect += "AND CAST([Check_Out_Date_Time] AS DATE) IS NULL "
     sqlSelect += "AND [Shop_Number] = " + str(shopNumber)
-    print('sqlSelect - ',sqlSelect)
+    #print('sqlSelect - ',sqlSelect)
     result = db.engine.execute(sqlSelect).scalar()
+    #print('result - ',result)
     if result != None:
-        return True
+        return 'IN SHOP NOW'
     else:
-        return False
+        return ''

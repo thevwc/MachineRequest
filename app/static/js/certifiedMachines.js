@@ -34,14 +34,11 @@ function printInlineTicket(machineID) {
     })
     .then((res) => res.json())
     .then((data) => {
-        console.log('data.status - '+data.status)
         if (data.status < 200 || data.status > 299) {
             alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
             return
         }
         // Populate ticket
-        console.log('ticketDate - '+data.ticketDate)
-        console.log('ticketName - '+data.ticketName)
         ticketDate = document.getElementById('ticketDate')
         ticketDate.innerHTML = data.ticketDate
         ticketName = document.getElementById('ticketName')
@@ -55,15 +52,15 @@ function printInlineTicket(machineID) {
         while (parent.firstChild) {
             parent.removeChild(parent.lastChild)
         }
-        if (isAuthorized == 'AUTHORIZED') {
+        if (data.isAuthorized == 'AUTHORIZED') {
             ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
         }
         else {
             ticketMachineID.innerHTML = ""
         }
-
+        // alert('keyInToolCrib - '+ data.keyInToolCrib + ' keyProvider - '+data.callKeyProvider)
         // IF AUTHORIZED AND KEY IS KEPT IN THE TOOL CRIB ...
-        if (isAuthorized = 'AUTHORIZED' && data.keyInToolCrib) {
+        if (data.isAuthorized == 'AUTHORIZED' && data.keyInToolCrib) {
             //display msg to pick up key at the tool crib
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
@@ -86,8 +83,9 @@ function printInlineTicket(machineID) {
         }
 
         // If authorized and key provider ---
-        if (isAuthorized = 'AUTHORIZED' && data.callKeyProvider) {
+        if (data.isAuthorized == 'AUTHORIZED' && data.callKeyProvider) {
             //  please contact one of the following for the machine lock key --
+            //alert('enter callKeyProvider rtn')
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
@@ -99,27 +97,63 @@ function printInlineTicket(machineID) {
             
             // LIST OF KEY PROVIDERS
             keyProviders = data.keyProvidersDict
+            // if (keyProviders.length == 0) {
+            //     alert('empty keyProvidersDict')
+            // }
+            
             for (var element of keyProviders) {
-                console.log('keyProviders element - ' + element.name)
+                divRow = document.createElement('div')
+                divRow.classList.add('row','kpRow')
+
+                divCol1 = document.createElement('div')
+                divCol1.classList.add('col-6','kpName')
+                divCol1.innerHTML = element['name']
+                divRow.appendChild(divCol1)
+
+                divCol2 = document.createElement('div')
+                divCol2.classList.add('col-5','kpInShopNow')
+                divCol2.innerHTML = element['inShopNow']
+                divRow.appendChild(divCol2)
+
+                parent.appendChild(divRow)
             }
         }
  
         // If not authorized ---
         if (isAuthorized != 'AUTHORIZED') {
-             //"You have not been authorized to use this equipment without assistance."
-            //  divRow1 = document.createElement('div')
-            //  divRow1.classList.add('row')
- 
-            //  divRow1Data = document.createElement('div')
-            //  divRow1Data.innerHTML = "Contact one of the following members to arrange a time for their assistance."
- 
-            //  divRow1.appendChild(divRow1Data)
-            //  parent.appendChild(divRow1)
-            
+            //"You have not been authorized to use this equipment without assistance."
+            divRow1 = document.createElement('div')
+            divRow1.classList.add('row')
+
+            divRow1Data = document.createElement('div')
+            divRow1Data.classList.add("col-12","msgLine1")
+            divRow1Data.innerHTML = "Contact one of the following members"
+            divRow1.appendChild(divRow1Data)
+
+            divRow1Data = document.createElement('div')
+            divRow1Data.classList.add("col-12","msgLine2")
+            divRow1Data.innerHTML = "to arrange a time for their assistance."
+            divRow1.appendChild(divRow1Data)
+
+            parent.appendChild(divRow1)
+        
              // LIST OF ASSISTANTS FOR THIS MACHINE
-             assistants = data.assistantsDict
+            assistants = data.assistantsDict
             for (var element of assistants) {
-                console.log('assistants element - ' + element.name)
+                divRow = document.createElement('div')
+                divRow.classList.add('row','kpRow')
+
+                divCol1 = document.createElement('div')
+                divCol1.classList.add('col-6','kpName')
+                divCol1.innerHTML = element['name']
+                divRow.appendChild(divCol1)
+
+                divCol2 = document.createElement('div')
+                divCol2.classList.add('col-5','kpInShopNow')
+                divCol2.innerHTML = element['inShopNow']
+                divRow.appendChild(divCol2)
+
+                parent.appendChild(divRow)
             }
         }
 
