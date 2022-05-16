@@ -143,14 +143,6 @@ def displayMemberData():
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
 
-    # DATA TO RETURN
-    dateCertified = ''
-    dateCertifiedSTR = ''
-    certified = False
-    certifiedMsg = ''
-    authorizationExpired = False
-    authorizationStatus = ''
-
     # Get machines with member certification
     machineDict = []
     machineItem = []
@@ -158,38 +150,62 @@ def displayMemberData():
         .filter(Machines.machineLocation == locationAbbr)\
         .order_by(Machines.machineDesc)
     for m in machines:
+        # CLEAR VARIABLES
+        #dateCertified = ''
+        certified = False
+        certifiedMsg = ''
+        authorizationExpired = False
+        #authorizationStatus = ''
+        authorizationExpirationDate = ''
+        expirationMsg = ''
+
+        print("========================================================================")
+        print('Machine ID - ',m.machineID,m.machineDesc,m.machineLocation)
+
         memberCertified = db.session.query(MemberMachineCertifications) \
             .filter(MemberMachineCertifications.machineID == m.machineID) \
             .filter(MemberMachineCertifications.member_ID == villageID).first()
+        
         if memberCertified:
             certifiedMsg = 'AUTHORIZED'
             dateCertified = memberCertified.dateCertified
-            dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
+            # dateCertifiedSTR = dateCertified.strftime("%m/%d/%Y")
             # Is authorization still valid?
             certificationDuration = memberCertified.certificationDuration
-            if certificationDuration != None:
-                authorizationExpired = checkCertification(dateCertified,certificationDuration)
+            # if certificationDuration != None:
+            #     flash("Missing duration data.",'danger')
+            #     return
+            
+            authorizationExpired = False
+            #print('certificationDuration - ',certificationDuration)
+            # DETERMINE EXPIRATION DATE AND IF AUTHORIZATION HAS EXPIRED
+            if certificationDuration.rstrip() != 'UNL':
+                authorizationExpirationDate = computedExpirationDate(dateCertified, certificationDuration)
+                #print('returned date - ',authorizationExpirationDate)
+                expirationMsg = ' until ' + authorizationExpirationDate.strftime('%m-%d-%Y')
+                if isExpired(authorizationExpirationDate):
+                    authorizationExpired = True
             else:
-                authorizationExpired = False
-            if authorizationExpired:
-                authorizationStatus = 'Valid'
-            else:
-                authorizationStatus = 'Expired'
-
+                expirationMsg = '- PERMANENT'
+                # print('---------------------------------------------------')
+                # print(dateCertified,certificationDuration,expirationMsg)
+                # print('---------------------------------------------------')
+            
         machineItem = {
             'machineID': m.machineID,
             'machineDesc': m.machineDesc,
             'machineLocation': m.machineLocation,
-            'dateCertified':dateCertifiedSTR,
             'certifiedMsg':certifiedMsg,
-            'authorizationStatus':authorizationStatus
+            'authorizationExpired':authorizationExpired,
+            'expirationMsg':expirationMsg
         }
-        
+        print(machineItem)
         machineDict.append(machineItem)
         
     msg="Success"
     
-    return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,memberID=villageID,memberName=memberName,machineDict=machineDict,location=locationName)
+    return render_template("certifiedMachines.html",msg=msg,todaysDate=todaysDateSTR,\
+        memberID=villageID,memberName=memberName,machineDict=machineDict,location=locationName)
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
@@ -431,36 +447,67 @@ def printESCticket():
     return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
 
 
-def checkCertification(dateCertified,certificationDuration):
-    if dateCertified == None:
-        return False
+# def checkCertification(dateCertified,certificationDuration):
+#     if dateCertified == None:
+#         return False
 
-    today=date.today()
-    delta = today - dateCertified
-    daysElapsed = delta.days  
-    certified = False  
-    if certificationDuration.rstrip() == 'UNL':
-        certified = True
+#     today=date.today()
+#     delta = today - dateCertified
+#     daysElapsed = delta.days  
+#     certified = False  
+#     if certificationDuration.rstrip() == 'UNL':
+#         certified = True
+#     if certificationDuration.rstrip() == '365 days':
+#         if daysElapsed < 365:
+#             certified = True
+#     if certificationDuration.rstrip() == '180 days':
+#         if daysElapsed < 180:
+#             certified = True
+#     if certificationDuration.rstrip() == '90 days':
+#         if daysElapsed < 90:
+#             certified = True
+#     if certificationDuration.rstrip() == '60 days':
+#         if daysElapsed < 60:
+#             certified = True
+#     if certificationDuration.rstrip() == '30 days':
+#         if daysElapsed < 30:
+#             certified = True
+#     if certificationDuration.rstrip() == '7 days':
+#         if daysElapsed < 7:
+#             certified = True
+#     return certified
+
+def computedExpirationDate(dateCertified,certificationDuration):
+    print('computedExpirationDate - ',dateCertified,certificationDuration)
     if certificationDuration.rstrip() == '365 days':
-        if daysElapsed > 365:
-            certified = True
+        expirationDate = dateCertified + timedelta(days=365)
+        return expirationDate
     if certificationDuration.rstrip() == '180 days':
-        if daysElapsed > 180:
-            certified = True
+        expirationDate = dateCertified + timedelta(days=180)
+        return expirationDate
     if certificationDuration.rstrip() == '90 days':
-        if daysElapsed > 90:
-            certified = True
+        expirationDate = dateCertified + timedelta(days=90)
+        return expirationDate
     if certificationDuration.rstrip() == '60 days':
-        if daysElapsed > 60:
-            certified = True
+        expirationDate = dateCertified + timedelta(days=60)
+        return expirationDate
     if certificationDuration.rstrip() == '30 days':
-        if daysElapsed > 30:
-            certified = True
+        expirationDate = dateCertified + timedelta(days=30)
+        return expirationDate
     if certificationDuration.rstrip() == '7 days':
-        if daysElapsed > 7:
-            certified = True
-    return certified
+        expirationDate = dateCertified + timedelta(days=7)
+        return expirationDate
+    # IF INVALID certificationDuration then return none
+    return ''
 
+def isExpired (expirationDate):
+    today=date.today()
+    delta = today - expirationDate 
+    print('isExpired - ',expirationDate,delta.days)
+    if delta.days > 0:
+        return True
+    else:
+        return False
 
 def inShopNow(villageID,shopNumber):
     sqlSelect = "SELECT [Member_ID] FROM [dbo].[tblMember_Activity] "

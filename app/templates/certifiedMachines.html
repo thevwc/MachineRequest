@@ -37,14 +37,14 @@
                         <!-- <button class="btn btn-sm btn-primary selectBtn" onclick="printTicketPage('{{c.machineID}}')">SELECT</button> -->
                         <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
                     </td>
-                    <td width="400">{{c.machineDesc}}</td>
-                    <td></td>
-                    {% if c.authorizationStatus != "Expired" %}
-                        <td id="A{{c.machineID}}">{{c.certifiedMsg}}</td>
+                    <td width="250">{{c.machineDesc}}</td>
+                   
+                    {% if c.authorizationExpired %}
+                        <td class='expired'>{{c.certifiedMsg}}</td>
                     {% else %}    
-                        <td><s>{{c.certifiedMsg}}</s></td>   
+                        <td>{{c.certifiedMsg}}</td>   
                     {% endif %}
-                    
+                    <td>{{c.expirationMsg}}</td>
                 </tr>
                 {%endfor%}
             </tbody>
