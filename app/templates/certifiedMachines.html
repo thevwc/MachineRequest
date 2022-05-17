@@ -31,11 +31,11 @@
                             <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
                         </td>
                         <td width="250" >{{c.machineDesc}}</td>
-                    
+                        <td id = "A{{c.machineID}}">{{c.certifiedMsg}}</td>
                         {% if c.authorizationExpired %}
-                            <td class='expired'>{{c.certifiedMsg}} </td>
+                            <td class='expired'>{{c.expirationMsg}} </td>
                         {% else %}    
-                            <td>{{c.certifiedMsg}}</td>   
+                            <td>{{c.expirationMsg}}</td>   
                         {% endif %}
 
                         <!-- <td class="expirationMsg">{{c.expirationMsg}}</td> -->
@@ -52,7 +52,7 @@
 
 <div class="ticket areaToPrint">
     <div id="heading">
-        <h2 style="text-align:center">Machine Request</h2>
+        <h2 id='ticketTitle' style="text-align:center">Machine Request</h2>
         <h3 id="ticketDate">todays date</h3>
     </div>
     
@@ -60,13 +60,18 @@
         <div class="row" style="text-align:center">
             <div id=ticketName class="col-12">Name</div>
         </div>
+        <br>
         <div class="row" style="text-align:center;font-weight: 400;">
             <div id=ticketMachineDesc class="col-12">machine desc</div>
         </div>
         <div class="row"></div>
         <div class="row" style="text-align:center">
             <div id=ticketMachineID class="col-12"></div>
+            <br>
             <div id="ticketBodyDetail">
+                <div id="msgLines"></div>
+
+                <div id="listOfNames"></div>
                 <!-- IF KEYS ARE KEPT IN THE TOOL CRIB -->
                 <!-- MESSAGE TO PICK UP KEY IN TOOL CRIB -->
 

@@ -129,7 +129,6 @@ def displayMemberData():
             else:
                 expirationMsg = '- PERMANENT'
 
-        certifiedMsg += '   ' + expirationMsg    
         machineItem = {
             'machineID': m.machineID,
             'machineDesc': m.machineDesc,
@@ -221,11 +220,11 @@ def printInlineTicket():
         assistantsDict.append(assistantsItem)
     else:
         for i in assistants:
+            print('assistants - ',i.fnl_name)
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             assistantsItem = {'name':i.fnl_name,
                         'inShopNow':inShopNow}
             assistantsDict.append(assistantsItem)
-
 
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')

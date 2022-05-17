@@ -48,20 +48,39 @@ function printInlineTicket(machineID) {
         ticketMachineID = document.getElementById('ticketMachineID')
         
         // CLEAR THE DETAIL SECTION
-        parent = document.getElementById('ticketBodyDetail')
-        while (parent.firstChild) {
-            parent.removeChild(parent.lastChild)
+        //parent = document.getElementById('ticketBodyDetail')
+        // while (parent.firstChild) {
+        //     parent.removeChild(parent.lastChild)
+        // }
+
+        // CLEAR PREVIOUS MSG LINES
+        msgLines = document.getElementById('msgLines')
+        while (msgLines.firstChild) {
+            msgLines.removeChild(msgLines.lastChild)
         }
+
+        // CLEAR PREVIOUS LIST OF NAMES
+        listOfNames = document.getElementById('listOfNames')
+        while (listOfNames.firstChild) {
+            listOfNames.removeChild(listOfNames.lastChild)
+        }
+
+        // SET TICKET TITLE
         if (data.isAuthorized == 'AUTHORIZED') {
+            document.getElementById('ticketTitle').innerHTML = "AUTHORIZATION TICKET"
             ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
         }
         else {
+            document.getElementById('ticketTitle').innerHTML = "REQUEST FOR ASSISTANCE"
             ticketMachineID.innerHTML = ""
         }
-        // alert('keyInToolCrib - '+ data.keyInToolCrib + ' keyProvider - '+data.callKeyProvider)
+        
         // IF AUTHORIZED AND KEY IS KEPT IN THE TOOL CRIB ...
         if (data.isAuthorized == 'AUTHORIZED' && data.keyInToolCrib) {
-            //display msg to pick up key at the tool crib
+            // DISPLAY MSG TO PICK UP KEY AT TOOL CRIB
+            brk = document.createElement('br')
+            msgLines.appendChild(brk)
+
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
@@ -69,16 +88,16 @@ function printInlineTicket(machineID) {
             divRow1Data.classList.add("col-12","msgLine1")
             divRow1Data.innerHTML = "Take this slip to the tool crib."
             divRow1.appendChild(divRow1Data)
-            parent.appendChild(divRow1)
+            msgLines.appendChild(divRow1)
 
             divRow2 = document.createElement('div')
             divRow2.classList.add('row')
 
             divRow2Data = document.createElement('div')
             divRow2Data.classList.add('msgLine2','col-12')
-            divRow2Data.innerHTML = "msgLine2"
+            divRow2Data.innerHTML = ""
             divRow2.appendChild(divRow2Data)
-            parent.appendChild(divRow2)
+            msgLines.appendChild(divRow2)
 
         }
 
@@ -93,7 +112,7 @@ function printInlineTicket(machineID) {
             divRow1Data.classList.add("col-12","msgLine1")
             divRow1Data.innerHTML = "Contact one of the following members for the key."
             divRow1.appendChild(divRow1Data)
-            parent.appendChild(divRow1)
+            listOfNames.appendChild(divRow1)
             
             // LIST OF KEY PROVIDERS
             keyProviders = data.keyProvidersDict
@@ -115,13 +134,16 @@ function printInlineTicket(machineID) {
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
-                parent.appendChild(divRow)
+                listOfNames.appendChild(divRow)
             }
         }
  
         // If not authorized ---
         if (isAuthorized != 'AUTHORIZED') {
+            brk = document.createElement('br')
+            listOfNames.appendChild(brk)
             //"You have not been authorized to use this equipment without assistance."
+
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
@@ -135,7 +157,7 @@ function printInlineTicket(machineID) {
             divRow1Data.innerHTML = "to arrange a time for their assistance."
             divRow1.appendChild(divRow1Data)
 
-            parent.appendChild(divRow1)
+            listOfNames.appendChild(divRow1)
         
              // LIST OF ASSISTANTS FOR THIS MACHINE
             assistants = data.assistantsDict
@@ -153,7 +175,7 @@ function printInlineTicket(machineID) {
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
-                parent.appendChild(divRow)
+                listOfNames.appendChild(divRow)
             }
         }
 
