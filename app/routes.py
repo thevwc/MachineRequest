@@ -183,7 +183,7 @@ def printInlineTicket():
 
     machineDesc = machine.machineDesc
     keyInToolCrib = machine.keyInToolCrib
-    callKeyProvider = machine.callKeyProvider
+    keyProvider = machine.keyProvider
     
     # BUILD LIST OF KEY PROVIDERS
     sqlKP = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
@@ -255,7 +255,7 @@ def printInlineTicket():
         ,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
         ticketMachineDesc=machineDesc,ticketMachineID=machineID,\
-        keyInToolCrib=keyInToolCrib,callKeyProvider=callKeyProvider,\
+        keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,\
         keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
 @app.route('/printTicketPage')

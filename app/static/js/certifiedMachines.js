@@ -102,9 +102,9 @@ function printInlineTicket(machineID) {
         }
 
         // If authorized and key provider ---
-        if (data.isAuthorized == 'AUTHORIZED' && data.callKeyProvider) {
+        if (data.isAuthorized == 'AUTHORIZED' && data.keyProvider) {
             //  please contact one of the following for the machine lock key --
-            //alert('enter callKeyProvider rtn')
+            //alert('enter keyProvider rtn')
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
