@@ -233,6 +233,19 @@ def printInlineTicket():
     
 
     # UPDATE MACHINE ACTIVITY TABLE
+    sqlInsert = "INSERT INTO [machineActivity] ([member_ID], [startDateTime], [machineID], [shopLocation]) " 
+    sqlInsert += " VALUES ('" + memberID + "', '" + activityDateTime + "', '" + machineID + "', '"
+    sqlInsert += shopLocation + "')"
+    print (sqlInsert)
+
+    try: 
+        db.session.execute(sqlInsert)
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        print('Error - ',error)
+        return jsonify(msg="Insert failed",status=201)
+
+    
     # if authorized ...
     #print(machineID,villageID,activityDateTime,shopLocation)
    
