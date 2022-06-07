@@ -152,8 +152,12 @@ def printInlineTicket():
     villageID = req["villageID"]
     machineID = req["machineID"]
     shopLocation = req["shopLocation"]
-    isAuthorized = req["isAuthorized"]
-    
+    #isAuthorized = req["isAuthorized"]
+    if req["isAuthorized"] == True:
+        isAuthorized = True
+    else:
+        isAuthorized = False
+
     print(villageID,machineID,isAuthorized,shopLocation)
 
     if shopLocation == 'RA':
@@ -241,15 +245,21 @@ def printInlineTicket():
         print (sqlInsert)
 
         try: 
-            db.session.execute(sqlInsert)
+            result = db.session.execute(text(sqlInsert).execution_options(autocommit=True))
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
-            print('Error - ',error)
-            return jsonify(msg="Insert failed",status=201)
+            print('SQLAlchemyError - ',error)
+            return jsonify(msg="Insert failed - SQLAlchemyError",status=201)
+        except DPAPIError as e:
+            error = str(e.__dict__['orig'])
+            print('DPAPIError - ',error)
+            return jsonify(msg="Insert failed - DPAPIError",status=201)
+
+        print('result.rowcount - ',result.rowcount)
 
     # RETURN DATA TO CLIENT FOR PRINTING TICKET
     return jsonify(msg='SUCCESS',status=200\
-        ,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
+        ,ticketName=memberName,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
         ticketMachineDesc=machineDesc,ticketMachineID=machineID,\
         keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,\

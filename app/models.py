@@ -326,7 +326,7 @@ class MachineActivity(db.Model):
     __tablename__ = 'machineActivity'
     __table_args__ = {"schema": "dbo"}
     ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    machineID = db.Column(db.String(20))
+    machineID = db.Column(db.String(10))
     member_ID = db.Column(db.String(6))
     startDateTime = db.Column(db.Date)
     endDateTime = db.Column(db.Date)

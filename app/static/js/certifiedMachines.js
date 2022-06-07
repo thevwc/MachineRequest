@@ -6,7 +6,8 @@ function getTicketData(machineID) {
     console.log('location - '+shopLocation)
     isAuthorizedID = 'A'+machineID
     console.log('isAuthorizedID - '+isAuthorizedID)
-    if (document.getElementById(isAuthorizedID.innerHTML == 'AUTHORIZED')) {
+    console.log(document.getElementById(isAuthorizedID).innerHTML)
+    if (document.getElementById(isAuthorizedID).innerHTML == 'AUTHORIZED') {
         isAuthorized = true
     }
     else {
@@ -66,8 +67,8 @@ function getTicketData(machineID) {
 
         // SET TICKET TITLE
 
-        console.log('data.isAuthorized -'+data.isAuthorized)
-        if (data.isAuthorized) {
+        console.log('isAuthorized -'+isAuthorized)
+        if (isAuthorized) {
             document.getElementById('ticketTitle').innerHTML = "AUTHORIZATION TICKET"
             ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
         }
@@ -77,7 +78,7 @@ function getTicketData(machineID) {
         }
         
         // IF AUTHORIZED AND KEY IS KEPT IN THE TOOL CRIB ...
-        if (data.isAuthorized && data.keyInToolCrib) {
+        if (isAuthorized && data.keyInToolCrib) {
             // DISPLAY MSG TO PICK UP KEY AT TOOL CRIB
             brk = document.createElement('br')
             msgLines.appendChild(brk)
@@ -103,7 +104,7 @@ function getTicketData(machineID) {
         }
 
         // If authorized and key provider ---
-        if (data.isAuthorized && data.keyProvider) {
+        if (isAuthorized && data.keyProvider) {
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
@@ -126,7 +127,7 @@ function getTicketData(machineID) {
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-5','kpInShopNow')
+                divCol2.classList.add('col-6','kpInShopNow')
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
