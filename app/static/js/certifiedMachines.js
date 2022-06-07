@@ -215,4 +215,8 @@ function getTicketData(machineID) {
 //     url = '/printTicketPage?villageID='+villageID+'&machineID='+machineID
 //     window.location.href=url
 // }
+
+// function returnToSignIn() {
+
+// }
 // END OF FUNCTIONS

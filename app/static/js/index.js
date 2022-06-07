@@ -9,6 +9,8 @@ var currentLocation = ''
 //shopLocationSelector = document.getElementById('shopLocationSelector')
 //shopLocationSelector.addEventListener('change',shopLocationChange)
 
+clearScreen()
+
 // Establish the current shop location
 if (localStorage.getItem('shopLocation')) {
   currentLocation = localStorage.getItem('shopLocation')

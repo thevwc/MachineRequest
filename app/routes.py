@@ -53,7 +53,7 @@ def login():
 @app.route('/index')
 def index():
     today=date.today()
-    todaysDate = today.strftime('%B %d, %Y')
+    todaysDate = today.strftime('%B %-d, %Y')
     return render_template("index.html",todaysDate=todaysDate)
     
 @app.route('/displayMemberData')
@@ -81,7 +81,7 @@ def displayMemberData():
     # print(row)
 
     today=date.today()
-    todaysDateSTR = today.strftime('%B %d, %Y')
+    todaysDateSTR = today.strftime('%B %-d, %Y')
 
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
@@ -164,7 +164,7 @@ def printInlineTicket():
     else:
         isAuthorized = False
 
-    print(villageID,machineID,isAuthorized,shopLocation)
+    #print(villageID,machineID,isAuthorized,shopLocation)
 
     if shopLocation == 'RA':
         shopNumber = 1
@@ -215,6 +215,8 @@ def printInlineTicket():
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             keyProvidersItem = {'name':i.fnl_name,
                         'inShopNow':inShopNow}
+            print('keyProvidersItem - ',keyProvidersItem)
+            
             keyProvidersDict.append(keyProvidersItem)
         
     # BUILD LIST OF MEMBERS WHO WILL ASSIST
@@ -239,7 +241,7 @@ def printInlineTicket():
 
     est = timezone('America/New_York')
     today=date.today()
-    todaysDateSTR = today.strftime('%B %d, %Y')
+    todaysDateSTR = today.strftime('%B %-d, %Y')
     
     activityDateTime = dt.datetime.now(est)
     activityDateTimeSTR = activityDateTime.strftime('%Y-%m-%d %H:%M')
