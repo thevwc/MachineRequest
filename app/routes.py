@@ -19,6 +19,12 @@ from sqlalchemy.sql import text as SQLQuery
 
 import datetime as dt
 from datetime import date, datetime, timedelta
+from pytz import timezone
+
+# import datetime
+# from datetime import date
+# from pytz import timezone
+
 
 import os.path
 from os import path
@@ -231,31 +237,25 @@ def printInlineTicket():
                         'inShopNow':inShopNow}
             assistantsDict.append(assistantsItem)
 
+    est = timezone('America/New_York')
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
     
-    activityDateTime = today.strftime('%Y-%m-%d %H:%M')
-    
+    activityDateTime = dt.datetime.now(est)
+    activityDateTimeSTR = activityDateTime.strftime('%Y-%m-%d %H:%M')
 
     # UPDATE MACHINE ACTIVITY TABLE
     if isAuthorized :
-        sqlInsert = "INSERT INTO [machineActivity] ([member_ID], [startDateTime], [machineID], [shopLocation]) " 
-        sqlInsert += " VALUES ('" + villageID + "', '" + activityDateTime + "', '" + machineID + "', '"
-        sqlInsert += shopLocation + "')"
-        print (sqlInsert)
-
-        try: 
-            result = db.session.execute(text(sqlInsert).execution_options(autocommit=True))
+        try:
+            activity = 	MachineActivity(member_ID=villageID,startDateTime=activityDateTime,
+	        machineID=machineID,shopLocation=shopLocation)
+            db.session.add(activity)
+            db.session.commit()  
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
-            print('SQLAlchemyError - ',error)
-            return jsonify(msg="Insert failed - SQLAlchemyError",status=201)
-        except DPAPIError as e:
-            error = str(e.__dict__['orig'])
-            print('DPAPIError - ',error)
-            return jsonify(msg="Insert failed - DPAPIError",status=201)
-
-        print('result.rowcount - ',result.rowcount)
+            db.session.rollback()
+            msg="Insert failed, SQLAlchemyError - " + error
+            return jsonify(msg=msg,status=201)
 
     # RETURN DATA TO CLIENT FOR PRINTING TICKET
     return jsonify(msg='SUCCESS',status=200\
