@@ -147,11 +147,15 @@ def displayMemberData():
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
+
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
     shopLocation = req["shopLocation"]
     isAuthorized = req["isAuthorized"]
+    
+    print(villageID,machineID,isAuthorized,shopLocation)
+
     if shopLocation == 'RA':
         shopNumber = 1
     else:
@@ -163,9 +167,7 @@ def printInlineTicket():
     # print('authorized - ',isAuthorized)
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
-        msg="Member not found"
-        status=400
-        return jsonify(msg=msg,status=status)
+        return jsonify(msg="Member not found.",status=400)
 
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
@@ -215,12 +217,11 @@ def printInlineTicket():
     assistantsDict = []
     assistantsItem = []
     if assistants == None:
-        assistantsItem = {name:"No key providers assigned.",
+        assistantsItem = {name:"No staff currently assigned.",
                         inShopNow:false}
         assistantsDict.append(assistantsItem)
     else:
         for i in assistants:
-            print('assistants - ',i.fnl_name)
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             assistantsItem = {'name':i.fnl_name,
                         'inShopNow':inShopNow}
@@ -233,37 +234,20 @@ def printInlineTicket():
     
 
     # UPDATE MACHINE ACTIVITY TABLE
-    sqlInsert = "INSERT INTO [machineActivity] ([member_ID], [startDateTime], [machineID], [shopLocation]) " 
-    sqlInsert += " VALUES ('" + memberID + "', '" + activityDateTime + "', '" + machineID + "', '"
-    sqlInsert += shopLocation + "')"
-    print (sqlInsert)
+    if isAuthorized :
+        sqlInsert = "INSERT INTO [machineActivity] ([member_ID], [startDateTime], [machineID], [shopLocation]) " 
+        sqlInsert += " VALUES ('" + villageID + "', '" + activityDateTime + "', '" + machineID + "', '"
+        sqlInsert += shopLocation + "')"
+        print (sqlInsert)
 
-    try: 
-        db.session.execute(sqlInsert)
-    except SQLAlchemyError as e:
-        error = str(e.__dict__['orig'])
-        print('Error - ',error)
-        return jsonify(msg="Insert failed",status=201)
-
-    
-    # if authorized ...
-    #print(machineID,villageID,activityDateTime,shopLocation)
-   
-    # try:
-    #     activity = MachineActivity(machineID=machineID,member_ID=villageID,startDateTime=activityDateTime,shopLocation=shopLocation)
-    #     db.session.add(activity)
-    #     db.session.commit()
-    # except SQLAlchemyError as e:
-    #     error = str(e.__dict__['orig'])
-    #     print('Error - ',error)
-    #     db.session.rollback()
-
+        try: 
+            db.session.execute(sqlInsert)
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            print('Error - ',error)
+            return jsonify(msg="Insert failed",status=201)
 
     # RETURN DATA TO CLIENT FOR PRINTING TICKET
-    # msg='Success'
-    # print('msg - ',msg)
-    #print('memberName - ',memberName)
-
     return jsonify(msg='SUCCESS',status=200\
         ,ticketName=memberName,isAuthorized=isAuthorized,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
@@ -271,48 +255,48 @@ def printInlineTicket():
         keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,\
         keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
-@app.route('/printTicketPage')
-def printTicketPage():
-    print('/printTicketPage')
-    villageID=request.args.get('villageID')
-    machineID=request.args.get('machineID')
-    # print('VillageID - ',villageID)
-    # print('MachineID - ',machineID)
+# @app.route('/printTicketPage')
+# def printTicketPage():
+#     print('/printTicketPage')
+#     villageID=request.args.get('villageID')
+#     machineID=request.args.get('machineID')
+#     # print('VillageID - ',villageID)
+#     # print('MachineID - ',machineID)
 
-    mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
-    if (mbr == None):
-        msg="Member not found"
-        status=400
-        return jsonify(msg=msg,status=status)
+#     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
+#     if (mbr == None):
+#         msg="Member not found"
+#         status=400
+#         return jsonify(msg=msg,status=status)
 
-    memberName = mbr.First_Name
-    if mbr.Nickname is not None:
-        if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
-    mobilePhone = mbr.Cell_Phone
-    homePhone = mbr.Home_Phone
-    eMail = mbr.eMail
+#     memberName = mbr.First_Name
+#     if mbr.Nickname is not None:
+#         if len(mbr.Nickname) > 0 :
+#             memberName += ' (' + mbr.Nickname + ')'
+#     memberName += ' ' + mbr.Last_Name
+#     mobilePhone = mbr.Cell_Phone
+#     homePhone = mbr.Home_Phone
+#     eMail = mbr.eMail
 
-    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-    print('machine - ',machine)
+#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+#     print('machine - ',machine)
 
-    if (machine != None):
-        machineDesc = machine.machineDesc
-    else:
-        machineDesc = "?"
+#     if (machine != None):
+#         machineDesc = machine.machineDesc
+#     else:
+#         machineDesc = "?"
 
-    today=date.today()
-    todaysDateSTR = today.strftime('%B %d, %Y')
+#     today=date.today()
+#     todaysDateSTR = today.strftime('%B %d, %Y')
 
-    # print(memberName)
-    # print(machineDesc)
-    # print('desc - ',machine.machineDesc)
-    # print(todaysDateSTR)
-    # print('Key # '+ machineID)
-    # print('-------------------------------------------')
+#     # print(memberName)
+#     # print(machineDesc)
+#     # print('desc - ',machine.machineDesc)
+#     # print(todaysDateSTR)
+#     # print('Key # '+ machineID)
+#     # print('-------------------------------------------')
 
-    return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
+#     return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
     
 
 # @app.route("/printWeeklyMonitorNotes", methods=["GET"])

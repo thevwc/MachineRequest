@@ -28,7 +28,7 @@
                 {% for c in machineDict %}
                     <tr height="35">
                         <td>
-                            <button class="btn btn-sm btn-primary selectBtn" onclick="printInlineTicket('{{c.machineID}}')">SELECT</button>
+                            <button class="btn btn-sm btn-primary selectBtn" onclick="getTicketData('{{c.machineID}}')">SELECT</button>
                         </td>
                         <td width="250" >{{c.machineDesc}}</td>
                         <td id = "A{{c.machineID}}">{{c.certifiedMsg}}</td>

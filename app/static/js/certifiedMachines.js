@@ -1,17 +1,16 @@
 
 
-function printInlineTicket(machineID) {
-    console.log('machineID - '+machineID)
+function getTicketData(machineID) {
     villageID = document.getElementById('memberID').innerText
     shopLocation = localStorage.getItem('shopLocation')
     console.log('location - '+shopLocation)
     isAuthorizedID = 'A'+machineID
     console.log('isAuthorizedID - '+isAuthorizedID)
-    if (document.getElementById(isAuthorizedID)) {
-        isAuthorized = document.getElementById(isAuthorizedID).innerHTML
+    if (document.getElementById(isAuthorizedID.innerHTML == 'AUTHORIZED')) {
+        isAuthorized = true
     }
     else {
-        isAuthorized = ''
+        isAuthorized = false
     }
     console.log('isAuthorized - ',isAuthorized)
 
@@ -66,7 +65,9 @@ function printInlineTicket(machineID) {
         }
 
         // SET TICKET TITLE
-        if (data.isAuthorized == 'AUTHORIZED') {
+
+        console.log('data.isAuthorized -'+data.isAuthorized)
+        if (data.isAuthorized) {
             document.getElementById('ticketTitle').innerHTML = "AUTHORIZATION TICKET"
             ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
         }
@@ -76,7 +77,7 @@ function printInlineTicket(machineID) {
         }
         
         // IF AUTHORIZED AND KEY IS KEPT IN THE TOOL CRIB ...
-        if (data.isAuthorized == 'AUTHORIZED' && data.keyInToolCrib) {
+        if (data.isAuthorized && data.keyInToolCrib) {
             // DISPLAY MSG TO PICK UP KEY AT TOOL CRIB
             brk = document.createElement('br')
             msgLines.appendChild(brk)
@@ -102,9 +103,7 @@ function printInlineTicket(machineID) {
         }
 
         // If authorized and key provider ---
-        if (data.isAuthorized == 'AUTHORIZED' && data.keyProvider) {
-            //  please contact one of the following for the machine lock key --
-            //alert('enter keyProvider rtn')
+        if (data.isAuthorized && data.keyProvider) {
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
@@ -116,9 +115,6 @@ function printInlineTicket(machineID) {
             
             // LIST OF KEY PROVIDERS
             keyProviders = data.keyProvidersDict
-            // if (keyProviders.length == 0) {
-            //     alert('empty keyProvidersDict')
-            // }
             
             for (var element of keyProviders) {
                 divRow = document.createElement('div')
@@ -139,7 +135,7 @@ function printInlineTicket(machineID) {
         }
  
         // If not authorized ---
-        if (isAuthorized != 'AUTHORIZED') {
+        if (!isAuthorized) {
             brk = document.createElement('br')
             listOfNames.appendChild(brk)
             //"You have not been authorized to use this equipment without assistance."
@@ -149,12 +145,30 @@ function printInlineTicket(machineID) {
 
             divRow1Data = document.createElement('div')
             divRow1Data.classList.add("col-12","msgLine1")
+            divRow1Data.innerHTML = "You are currently not authorized to use"
+            divRow1.appendChild(divRow1Data)
+
+            divRow1Data = document.createElement('div')
+            divRow1Data.classList.add("col-12","msgLine1")
+            divRow1Data.innerHTML = "this equipment without assistance."
+            divRow1.appendChild(divRow1Data)
+
+            brk = document.createElement('br')
+            divRow1.appendChild(brk)
+            listOfNames.appendChild(divRow1)
+
+            brk = document.createElement('br')
+            divRow1.appendChild(brk)
+            listOfNames.appendChild(divRow1)
+
+            divRow1Data = document.createElement('div')
+            divRow1Data.classList.add("col-12","msgLine1")
             divRow1Data.innerHTML = "Contact one of the following members"
             divRow1.appendChild(divRow1Data)
 
             divRow1Data = document.createElement('div')
             divRow1Data.classList.add("col-12","msgLine2")
-            divRow1Data.innerHTML = "to arrange a time for their assistance."
+            divRow1Data.innerHTML = "to arrange a time for them to assist you."
             divRow1.appendChild(divRow1Data)
 
             listOfNames.appendChild(divRow1)
@@ -166,12 +180,12 @@ function printInlineTicket(machineID) {
                 divRow.classList.add('row','kpRow')
 
                 divCol1 = document.createElement('div')
-                divCol1.classList.add('col-6','kpName')
+                divCol1.classList.add('col-8','kpName')
                 divCol1.innerHTML = element['name']
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-5','kpInShopNow')
+                divCol2.classList.add('col-3','kpInShopNow')
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
@@ -188,17 +202,16 @@ function printInlineTicket(machineID) {
     })     
 }
 
-function printTicket2(machineID) {
-    alert('printTicket2')
-    villageID = document.getElementById('memberID').innerText
-    url = '/printESCticket?villageID='+villageID+'&machineID='+machineID
-    window.location.href=url
-}
+// function printTicket2(machineID) {
+//     villageID = document.getElementById('memberID').innerText
+//     url = '/printESCticket?villageID='+villageID+'&machineID='+machineID
+//     window.location.href=url
+// }
 
-function printTicketPage(machineID) {
-    alert('printTicketPage')
-    villageID = document.getElementById('memberID').innerText
-    url = '/printTicketPage?villageID='+villageID+'&machineID='+machineID
-    window.location.href=url
-}
+// function printTicketPage(machineID) {
+//     alert('printTicketPage')
+//     villageID = document.getElementById('memberID').innerText
+//     url = '/printTicketPage?villageID='+villageID+'&machineID='+machineID
+//     window.location.href=url
+// }
 // END OF FUNCTIONS
