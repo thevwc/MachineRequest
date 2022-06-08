@@ -31,11 +31,11 @@
                             <button class="btn btn-sm btn-primary selectBtn" onclick="getTicketData('{{c.machineID}}')">SELECT</button>
                         </td>
                         <td width="250" >{{c.machineDesc}}</td>
-                        <td id = "A{{c.machineID}}">{{c.certifiedMsg}}</td>
+                        <!-- <td id = "A{{c.machineID}}">{{c.certifiedMsg}}</td> -->
                         {% if c.authorizationExpired %}
-                            <td class='expired'>{{c.expirationMsg}} </td>
-                        {% else %}    
-                            <td>{{c.expirationMsg}}</td>   
+                            <td id = "A{{c.machineID}}" class='expired'>{{c.authorizationMsg}}</td>
+                        {% else %} 
+                            <td id = "A{{c.machineID}}">{{c.authorizationMsg}}</td>     
                         {% endif %}
 
                         <!-- <td class="expirationMsg">{{c.expirationMsg}}</td> -->

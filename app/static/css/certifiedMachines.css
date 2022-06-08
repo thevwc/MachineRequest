@@ -219,6 +219,7 @@ background-color: #4e9ed4;
     }
     .expired {
         text-decoration: line-through;
+        background-color: yellow;
     }
     
     #footer {

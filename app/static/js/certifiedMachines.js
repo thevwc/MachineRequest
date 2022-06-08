@@ -7,7 +7,9 @@ function getTicketData(machineID) {
     isAuthorizedID = 'A'+machineID
     console.log('isAuthorizedID - '+isAuthorizedID)
     console.log(document.getElementById(isAuthorizedID).innerHTML)
-    if (document.getElementById(isAuthorizedID).innerHTML == 'AUTHORIZED') {
+    authorizationMsg = document.getElementById(isAuthorizedID).innerHTML
+    console.log('authorizationMsg - '+authorizationMsg.substring(0,10))
+    if (authorizationMsg.substring(0,10) == 'AUTHORIZED') {
         isAuthorized = true
     }
     else {

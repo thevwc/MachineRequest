@@ -112,6 +112,7 @@ def displayMemberData():
         authorizationExpired = False
         authorizationExpirationDate = ''
         expirationMsg = ''
+        authorizationMsg = ''
 
         memberCertified = db.session.query(MemberMachineCertifications) \
             .filter(MemberMachineCertifications.machineID == m.machineID) \
@@ -131,8 +132,12 @@ def displayMemberData():
                 #print('returned date - ',authorizationExpirationDate)
                 expirationMsg = 'until ' + authorizationExpirationDate.strftime('%m-%d-%Y')
                 if isExpired(authorizationExpirationDate):
+                    authorizationMsg = "Authorization EXPIRED " + authorizationExpirationDate.strftime('%m-%d-%Y')
                     authorizationExpired = True
+                else:
+                   authorizationMsg = "AUTHORIZED UNTIL " + authorizationExpirationDate.strftime('%m-%d-%Y') 
             else:
+                authorizationMsg = "AUTHORIZATION IS PERMANENT"
                 expirationMsg = '- PERMANENT'
 
         machineItem = {
@@ -141,9 +146,12 @@ def displayMemberData():
             'machineLocation': m.machineLocation,
             'certifiedMsg':certifiedMsg,
             'authorizationExpired':authorizationExpired,
+            'authorizationMsg':authorizationMsg,
             'expirationMsg':expirationMsg
         }
-        #print('Item - ',machineItem)
+
+        print('Item - ',machineItem)
+        
         machineDict.append(machineItem)
         
     msg="Success"
@@ -237,6 +245,8 @@ def printInlineTicket():
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             assistantsItem = {'name':i.fnl_name,
                         'inShopNow':inShopNow}
+            print('assistants - ',assistantsDict)
+            
             assistantsDict.append(assistantsItem)
 
     est = timezone('America/New_York')
@@ -462,7 +472,8 @@ def determineIfInShop(villageID,shopNumber):
     sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'US Eastern Standard Time' AS date) "
     sqlSelect += "AND CAST([Check_Out_Date_Time] AS DATE) IS NULL "
     sqlSelect += "AND [Shop_Number] = " + str(shopNumber)
-    #print('sqlSelect - ',sqlSelect)
+    print('sqlSelect - ',sqlSelect)
+
     result = db.engine.execute(sqlSelect).scalar()
     #print('result - ',result)
     if result != None:
