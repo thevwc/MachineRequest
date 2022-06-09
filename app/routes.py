@@ -67,19 +67,6 @@ def displayMemberData():
         locationName = 'Brownwood'
         shopNumber = 2
 
-    # test memberInShopNow
-    #sp = "EXEC newMemberMachineCertification '" + memberID + "', '" + todaysDate + "',
-    # sp = "EXEC memberInShopNow '" + villageID + "', '" + str(shopNumber) + "'"
-    # print('sp - ',sp)
-    # sql = SQLQuery
-    # result = db.engine.execute(sql)
-    # print('result - ',result)
-    # sqlSelectSM += "ORDER BY Last_Name, First_Name"
-    # result = db.engine.execute(sqlSelectSM)
-    # result_as_list = result.fetchall()
-    # for row in result_as_list:
-    # print(row)
-
     today=date.today()
     todaysDateSTR = today.strftime('%B %-d, %Y')
 
@@ -149,8 +136,6 @@ def displayMemberData():
             'authorizationMsg':authorizationMsg,
             'expirationMsg':expirationMsg
         }
-
-        print('Item - ',machineItem)
         
         machineDict.append(machineItem)
         
@@ -172,17 +157,11 @@ def printInlineTicket():
     else:
         isAuthorized = False
 
-    #print(villageID,machineID,isAuthorized,shopLocation)
-
     if shopLocation == 'RA':
         shopNumber = 1
     else:
         shopNumber = 2
 
-    # print('VillageID - ',villageID)
-    # print('MachineID - ',machineID)
-    # print('shopNumber - ',shopNumber)
-    # print('authorized - ',isAuthorized)
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         return jsonify(msg="Member not found.",status=400)
@@ -223,7 +202,6 @@ def printInlineTicket():
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             keyProvidersItem = {'name':i.fnl_name,
                         'inShopNow':inShopNow}
-            print('keyProvidersItem - ',keyProvidersItem)
             
             keyProvidersDict.append(keyProvidersItem)
         
@@ -244,9 +222,7 @@ def printInlineTicket():
         for i in assistants:
             inShopNow = determineIfInShop(i.villageID,shopNumber)
             assistantsItem = {'name':i.fnl_name,
-                        'inShopNow':inShopNow}
-            print('assistants - ',assistantsDict)
-            
+                        'inShopNow':inShopNow}  
             assistantsDict.append(assistantsItem)
 
     est = timezone('America/New_York')
@@ -347,53 +323,40 @@ def printInlineTicket():
 	# 	)
 	
 
-@app.route('/printESCticket',methods=['GET'])
-def printESCticket():
-    print('/printESCticket')
-    villageID=request.args.get('villageID')
-    machineID=request.args.get('machineID')
-    locationAbbr = request.args.get('location')
-    if (locationAbbr == 'RA'):
-        locationName = 'Rolling Acres'
-    else:
-        locationName = 'Brownwood'
-
-    print('VillageID - ',villageID)
-    print('MachineID - ',machineID)
-    print('Location abbr - ',locationAbbr)
+# @app.route('/printESCticket',methods=['GET'])
+# def printESCticket():
+#     villageID=request.args.get('villageID')
+#     machineID=request.args.get('machineID')
+#     locationAbbr = request.args.get('location')
+#     if (locationAbbr == 'RA'):
+#         locationName = 'Rolling Acres'
+#     else:
+#         locationName = 'Brownwood'
     
-    mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
-    if (mbr == None):
-        msg="Member not found"
-        status=400
-        flash('Member not found.','Info')
-        return
+#     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
+#     if (mbr == None):
+#         msg="Member not found"
+#         status=400
+#         flash('Member not found.','Info')
+#         return
 
-    memberName = mbr.First_Name
-    if mbr.Nickname is not None:
-        if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
-    mobilePhone = mbr.Cell_Phone
-    homePhone = mbr.Home_Phone
-    eMail = mbr.eMail
+#     memberName = mbr.First_Name
+#     if mbr.Nickname is not None:
+#         if len(mbr.Nickname) > 0 :
+#             memberName += ' (' + mbr.Nickname + ')'
+#     memberName += ' ' + mbr.Last_Name
+#     mobilePhone = mbr.Cell_Phone
+#     homePhone = mbr.Home_Phone
+#     eMail = mbr.eMail
 
-    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-    if (machine != None):
-        machineDesc = machine.machineDesc
-    else:
-        machineDesc = "?"
+#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+#     if (machine != None):
+#         machineDesc = machine.machineDesc
+#     else:
+#         machineDesc = "?"
 
-    today=date.today()
-    todaysDate = today.strftime('%B %d, %Y')
-    print('Location - ',locationName)
-    print('Name - ',memberName)
-    print('Home phone - ',homePhone)
-    print('Mobile phone - ',mobilePhone)
-    print('Email - ',eMail)
-    print(machineDesc)
-    print(todaysDate)
-    print('Key # '+ machineID)
+#     today=date.today()
+#     todaysDate = today.strftime('%B %d, %Y')
     
    
     # epsonPrinter = Network("192.168.12.126")
@@ -472,10 +435,8 @@ def determineIfInShop(villageID,shopNumber):
     sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'US Eastern Standard Time' AS date) "
     sqlSelect += "AND CAST([Check_Out_Date_Time] AS DATE) IS NULL "
     sqlSelect += "AND [Shop_Number] = " + str(shopNumber)
-    print('sqlSelect - ',sqlSelect)
-
+   
     result = db.engine.execute(sqlSelect).scalar()
-    #print('result - ',result)
     if result != None:
         return 'IN SHOP NOW'
     else:
