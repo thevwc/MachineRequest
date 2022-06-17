@@ -46,8 +46,8 @@ function getTicketData(machineID) {
         ticketName = document.getElementById('ticketName')
         ticketName.innerHTML = data.ticketName
         ticketMachineDesc = document.getElementById('ticketMachineDesc')
+        ticketMachineDesc.classList.add('machineName')
         ticketMachineDesc.innerHTML = data.ticketMachineDesc
-        ticketMachineDesc.style='border:1px solid black'
         ticketMachineID = document.getElementById('ticketMachineID')
         
         // CLEAR THE DETAIL SECTION
@@ -95,7 +95,6 @@ function getTicketData(machineID) {
 
             divRow1Col2 = document.createElement('div')
             divRow1Col2.classList.add("col-8","msgLine1")
-            divRow1Col2.style='background-color:yellow'
             divRow1Col2.innerHTML = "Take this slip to the tool crib."
             divRow1Col2.style='text-align:center'
             divRow1.appendChild(divRow1Col2)
@@ -120,10 +119,14 @@ function getTicketData(machineID) {
         // If authorized and key provider ---
         if (isAuthorized && data.keyProvider) {
             divRow1 = document.createElement('div')
-            divRow1.classList.add('row')
+            divRow1.classList.add('row','kpMsgRow')
+
+            // divRow1Col1 = document.createElement('div')
+            // divRow1Col1.classList.add('col-3')
+            // divRow1.appendChild(divRow1Col1)
 
             divRow1Data = document.createElement('div')
-            divRow1Data.classList.add("col-12","msgLine1")
+            divRow1Data.classList.add("col-12", 'kpMsgLine')
             divRow1Data.innerHTML = "Contact one of the following members for the key."
             divRow1.appendChild(divRow1Data)
             listOfNames.appendChild(divRow1)
@@ -135,13 +138,17 @@ function getTicketData(machineID) {
                 divRow = document.createElement('div')
                 divRow.classList.add('row','kpRow')
 
+                // divCol0 = document.createElement('div')
+                // divCol0.classList.add('col-0')
+                // divRow.appendChild(divCol0)
+
                 divCol1 = document.createElement('div')
                 divCol1.classList.add('col-6','kpName')
                 divCol1.innerHTML = element['name']
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-6','kpInShopNow')
+                divCol2.classList.add('col-2','kpInShopNow')
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
@@ -198,6 +205,7 @@ function getTicketData(machineID) {
             divRow1Col2 = document.createElement('div')
             divRow1Col2.classList.add("col-8","msgLine1")
             divRow1Col2.innerHTML = "Contact one of the following members to arrange a time for them to assist you:"
+            divRow1Col2.style='text-align:left'
             divRow1.appendChild(divRow1Col2)
 
             // divRow1Data = document.createElement('div')
@@ -216,22 +224,20 @@ function getTicketData(machineID) {
             assistants = data.assistantsDict
             for (var element of assistants) {
                 divRow = document.createElement('div')
-                divRow.classList.add('row','kpRow')
+                divRow.classList.add('row','asstRow')
 
                 divCol0 = document.createElement('div')
                 divCol0.classList.add('col-3')
                 divRow.appendChild(divCol0)
 
                 divCol1 = document.createElement('div')
-                divCol1.classList.add('col-4','kpName')
+                divCol1.classList.add('col-4','asstName')
                 divCol1.innerHTML = element['name']
-                divCol1.style='font-size:2rem';
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-3','kpInShopNow')
+                divCol2.classList.add('col-3','asstInShopNow')
                 divCol2.innerHTML = element['inShopNow']
-                divCol2.style='font-size:2rem';
                 divRow.appendChild(divCol2)
 
                 listOfNames.appendChild(divRow)

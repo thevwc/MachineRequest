@@ -189,6 +189,7 @@ def printInlineTicket():
     sqlKP += "from tblMember_Data "
     sqlKP += "left join machineInstructors on tblMember_Data.member_id = machineInstructors.member_id "
     sqlKP += "where keyProvider = 1 and machineid = '" + machineID + "'"
+    sqlKP += " order by lfn_name"
     
     keyProviders = db.engine.execute(sqlKP)
     keyProvidersDict = []

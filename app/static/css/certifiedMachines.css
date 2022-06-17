@@ -201,7 +201,7 @@ background-color: #4e9ed4;
         width:50%;
         margin:auto;
         margin-top:20px; 
-        font-size:1.5rem;
+        font-size:3rem;
         padding-top:0px;
         color:navy;
         display:block;
@@ -276,36 +276,54 @@ background-color: #4e9ed4;
         width:100%;
         margin:auto;
         font-size: 2rem;
-        
-        
-        /* display:none; */
+    }
+    .machineName {
+        font-weight: 700;
+        font-size: 3rem;
+        border:2px solid black;
+        width:50%;
     }
     .msgLines {
-        border:3px solid fuchsia;
         margin:auto;
     }
     .msgLine1 {
-        border:1px solid red;
         font-size:2rem;
     }
     .msgLine2 {
-        background-color: yellow;
         font-size:2rem;
     }
     .listOfNames {
         border:1px solid black;
     }
     .kpRow {
-        margin-left:15px;
+        text-align:center
+    }
+    .kpMsgRow{
+        margin-left:200px;
+    }
+    .kpMsgLine {
+        text-align: center;
     }
     .kpName {
-        font-size: 1rem;
+        font-size: 2rem;
         text-align: left;
+        margin-left:250px;
     }
     .kpInShopNow {
-        font-size: .75rem;
+        font-size: 1rem;
+        text-align: left;
+        padding-top:15px;
+        padding-bottom:0px;
+    }
+    .asstName {
+        font-size: 2rem;
         text-align: left;
     }
+    .asstInShopNow {
+        font-size: 1.5rem;
+        text-align: left;
+    }
+
     #ticketFooter {
         grid-area: footerArea;
         width:100%;
