@@ -277,9 +277,16 @@ background-color: #4e9ed4;
         margin:auto;
         font-size: 2rem;
     }
+    #ticketName {
+        font-size:3rem;
+    }
+    #ticketMachineDesc {
+        font-size:3rem;
+    }
+
     .machineName {
         font-weight: 700;
-        font-size: 3rem;
+        font-size: 5rem;
         border:2px solid black;
         width:50%;
     }
@@ -287,10 +294,15 @@ background-color: #4e9ed4;
         margin:auto;
     }
     .msgLine1 {
-        font-size:2rem;
+        font-size:3rem;
     }
     .msgLine2 {
-        font-size:2rem;
+        font-size:3rem;
+    }
+    .toolCribMsg {
+        font-size:3rem;
+        margin-left:200px;
+        border:1px solid black;
     }
     .listOfNames {
         border:1px solid black;
@@ -305,12 +317,12 @@ background-color: #4e9ed4;
         text-align: center;
     }
     .kpName {
-        font-size: 2rem;
+        font-size: 3rem;
         text-align: left;
         margin-left:250px;
     }
     .kpInShopNow {
-        font-size: 1rem;
+        font-size: 2rem;
         text-align: left;
         padding-top:15px;
         padding-bottom:0px;

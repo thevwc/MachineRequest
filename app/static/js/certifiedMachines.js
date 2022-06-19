@@ -70,7 +70,6 @@ function getTicketData(machineID) {
 
         // SET TICKET TITLE
 
-        console.log('isAuthorized -'+isAuthorized)
         if (isAuthorized) {
             document.getElementById('ticketTitle').innerHTML = "AUTHORIZATION TICKET"
             ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
@@ -89,14 +88,13 @@ function getTicketData(machineID) {
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
-            divRow1Col1=document.createElement('div')
-            divRow1Col1.classList.add('col-4')
-            divRow1.appendChild(divRow1Col1)
+            // divRow1Col1=document.createElement('div')
+            // divRow1Col1.classList.add('col-4')
+            // divRow1.appendChild(divRow1Col1)
 
             divRow1Col2 = document.createElement('div')
-            divRow1Col2.classList.add("col-8","msgLine1")
+            divRow1Col2.classList.add("col-12","toolCribMsg")
             divRow1Col2.innerHTML = "Take this slip to the tool crib."
-            divRow1Col2.style='text-align:center'
             divRow1.appendChild(divRow1Col2)
 
             msgLines.appendChild(divRow1)
