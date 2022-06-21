@@ -177,6 +177,9 @@ background-color: #4e9ed4;
         color:white;
         width:100%;
     }
+    .setPrintChoice {
+        float:right;
+    }
     tbody {
         padding-top:20px;
        

@@ -16,6 +16,16 @@ function getTicketData(machineID) {
         isAuthorized = false
     }
     console.log('isAuthorized - ',isAuthorized)
+    // if (localStorage.getItem('printOption')) {
+    //     printOption = localStorage.getItem('printOption')
+    // }
+    // else {
+    //     printOption = "PRINT"
+    // }
+    
+    // if (printOption == 'ESCPOS') {
+
+    // }
 
     let dataToSend = {
         villageID: villageID,
@@ -40,6 +50,9 @@ function getTicketData(machineID) {
             alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
             return
         }
+        
+
+
         // Populate ticket
         ticketDate = document.getElementById('ticketDate')
         ticketDate.innerHTML = data.ticketDate
@@ -251,11 +264,11 @@ function getTicketData(machineID) {
     })     
 }
 
-// function printTicket2(machineID) {
-//     villageID = document.getElementById('memberID').innerText
-//     url = '/printESCticket?villageID='+villageID+'&machineID='+machineID
-//     window.location.href=url
-// }
+function printViaESCPOS(machineID) {
+    villageID = document.getElementById('memberID').innerText
+    url = '/printTicketViaESCPOS?villageID='+villageID+'&machineID='+machineID
+    window.location.href=url
+}
 
 // function printTicketPage(machineID) {
 //     alert('printTicketPage')

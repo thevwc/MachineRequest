@@ -27,7 +27,25 @@ else {
   currentLocation = 'RA'
   localStorage.setItem('shopLocation',currentLocation)
 }  
-  
+
+// Set print option
+// if (localStorage.getItem('printOption')) {
+//   printOption = localStorage.getItem('printOption')
+//   if (printOption == 'PRINT') {
+//     printOptionSelectedID.innerText = 'PRINT'
+//   }
+//   else {
+//     printOptionSelectedID.innerText = 'ESCPOS'
+//   }
+// }  
+// else {
+//   // Initialize localStorage with 'PRINT'
+//   printOptionSelectedID.innerText ='PRINT'
+//   printOption = "PRINT" 
+//   localStorage.setItem('printOption',printOption)
+// }  
+
+
   // console.log('currentLocation - '+currentLocation)
   // document.getElementById('shopLocation').value = currentLocation
   // keypad.style.display='block'

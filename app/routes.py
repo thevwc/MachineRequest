@@ -34,7 +34,7 @@ from flask_mail import Mail, Message
 mail=Mail(app)
 import requests
 
-#from escpos.printer import Network
+from escpos.printer import Network
 
 # LOAD INITIAL LOGIN PAGE
 
@@ -324,47 +324,54 @@ def printInlineTicket():
 	# 	)
 	
 
-# @app.route('/printESCticket',methods=['GET'])
-# def printESCticket():
-#     villageID=request.args.get('villageID')
-#     machineID=request.args.get('machineID')
-#     locationAbbr = request.args.get('location')
-#     if (locationAbbr == 'RA'):
-#         locationName = 'Rolling Acres'
-#     else:
-#         locationName = 'Brownwood'
+@app.route('/printTicketViaESCPOS',methods=['GET'])
+def printESCticket():
+    villageID=request.args.get('villageID')
+    machineID=request.args.get('machineID')
+    locationAbbr = request.args.get('location')
+    if (locationAbbr == 'RA'):
+        locationName = 'Rolling Acres'
+    else:
+        locationName = 'Brownwood'
     
-#     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
-#     if (mbr == None):
-#         msg="Member not found"
-#         status=400
-#         flash('Member not found.','Info')
-#         return
+    # GET MEMBER DATA
+    mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
+    if (mbr == None):
+        msg="Member not found"
+        status=400
+        flash('Member not found.','Info')
+        return
 
-#     memberName = mbr.First_Name
-#     if mbr.Nickname is not None:
-#         if len(mbr.Nickname) > 0 :
-#             memberName += ' (' + mbr.Nickname + ')'
-#     memberName += ' ' + mbr.Last_Name
-#     mobilePhone = mbr.Cell_Phone
-#     homePhone = mbr.Home_Phone
-#     eMail = mbr.eMail
+    memberName = mbr.First_Name
+    if mbr.Nickname is not None:
+        if len(mbr.Nickname) > 0 :
+            memberName += ' (' + mbr.Nickname + ')'
+    memberName += ' ' + mbr.Last_Name
+    mobilePhone = mbr.Cell_Phone
+    homePhone = mbr.Home_Phone
+    eMail = mbr.eMail
 
-#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-#     if (machine != None):
-#         machineDesc = machine.machineDesc
-#     else:
-#         machineDesc = "?"
+    # GET MACHINE DATA
+    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+    if (machine != None):
+        machineDesc = machine.machineDesc
+    else:
+        machineDesc = "?"
 
-#     today=date.today()
-#     todaysDate = today.strftime('%B %d, %Y')
+    # GET TODAY'S DATE
+    today=date.today()
+    todaysDate = today.strftime('%B %d, %Y')
     
-   
-    # epsonPrinter = Network("192.168.12.126")
-    # epsonPrinter.text = memberName + '\n'
-    # epsonPrinter.text = todaysDateSTR + '\n'
-    # epsonPrinter.text = machineDesc + "\n"
-    # epsonPrinter.cut()
+#    ESCPOS PRINT ROUTINE
+    print('namej - ',memberName)
+    print('date - ',todaysDate)
+    print('machine - ',machineDesc)
+
+    epsonPrinter = Network("192.168.12.126")
+    epsonPrinter.text = memberName + '\n'
+    epsonPrinter.text = todaysDate + '\n'
+    epsonPrinter.text = machineDesc + "\n"
+    epsonPrinter.cut()
     
     
     return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
