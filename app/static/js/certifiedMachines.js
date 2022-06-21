@@ -270,12 +270,11 @@ function printViaESCPOS(machineID) {
     window.location.href=url
 }
 
-// function printTicketPage(machineID) {
-//     alert('printTicketPage')
-//     villageID = document.getElementById('memberID').innerText
-//     url = '/printTicketPage?villageID='+villageID+'&machineID='+machineID
-//     window.location.href=url
-// }
+function printTicketPage(machineID) {
+    villageID = document.getElementById('memberID').innerText
+    url = '/printTicketPage?villageID='+villageID+'&machineID='+machineID
+    window.location.href=url
+}
 
 // function returnToSignIn() {
 

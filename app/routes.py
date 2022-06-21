@@ -2,8 +2,6 @@
 
 from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
 
-
-
 from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
@@ -21,14 +19,8 @@ import datetime as dt
 from datetime import date, datetime, timedelta
 from pytz import timezone
 
-# import datetime
-# from datetime import date
-# from pytz import timezone
-
-
 import os.path
 from os import path
-
 
 from flask_mail import Mail, Message
 mail=Mail(app)
@@ -254,48 +246,48 @@ def printInlineTicket():
         keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,\
         keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
-# @app.route('/printTicketPage')
-# def printTicketPage():
-#     print('/printTicketPage')
-#     villageID=request.args.get('villageID')
-#     machineID=request.args.get('machineID')
-#     # print('VillageID - ',villageID)
-#     # print('MachineID - ',machineID)
+@app.route('/printTicketPage')
+def printTicketPage():
+    print('/printTicketPage')
+    villageID=request.args.get('villageID')
+    machineID=request.args.get('machineID')
+    # print('VillageID - ',villageID)
+    # print('MachineID - ',machineID)
 
-#     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
-#     if (mbr == None):
-#         msg="Member not found"
-#         status=400
-#         return jsonify(msg=msg,status=status)
+    mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
+    if (mbr == None):
+        msg="Member not found"
+        status=400
+        return jsonify(msg=msg,status=status)
 
-#     memberName = mbr.First_Name
-#     if mbr.Nickname is not None:
-#         if len(mbr.Nickname) > 0 :
-#             memberName += ' (' + mbr.Nickname + ')'
-#     memberName += ' ' + mbr.Last_Name
-#     mobilePhone = mbr.Cell_Phone
-#     homePhone = mbr.Home_Phone
-#     eMail = mbr.eMail
+    memberName = mbr.First_Name
+    if mbr.Nickname is not None:
+        if len(mbr.Nickname) > 0 :
+            memberName += ' (' + mbr.Nickname + ')'
+    memberName += ' ' + mbr.Last_Name
+    mobilePhone = mbr.Cell_Phone
+    homePhone = mbr.Home_Phone
+    eMail = mbr.eMail
 
-#     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-#     print('machine - ',machine)
+    machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
+    print('machine - ',machine)
 
-#     if (machine != None):
-#         machineDesc = machine.machineDesc
-#     else:
-#         machineDesc = "?"
+    if (machine != None):
+        machineDesc = machine.machineDesc
+    else:
+        machineDesc = "?"
 
-#     today=date.today()
-#     todaysDateSTR = today.strftime('%B %d, %Y')
+    today=date.today()
+    todaysDateSTR = today.strftime('%B %d, %Y')
 
-#     # print(memberName)
-#     # print(machineDesc)
-#     # print('desc - ',machine.machineDesc)
-#     # print(todaysDateSTR)
-#     # print('Key # '+ machineID)
-#     # print('-------------------------------------------')
+    # print(memberName)
+    # print(machineDesc)
+    # print('desc - ',machine.machineDesc)
+    # print(todaysDateSTR)
+    # print('Key # '+ machineID)
+    # print('-------------------------------------------')
 
-#     return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
+    return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
     
 
 # @app.route("/printWeeklyMonitorNotes", methods=["GET"])
@@ -367,13 +359,17 @@ def printESCticket():
     print('date - ',todaysDate)
     print('machine - ',machineDesc)
 
-    epsonPrinter = Network("192.168.12.126")
-    epsonPrinter.text = memberName + '\n'
-    epsonPrinter.text = todaysDate + '\n'
-    epsonPrinter.text = machineDesc + "\n"
-    epsonPrinter.cut()
+    try:
+        epsonPrinter = Network("192.168.12.126")
+        epsonPrinter.text = memberName + '\n'
+        epsonPrinter.text = todaysDate + '\n'
+        epsonPrinter.text = machineDesc + "\n"
+        epsonPrinter.cut()
     
-    
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])   
+        print('error - ',error)
+
     return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
 
 
