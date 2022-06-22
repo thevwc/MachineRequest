@@ -1,4 +1,14 @@
+// HIDE EXTRA BUTTONS FOR TESTING RECEIPT PRINTER
+villageID = document.getElementById('memberID').innerHTML
 
+if (villageID == '604875' || villageID == '373608') {
+    const escposBtnTest = document.getElementsByClassName('escposBtn')
+    for (const escPosBtn of escposBtnTest)
+        escPosBtn.style.display = 'block'
+    const prtTicketPageBtnTest = document.getElementsByClassName('prtTicketPageBtn')
+    for (const prtTicketPageBtn of prtTicketPageBtnTest)
+        prtTicketPageBtn.style.display = 'block'
+}
 
 function getTicketData(machineID) {
     villageID = document.getElementById('memberID').innerText

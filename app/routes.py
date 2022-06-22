@@ -65,10 +65,13 @@ def displayMemberData():
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
         notFoundMsg = 'Member ID was not found.'
-        return render_template('index.html',todaysDate=todaysDateSTR,notFoundMsg=notFoundMsg)
+        #return render_template("certifiedMachines.html",msg=notFoundMsg)
+        flash('info','Member ID was not found.')
+        print('notFoundMsg - ',notFoundMsg)
+        return render_template('index.html',todaysDate=todaysDateSTR,msg=notFoundMsg)
     else:
         notFoundMsg = ''
-
+    print('notFoundMsg - ',notFoundMsg)
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :

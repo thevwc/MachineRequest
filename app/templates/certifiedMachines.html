@@ -31,10 +31,21 @@
                             <button class="btn btn-sm btn-primary selectBtn" onclick="getTicketData('{{c.machineID}}')">SELECT</button>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary escposBtn" onclick="printViaESCPOS('{{c.machineID}}')">ESCPOS</button>
+                            <button id='escposBtn' 
+                                class="btn btn-sm btn-primary escposBtn"
+                                style="display:none" 
+                                onclick="printViaESCPOS('{{c.machineID}}')">
+                                ESCPOS
+                            </button>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary prtTicketPageBtn" onclick="printTicketPage('{{c.machineID}}')">PAGE</button>
+                            <button id='prtTicketPageBtn' 
+                                class="btn btn-sm btn-primary prtTicketPageBtn" 
+                                style="display:none"
+                                onclick="printTicketPage('{{c.machineID}}')">
+                                PAGE
+                            </button>
+                        
                         </td>
                         <td width="250" >{{c.machineDesc}}</td>
                         <!-- <td id = "A{{c.machineID}}">{{c.certifiedMsg}}</td> -->
