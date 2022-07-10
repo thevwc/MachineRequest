@@ -139,6 +139,7 @@ grid-area: 2 / 4 / 6 / 5;
 background-color: #4e9ed4;
 }
 
+
 /* iPad portrait */
 @media (min-width: 768px) {
     .parent {
@@ -236,7 +237,7 @@ background-color: #4e9ed4;
     .parent {
         background-color: white;
     }
-
+    
     .areaToPrint {
         display:block;
     }
