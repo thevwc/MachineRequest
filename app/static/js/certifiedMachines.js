@@ -1,7 +1,7 @@
 // HIDE EXTRA BUTTONS FOR TESTING RECEIPT PRINTER
 villageID = document.getElementById('memberID').innerHTML
 
-if (villageID == '604875' || villageID == '373608') {
+if (villageID == '604875' || villageID == '373608' || villageID == '123456' || villageID == '492219') {
     const escposBtnTest = document.getElementsByClassName('escposBtn')
     for (const escPosBtn of escposBtnTest)
         escPosBtn.style.display = 'block'
@@ -19,7 +19,8 @@ function getTicketData(machineID) {
     console.log(document.getElementById(isAuthorizedID).innerHTML)
     authorizationMsg = document.getElementById(isAuthorizedID).innerHTML
     console.log('authorizationMsg - '+authorizationMsg.substring(0,10))
-    if (authorizationMsg.substring(0,10) == 'AUTHORIZED') {
+
+    if (authorizationMsg.substring(0,10) == 'AUTHORIZED')  {
         isAuthorized = true
     }
     else {
@@ -71,8 +72,9 @@ function getTicketData(machineID) {
         ticketMachineDesc = document.getElementById('ticketMachineDesc')
         ticketMachineDesc.classList.add('machineName')
         ticketMachineDesc.innerHTML = data.ticketMachineDesc
-        ticketMachineID = document.getElementById('ticketMachineID')
-        
+        //ticketMachineID = document.getElementById('ticketMachineID')
+        ticketKeyNumber = document.getElementById('ticketKeyNumber')
+
         // CLEAR THE DETAIL SECTION
         //parent = document.getElementById('ticketBodyDetail')
         // while (parent.firstChild) {
@@ -95,11 +97,11 @@ function getTicketData(machineID) {
 
         if (isAuthorized) {
             document.getElementById('ticketTitle').innerHTML = "AUTHORIZATION TICKET"
-            ticketMachineID.innerHTML = "Key # " + data.ticketMachineID
+            ticketKeyNumber.innerHTML = "Key # " + data.keyNumber
         }
         else {
             document.getElementById('ticketTitle').innerHTML = "REQUEST FOR ASSISTANCE"
-            ticketMachineID.innerHTML = ""
+            ticketKeyNumber.innerHTML = ""
         }
         
         // IF AUTHORIZED AND KEY IS KEPT IN THE TOOL CRIB ...

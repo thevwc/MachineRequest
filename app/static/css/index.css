@@ -146,7 +146,7 @@ background-color: #4e9ed4;
         width:100%;
         height:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 80px 70px 50px auto 50px;
+        grid-template-rows: 120px 70px 50px auto 50px;
         grid-template-areas:"hdgArea"
                             "locationArea"
                             "notFoundArea"

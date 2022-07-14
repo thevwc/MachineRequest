@@ -67,11 +67,10 @@ def displayMemberData():
         notFoundMsg = 'Member ID was not found.'
         #return render_template("certifiedMachines.html",msg=notFoundMsg)
         flash('info','Member ID was not found.')
-        print('notFoundMsg - ',notFoundMsg)
         return render_template('index.html',todaysDate=todaysDateSTR,msg=notFoundMsg)
     else:
         notFoundMsg = ''
-    print('notFoundMsg - ',notFoundMsg)
+
     memberName = mbr.First_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
@@ -119,7 +118,7 @@ def displayMemberData():
                 else:
                    authorizationMsg = "AUTHORIZED UNTIL " + authorizationExpirationDate.strftime('%m-%d-%Y') 
             else:
-                authorizationMsg = "AUTHORIZATION IS PERMANENT"
+                authorizationMsg = "AUTHORIZED - IS PERMANENT"
                 expirationMsg = '- PERMANENT'
 
         machineItem = {
@@ -141,7 +140,6 @@ def displayMemberData():
 
 @app.route('/printInlineTicket',methods=['POST'])
 def printInlineTicket():
-
     req = request.get_json() 
     villageID = req["villageID"]
     machineID = req["machineID"]
@@ -178,7 +176,12 @@ def printInlineTicket():
     machineDesc = machine.machineDesc
     keyInToolCrib = machine.keyInToolCrib
     keyProvider = machine.keyProvider
-    
+
+    if machine.keyNumber:
+        keyNumber = machine.keyNumber
+    else:
+        keyNumber = 'NA'
+
     # BUILD LIST OF KEY PROVIDERS
     sqlKP = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
     sqlKP += "from tblMember_Data "
@@ -246,7 +249,7 @@ def printInlineTicket():
         ,ticketName=memberName,ticketMobilePhone=mobilePhone,\
         ticketDate=todaysDateSTR,ticketHomePhone=homePhone,ticketeMail=eMail,\
         ticketMachineDesc=machineDesc,ticketMachineID=machineID,\
-        keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,\
+        keyInToolCrib=keyInToolCrib,keyProvider=keyProvider,keyNumber=keyNumber,\
         keyProvidersDict=keyProvidersDict,assistantsDict=assistantsDict)
 
 @app.route('/printTicketPage')
@@ -254,8 +257,6 @@ def printTicketPage():
     print('/printTicketPage')
     villageID=request.args.get('villageID')
     machineID=request.args.get('machineID')
-    # print('VillageID - ',villageID)
-    # print('MachineID - ',machineID)
 
     mbr = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (mbr == None):
@@ -277,8 +278,13 @@ def printTicketPage():
 
     if (machine != None):
         machineDesc = machine.machineDesc
+        if machine.keyNumber:
+            keyNumber = machine.keyNumber
+        else:
+            keyNumber = ''
     else:
         machineDesc = "?"
+        keyNumber = "?"
 
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
@@ -290,7 +296,8 @@ def printTicketPage():
     # print('Key # '+ machineID)
     # print('-------------------------------------------')
 
-    return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,machineDesc=machineDesc,machineID=machineID)
+    return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,\
+        machineDesc=machineDesc,machineID=machineID,keyNumber=keyNumber)
     
 
 # @app.route("/printWeeklyMonitorNotes", methods=["GET"])
