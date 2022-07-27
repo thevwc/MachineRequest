@@ -244,33 +244,41 @@ background-color: #4e9ed4;
     .screenOnly {
         display:none;
     }
-
+/* 
     .ticket {
         display: grid;
         width:100%;
         height:100%;
         grid-template-columns: 1fr;
-        grid-template-rows: 100px auto 100px;
-        grid-template-areas:"hdgArea"
-                            "ticketBodyArea"
-                            "footerArea";
+        grid-template-areas:    "ticketTitleArea",
+                                "ticketDateArea",
+                                "ticketNameArea",
+                                "ticketMachineDescArea",
+                                "msgLinesArea",
+                                "listOfNamesArea";
         grid-gap:0em;
         background-color: white;
-        color:black;             
+        color:black;          
     }
-    #heading {
-        grid-area: hdgArea;
-        display:grid;
-        width:100%;
-        padding-top: 0px;
-        padding-bottom:0px;
+     */
+    #ticketTitle {
+        grid-area:ticketTitleArea;
         text-align: center;
-        background-color: white;
-        color: black;
+        font-size: 4rem;
     }
 
-    
-    #ticketBody {
+    #ticketDate {
+        grid-area:ticketDateArea;
+        text-align: center;
+        font-size: 4rem;
+    }
+    #ticketName {
+        grid-area:ticketNameArea;
+        text-align: center;
+        font-size:4rem;
+    }
+
+    /* #ticketBody {
         grid-area:ticketBodyArea;
         color:black;
         padding-top:5px;
@@ -279,37 +287,48 @@ background-color: #4e9ed4;
         margin-top:50px;
         width:100%;
         margin:auto;
-        font-size: 2rem;
-    }
-    #ticketName {
-        font-size:3rem;
-    }
+        font-size: 6rem;
+        border:2px solid black;
+    } */
+    
     #ticketMachineDesc {
-        font-size:3rem;
+        grid-area:ticketMachineDescArea;
+        text-align: center;
+        font-weight: 400;
+        font-size:5rem;
+        border:3px solid black;
+        margin-left:5px;
+        margin-right:5px;
     }
 
-    .machineName {
+    /* .machineName {
         font-weight: 700;
-        font-size: 5rem;
+        font-size: 9rem;
         border:2px solid black;
         width:50%;
-    }
+    } */
     .msgLines {
+        grid-area:msgLinesArea;
         margin:auto;
     }
     .msgLine1 {
-        font-size:3rem;
+        font-size:2rem;
+        background-color: lightgray;
     }
     .msgLine2 {
-        font-size:3rem;
+        font-size:4rem;
+        background-color: gray;
     }
     .toolCribMsg {
-        font-size:3rem;
-        margin-left:200px;
-        border:1px solid black;
+        font-size:5rem;
     }
     .listOfNames {
+        grid-area:listOfNamesArea;
         border:1px solid black;
+        font-size: 4rem;
+    }
+    #ticketKeyNumber {
+        font-size:4rem;
     }
     .kpRow {
         text-align:center
@@ -318,34 +337,46 @@ background-color: #4e9ed4;
         margin-left:200px;
     }
     .kpMsgLine {
-        text-align: center;
+        text-align: left;
+        font-size:2rem;
     }
     .kpName {
-        font-size: 3rem;
-        text-align: left;
-        margin-left:250px;
+        font-size: 4rem;
+        text-align:left;
+
+        border:1px solid black;
     }
     .kpInShopNow {
         font-size: 2rem;
+        text-align:right;
+        border:1px solid black;
+        padding-top: 0px;
+        height:100px;
+        line-height: 100px;
+    }
+    .asstMsg {
+        font-size: 3rem;
         text-align: left;
-        padding-top:15px;
-        padding-bottom:0px;
     }
     .asstName {
-        font-size: 2rem;
+        font-size: 4rem;
         text-align: left;
+        border:1px solid black;
     }
     .asstInShopNow {
-        font-size: 1.5rem;
+        font-size: 3rem;
         text-align: left;
+        height: 100px;
+        line-height: 100px;
+        border:1px solid black;
     }
 
-    #ticketFooter {
+    /* #ticketFooter {
         grid-area: footerArea;
         width:100%;
         text-align: center;
-        font-size: 2rem;
-    }
+        font-size: 6rem;
+    } */
  
 }
 

@@ -71,11 +71,11 @@ def displayMemberData():
     else:
         notFoundMsg = ''
 
-    memberName = mbr.First_Name
+    memberName = mbr.First_Name + ' ' + mbr.Last_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
+            memberName = mbr.Nickname + ' ' + mbr.Last_Name
+
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
@@ -110,7 +110,6 @@ def displayMemberData():
             # DETERMINE EXPIRATION DATE AND IF AUTHORIZATION HAS EXPIRED
             if certificationDuration.rstrip() != 'UNL':
                 authorizationExpirationDate = computedExpirationDate(dateCertified, certificationDuration)
-                #print('returned date - ',authorizationExpirationDate)
                 expirationMsg = 'until ' + authorizationExpirationDate.strftime('%m-%d-%Y')
                 if isExpired(authorizationExpirationDate):
                     authorizationMsg = "Authorization EXPIRED " + authorizationExpirationDate.strftime('%m-%d-%Y')
@@ -159,11 +158,11 @@ def printInlineTicket():
     if (mbr == None):
         return jsonify(msg="Member not found.",status=400)
 
-    memberName = mbr.First_Name
+    memberName = mbr.First_Name + ' ' + mbr.Last_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
+            memberName = mbr.Nickname + ' ' + mbr.Last_Name
+
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
@@ -183,7 +182,7 @@ def printInlineTicket():
         keyNumber = 'NA'
 
     # BUILD LIST OF KEY PROVIDERS
-    sqlKP = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
+    sqlKP = "select first_name, last_name, nickname, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
     sqlKP += "from tblMember_Data "
     sqlKP += "left join machineInstructors on tblMember_Data.member_id = machineInstructors.member_id "
     sqlKP += "where keyProvider = 1 and machineid = '" + machineID + "'"
@@ -198,14 +197,18 @@ def printInlineTicket():
         keyProvidersDict.append(keyProvidersItem)
     else:
         for i in keyProviders:
+            kpName = i.first_name + ' ' + i.last_name
+            if i.nickname != None:
+                if i.nickname != '':
+                    kpName = i.nickname + ' ' + i.last_name
             inShopNow = determineIfInShop(i.villageID,shopNumber)
-            keyProvidersItem = {'name':i.fnl_name,
+            keyProvidersItem = {'name':kpName,
                         'inShopNow':inShopNow}
             
             keyProvidersDict.append(keyProvidersItem)
         
     # BUILD LIST OF MEMBERS WHO WILL ASSIST
-    sqlAssistants = "select lfn_name, fnl_name, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
+    sqlAssistants = "select first_name, last_name, nickname, canAssist, KeyProvider, machineID, tblMember_Data.member_id as villageID "
     sqlAssistants += "from tblMember_Data "
     sqlAssistants += "left join machineInstructors on tblMember_Data.member_id = machineInstructors.member_id "
     sqlAssistants += "where canAssist = 1 and machineid = '" + machineID + "'"
@@ -219,9 +222,12 @@ def printInlineTicket():
         assistantsDict.append(assistantsItem)
     else:
         for i in assistants:
+            asstName = i.first_name + ' ' + i.last_name
+            if i.nickname != None:
+                if i.nickname != '':
+                    asstName = i.nickname + ' ' + i.last_name
             inShopNow = determineIfInShop(i.villageID,shopNumber)
-            assistantsItem = {'name':i.fnl_name,
-                        'inShopNow':inShopNow}  
+            assistantsItem = {'name':asstName,'inShopNow':inShopNow}  
             assistantsDict.append(assistantsItem)
 
     est = timezone('America/New_York')
@@ -254,7 +260,6 @@ def printInlineTicket():
 
 @app.route('/printTicketPage')
 def printTicketPage():
-    print('/printTicketPage')
     villageID=request.args.get('villageID')
     machineID=request.args.get('machineID')
 
@@ -264,18 +269,16 @@ def printTicketPage():
         status=400
         return jsonify(msg=msg,status=status)
 
-    memberName = mbr.First_Name
+    memberName = mbr.First_Name + ' ' + mbr.Last_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
+            memberName = mbr.Nickname + ' ' + mbr.Last_Name
+            
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
 
     machine = db.session.query(Machines).filter(Machines.machineID == machineID).first()
-    print('machine - ',machine)
-
     if (machine != None):
         machineDesc = machine.machineDesc
         if machine.keyNumber:
@@ -288,13 +291,6 @@ def printTicketPage():
 
     today=date.today()
     todaysDateSTR = today.strftime('%B %d, %Y')
-
-    # print(memberName)
-    # print(machineDesc)
-    # print('desc - ',machine.machineDesc)
-    # print(todaysDateSTR)
-    # print('Key # '+ machineID)
-    # print('-------------------------------------------')
 
     return render_template("ticket.html",todaysDate=todaysDateSTR,memberName=memberName,\
         machineDesc=machineDesc,machineID=machineID,keyNumber=keyNumber)
@@ -344,11 +340,11 @@ def printESCticket():
         flash('Member not found.','Info')
         return
 
-    memberName = mbr.First_Name
+    memberName = mbr.First_Name + ' ' + mbr.Last_Name
     if mbr.Nickname is not None:
         if len(mbr.Nickname) > 0 :
-            memberName += ' (' + mbr.Nickname + ')'
-    memberName += ' ' + mbr.Last_Name
+            memberName = mbr.Nickname + ' ' + mbr.Last_Name
+
     mobilePhone = mbr.Cell_Phone
     homePhone = mbr.Home_Phone
     eMail = mbr.eMail
@@ -364,11 +360,7 @@ def printESCticket():
     today=date.today()
     todaysDate = today.strftime('%B %d, %Y')
     
-#    ESCPOS PRINT ROUTINE
-    print('namej - ',memberName)
-    print('date - ',todaysDate)
-    print('machine - ',machineDesc)
-
+    #    ESCPOS PRINT ROUTINE   
     try:
         epsonPrinter = Network("192.168.12.126")
         epsonPrinter.text = memberName + '\n'
@@ -378,7 +370,6 @@ def printESCticket():
     
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])   
-        print('error - ',error)
 
     return render_template('index.html',todaysDate=todaysDate,notFoundMsg='')
 
@@ -443,15 +434,37 @@ def isExpired (expirationDate):
     else:
         return False
 
+# STORED PROCEDURE IS NOT WORKING
+# def isInShopNow(villageID,shopNumber):
+#     sp = "EXEC inShopNow '" + villageID + "', '" + str(shopNumber) + "'"
+#     sql = SQLQuery(sp)
+#     nowInShop = db.engine.execute(sql)
+#     return nowInShop
+    
 def determineIfInShop(villageID,shopNumber):
+    todaysDate = date.today()
+    todaysDateSTR = todaysDate.strftime('%Y-%m-%d')
     sqlSelect = "SELECT Top 1 [Member_ID] FROM [dbo].[tblMember_Activity] "
     sqlSelect += "WHERE [Member_ID] = '" + villageID + "' " 
-    sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = CAST(SYSDATETIMEOFFSET() AT TIME ZONE 'US Eastern Standard Time' AS date) "
+    sqlSelect += "AND CAST([Check_In_Date_Time] AS DATE) = '" + todaysDateSTR + "' "
     sqlSelect += "AND CAST([Check_Out_Date_Time] AS DATE) IS NULL "
     sqlSelect += "AND [Shop_Number] = " + str(shopNumber)
-   
     result = db.engine.execute(sqlSelect).scalar()
     if result != None:
         return 'IN SHOP NOW'
     else:
         return ''
+
+# SQLALCHEMY APPROACH NOT WORKING
+# def memberInShopNow(villageID,shopNumber):
+#     todaysDate = date.today()
+#     todaysDateSTR = todaysDate.strftime('%Y-%m-%d')
+#     inShopNow =  db.session.query(MemberActivity)\
+#         .filter(MemberActivity.Member_ID == villageID)\
+#         .filter(MemberActivity.Shop_Number == shopNumber)\
+#         .filter(MemberActivity.Check_In_Date_Time == todaysDate)\
+#         .filter(MemberActivity.Check_Out_Date_Time == None).first()
+#     if inShopNow != None:
+#         return 'IN SHOP NOW'
+#     else:
+#         return ''

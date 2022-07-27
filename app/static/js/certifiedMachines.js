@@ -1,14 +1,14 @@
 // HIDE EXTRA BUTTONS FOR TESTING RECEIPT PRINTER
 villageID = document.getElementById('memberID').innerHTML
 
-if (villageID == '604875' || villageID == '373608' || villageID == '123456' || villageID == '492219') {
-    const escposBtnTest = document.getElementsByClassName('escposBtn')
-    for (const escPosBtn of escposBtnTest)
-        escPosBtn.style.display = 'block'
-    const prtTicketPageBtnTest = document.getElementsByClassName('prtTicketPageBtn')
-    for (const prtTicketPageBtn of prtTicketPageBtnTest)
-        prtTicketPageBtn.style.display = 'block'
-}
+// if (villageID == '604875' || villageID == '373608' || villageID == '123456' || villageID == '492219') {
+//     const escposBtnTest = document.getElementsByClassName('escposBtn')
+//     for (const escPosBtn of escposBtnTest)
+//         escPosBtn.style.display = 'block'
+//     const prtTicketPageBtnTest = document.getElementsByClassName('prtTicketPageBtn')
+//     for (const prtTicketPageBtn of prtTicketPageBtnTest)
+//         prtTicketPageBtn.style.display = 'block'
+// }
 
 function getTicketData(machineID) {
     villageID = document.getElementById('memberID').innerText
@@ -127,12 +127,12 @@ function getTicketData(machineID) {
             divRow2 = document.createElement('div')
             divRow2.classList.add('row')
 
-            divRow2Col1=document.createElement('div')
-            divRow2Col1.classList='col-4'
-            divRow2.appendChild(divRow2Col1)
+            // divRow2Col1=document.createElement('div')
+            // divRow2Col1.classList='col-4'
+            // divRow2.appendChild(divRow2Col1)
 
             divRow2Col2 = document.createElement('div')
-            divRow2Col2.classList.add('msgLine2','col-8')
+            divRow2Col2.classList.add('msgLine2','col-12')
             divRow2Col2.innerHTML = ""
             divRow2.appendChild(divRow2Col2)
             msgLines.appendChild(divRow2)
@@ -150,7 +150,7 @@ function getTicketData(machineID) {
 
             divRow1Data = document.createElement('div')
             divRow1Data.classList.add("col-12", 'kpMsgLine')
-            divRow1Data.innerHTML = "Contact one of the following members for the key."
+            divRow1Data.innerHTML = "Contact one of the following members for the key -"
             divRow1.appendChild(divRow1Data)
             listOfNames.appendChild(divRow1)
             
@@ -166,12 +166,12 @@ function getTicketData(machineID) {
                 // divRow.appendChild(divCol0)
 
                 divCol1 = document.createElement('div')
-                divCol1.classList.add('col-6','kpName')
+                divCol1.classList.add('col-9','kpName')
                 divCol1.innerHTML = element['name']
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-2','kpInShopNow')
+                divCol2.classList.add('col-3','kpInShopNow')
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 
@@ -188,19 +188,19 @@ function getTicketData(machineID) {
             divRow1 = document.createElement('div')
             divRow1.classList.add('row')
 
-            divRow1Col1=document.createElement('div')
-            divRow1Col1.classList.add('col-3')
-            divRow1.appendChild(divRow1Col1)
+            // divRow1Col1=document.createElement('div')
+            // divRow1Col1.classList.add('col-3')
+            // divRow1.appendChild(divRow1Col1)
 
             divRow1DataCol2 = document.createElement('div')
-            divRow1DataCol2.classList.add("col-8","msgLine1")
+            divRow1DataCol2.classList.add("col-12","asstMsg")
             divRow1DataCol2.style='text-align:left'
             divRow1DataCol2.innerHTML = "You are currently not authorized to use this equipment without assistance."
             divRow1.appendChild(divRow1DataCol2)
 
             divRow2 = document.createElement('div')
             divRow2.classList.add('row')
-            divRow2.style='height:100px'
+            //divRow2.style='height:100px'
 
             // divRow2Col1=document.createElement('div')
             // divRow2Col1.classList.add('col-3')
@@ -221,12 +221,12 @@ function getTicketData(machineID) {
             divRow1.appendChild(brk)
             listOfNames.appendChild(divRow1)
 
-            divRow1Col1=document.createElement('div')
-            divRow1Col1.classList.add('col-3')
-            divRow1.appendChild(divRow1Col1)
+            // divRow1Col1=document.createElement('div')
+            // divRow1Col1.classList.add('col-3')
+            // divRow1.appendChild(divRow1Col1)
 
             divRow1Col2 = document.createElement('div')
-            divRow1Col2.classList.add("col-8","msgLine1")
+            divRow1Col2.classList.add("col-12","asstMsg")
             divRow1Col2.innerHTML = "Contact one of the following members to arrange a time for them to assist you:"
             divRow1Col2.style='text-align:left'
             divRow1.appendChild(divRow1Col2)
@@ -249,17 +249,17 @@ function getTicketData(machineID) {
                 divRow = document.createElement('div')
                 divRow.classList.add('row','asstRow')
 
-                divCol0 = document.createElement('div')
-                divCol0.classList.add('col-3')
-                divRow.appendChild(divCol0)
+                hrLine = document.createElement('HR')
+                // divCol0.classList.add('col-3')
+                divRow.appendChild(hrLine)
 
                 divCol1 = document.createElement('div')
-                divCol1.classList.add('col-4','asstName')
+                divCol1.classList.add('col-8','asstName')
                 divCol1.innerHTML = element['name']
                 divRow.appendChild(divCol1)
 
                 divCol2 = document.createElement('div')
-                divCol2.classList.add('col-3','asstInShopNow')
+                divCol2.classList.add('col-4','asstInShopNow')
                 divCol2.innerHTML = element['inShopNow']
                 divRow.appendChild(divCol2)
 

@@ -71,38 +71,8 @@ function shopLocationChange() {
       currentLocation = 'RA'
       localStorage.setItem('shopLocation','RA')
     }
-    //   modalAlert('Location','Please select a location.')
-    //   return 
-    // }
-    // localStorage.setItem('shopLocation',currentLocation)
-    // keypad.style.display='block'
-    clearScreen()
-    // console.log('currentLocation - '+currentLocation)
-    // console.log('memberInput value - '+document.getElementById('memberInput').value)
+    
 }
-
-//   if (!localStorage.getItem('delaySec')) {
-//     localStorage.setItem('delaySec',5)
-//     delayInSeconds = 5
-//   }
-//   else {
-//     delayInSeconds = localStorage.getItem('delaySec')
-//   }
-//   delayInMilliseconds = delayInSeconds * 1000
-//   document.getElementById('delaySec').innerHTML = delayInSeconds + ' sec'
-//   document.getElementById('delayTimeID').value = delayInSeconds
-
-  
-  // SET UP LISTENER FOR BARCODE SCANNER INPUT
-  // memberInput = document.getElementById('memberInput')
-  // memberInput.addEventListener('input',checkForScannerInput)
-  
-  // SET UP LISTENERS FOR SETTINGS BUTTONS
-  // $(".cancelBtn").click(function() {
-  //   console.log('cancelBtn clicked ...')
-  //   $('#settingsModalID').modal('hide')
-  // })
-
   function cancelSettings() {
     $('#settingsModalID').modal('hide')
   }
@@ -125,7 +95,7 @@ function checkForScannerInput() {
 
 $("button").click(function() {    
     entry = $(this).attr("value");
-    //alert('this - '+$(this).id)
+   
     if (entry == undefined) {
       return
     }
@@ -149,7 +119,7 @@ $("button").click(function() {
       location.href=url
       return
       }
-    //document.getElementById('memberInput').focus()
+    
     return
 })
 
@@ -159,100 +129,6 @@ function clearScreen() {
     document.getElementById("memberInput").value = "";
     document.getElementById('notFoundID').innerHTML = ''
   }
-
-
-// function lookupMember(villageID) {
-//     console.log('villageID - '+villageID)
-//     //console.log('location - '+location)
-//     shopLocation = 'BW'
-
-//     let dataToSend = {
-//         villageID: villageID,
-//         location: shopLocation
-//     };
-
-//     fetch(`${window.origin}/lookUpMember`, {
-//         method: "POST",
-//         credentials: "include",
-//         body: JSON.stringify(dataToSend),
-//         cache: "no-cache",
-//         headers: new Headers({
-//             "content-type": "application/json"
-//         })
-//     })
-//     .then((res) => res.json())
-//     .then((data) => {
-//         clearMemberData()
-//         if (data.status < 200 || data.status > 299) {
-//             alert('An error has occurred. ' + data.statusText + ' status code ' + data.status)
-//             return
-//         }
-        
-//         memberName = document.getElementById('memberName')
-//         memberName.innerHTML = data.memberName
-        
-//         if (data.status == 201) {
-//             // Member not found
-//             document.getElementById('memberID').value = ""
-//             return
-//         }
-//         // SUCCESS - Member was found
-//         // Build machine list
-//         machinesSection = document.getElementById('machinesSection')
-
-//         machine = data.machineDict
-//         if (machine.length == 0){
-//             // If no machines, display message
-//             var divNoMachines = document.createElement('div')
-//             divNoMachines.innerHTML = "No machines have been certified for this member."
-//             divNoMachines.style.width = '400px'
-//             divNoMachines.style.margin = 'auto'
-//             machinesSection.appendChild(divNoMachines)
-//             return
-//         }
-        
-//         // BUILD HEADINGS FOR LIST OF MACHINES
-//         // Insert a <br> after name
-//         var breakElement = document.createElement('br')
-//         nameSection.appendChild(breakElement)
-
-//         // Display the prompt - Select a machine:
-//         // machinesSection = document.getElementById('machinesSection')
-//         // divHdg = document.createElement('div')
-//         // divHdg.innerHTML = 'Select a machine:'
-//         // divHdg.style.marginLeft='20px'
-//         // machinesSection.appendChild(divHdg)
-      
-//         // List the machines the member is certified
-//         for (m of machine) {
-//             // BUILD THE ROW
-//             var divRow = document.createElement('div')
-//             divRow.classList.add('row')
-            
-//             var selectBtn = document.createElement('btn')
-//             selectBtn.innerHTML = 'SELECT'
-//             selectBtn.classList.add('btn', 'btn-primary','btn-sm','selectBtn')
-//             var printTicketSTR = "printTicket('" + m['machineID'] + "')"
-//             console.log('printTicketSTR - ',printTicketSTR)
-//             //selectBtn.onclick = printTicketSTR
-//             selectBtn.setAttribute('onclick',printTicketSTR);
-//             divRow.appendChild(selectBtn)
-
-//             var divMachineDesc = document.createElement('div')
-//             divMachineDesc.innerHTML = m['machineDesc']
-//             divMachineDesc.classList.add('machineDesc')
-
-//             divRow.appendChild(divMachineDesc)
-
-//             // ADD THE ROW TO THE DETAIL SECTION
-//             machinesSection.appendChild(divRow)
-//         }
-
-//         return
-//     })
-    
-// }
-
 function displayMemberCertificationsPage(villageID,location) {
   window.location()
 }
@@ -366,24 +242,6 @@ function modalAlert(title,msg) {
 function closeModal() {
 	$('#myModalMsg').modal('hide')
 }
-
-// function clearMemberData() {
-//     // Clear previous member data
-//     //memberID = document.getElementById('memberID')
-//     memberID.value = ''
-//     memberName = document.getElementById('memberName')
-//     memberName.innerHTML = ''
-//     machinesSection = document.getElementById('machinesSection')
-
-//     // Erase machine list
-//     while (machinesSection.firstChild) {
-//         machinesSection.removeChild(machinesSection.lastChild)
-//     }
-//     window.focus()
-//     document.getElementById("memberID").focus();
-
-// }
-
 // function printTicket(machineID) {
 //     console.log('machineID - '+machineID)
 //     //alert('Print a ticket for '+ machineID)
