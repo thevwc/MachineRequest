@@ -1,3 +1,5 @@
+
+
 // HIDE EXTRA BUTTONS FOR TESTING RECEIPT PRINTER
 villageID = document.getElementById('memberID').innerHTML
 
@@ -269,13 +271,15 @@ function getTicketData(machineID) {
 
         // Print ticket
         window.print();
+        
+        setTimeout(clearForNextMember,30000)
 
-        // Clear screen
-        //clearMemberData()
         return
     })     
 }
-
+function clearForNextMember() {
+    window.history.back()
+}
 function printViaESCPOS(machineID) {
     villageID = document.getElementById('memberID').innerText
     url = '/printTicketViaESCPOS?villageID='+villageID+'&machineID='+machineID
