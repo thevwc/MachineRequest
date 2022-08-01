@@ -4,7 +4,9 @@
 var curNumber="";
 var entry = "";
 var currentLocation = ''
-
+memberInput = document.getElementById('memberInput')
+memberInput.innerHTML = ''
+memberInput.value = ''
 // Define event listeners
 //shopLocationSelector = document.getElementById('shopLocationSelector')
 //shopLocationSelector.addEventListener('change',shopLocationChange)

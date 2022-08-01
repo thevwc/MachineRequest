@@ -272,6 +272,7 @@ function getTicketData(machineID) {
         // Print ticket
         window.print();
         
+
         setTimeout(clearForNextMember,30000)
 
         return
